@@ -18,6 +18,7 @@
 
 from unittest import mock
 
+from django.db.utils import OperationalError
 from django.urls import reverse
 from django.test import TestCase
 
@@ -31,7 +32,6 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.content.decode(), '')
 
-    @mock.patch('django_eha_sdk.health.views.check_db_connection', return_value=True)
     def test__check_db_ok(self, *args):
         response = self.client.get(reverse('check-db'))
         self.assertEqual(response.status_code, 200)
@@ -42,6 +42,24 @@ class ViewsTest(TestCase):
 
     @mock.patch('django_eha_sdk.health.views.check_db_connection', return_value=False)
     def test__check_db_down(self, *args):
+        response = self.client.get(reverse('check-db'))
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(
+            response.content.decode(),
+            'Always Look on the Bright Side of Life!!!',
+        )
+
+    @mock.patch('django_eha_sdk.health.utils.connection.cursor', side_effect=OperationalError)
+    def test__check_db__operational_error(self, *args):
+        response = self.client.get(reverse('check-db'))
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(
+            response.content.decode(),
+            'Always Look on the Bright Side of Life!!!',
+        )
+
+    @mock.patch('django_eha_sdk.health.utils.connection.cursor', side_effect=RuntimeError)
+    def test__check_db__another_error(self, *args):
         response = self.client.get(reverse('check-db'))
         self.assertEqual(response.status_code, 500)
         self.assertEqual(

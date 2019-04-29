@@ -19,7 +19,7 @@
 import logging
 
 from django.conf import settings
-from django.db import connections
+from django.db import connection
 from django.db.utils import OperationalError
 from django.utils.translation import ugettext as _
 
@@ -29,11 +29,12 @@ logger = logging.getLogger(__name__)
 logger.setLevel(settings.LOGGING_LEVEL)
 
 
-def check_db_connection():  # pragma: no cover
+def check_db_connection():
     try:
-        db_conn = connections['default']
-        db_conn.cursor()
+        connection.cursor()
     except OperationalError:
+        return False
+    except Exception:
         return False
 
     return True
