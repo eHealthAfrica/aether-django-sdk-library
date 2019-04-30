@@ -44,8 +44,6 @@ class UserRole(models.Model):
         return f'{self.user.username} - {self.name}'
 
     class Meta:
-        abstract = 'django_eha_sdk.auth.cas' not in settings.INSTALLED_APPS
-
         app_label = 'cas'
         ordering = ['name']
         unique_together = ('user', 'group')

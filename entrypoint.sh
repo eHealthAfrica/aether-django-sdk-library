@@ -44,6 +44,11 @@ function test_flake8 {
 function test_coverage {
     rm -R /code/.coverage* 2>/dev/null || true
 
+    # for testing VERSION and REVISION settings
+    mkdir -p /var/tmp
+    echo "1.2.3" > /var/tmp/VERSION
+    echo "test"  > /var/tmp/REVISION
+
     coverage run \
         --concurrency=multiprocessing \
         --parallel-mode \
