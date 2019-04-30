@@ -71,7 +71,7 @@ def find_in_request(request, key, default_value=None):
 
 def find_in_request_headers(request, key, default_value=None):
     '''
-    Finds the key in within the request headers.
+    Finds the key within the request headers.
 
     https://docs.djangoproject.com/en/2.2/ref/request-response/#django.http.HttpRequest.META
 

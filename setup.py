@@ -52,6 +52,7 @@ setup(
         'python-json-logger',
         'requests',
         'urllib3>=1.25',
+        'uwsgi',
     ],
     extras_require={
         'cas': [
@@ -63,7 +64,6 @@ setup(
         ],
         'server': [
             'sentry-sdk',
-            'uwsgi',
         ],
         'webpack': [
             'django-webpack-loader',

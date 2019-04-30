@@ -48,6 +48,8 @@ class MtInstance(models.Model):
         return str(self.instance)
 
     class Meta:
+        abstract = 'django_eha_sdk.multitenancy' not in settings.INSTALLED_APPS
+
         app_label = 'multitenancy'
         ordering = ['instance']
         indexes = [
