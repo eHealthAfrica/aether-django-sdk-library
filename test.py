@@ -22,8 +22,13 @@ import os
 import sys
 
 if __name__ == '__main__':
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_eha_sdk.tests.settings')
-
     from django.core.management import execute_from_command_line
+
+    # take all testing environment variables from file
+    with open('./scripts/test.ini') as envfile:
+        for line in envfile:
+            if line.strip() and not line.startswith('#'):
+                setting = line.strip().split('=', maxsplit=1)
+                os.environ.setdefault(setting[0], setting[1])
 
     execute_from_command_line(sys.argv)

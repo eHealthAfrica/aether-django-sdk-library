@@ -20,13 +20,14 @@
 #
 set -Eeuo pipefail
 
-docker-compose kill
-docker-compose down
+# ----------------------------------------
+# install requirements in virtual env
+# ----------------------------------------
+pip3 install -q virtualenv
+rm -rf ./venv
+virtualenv -p python3 ./venv
 
-# create the distribution
-docker-compose build --no-cache --force-rm --pull sdk
-docker-compose run sdk test
-docker-compose run sdk build
+source ./venv/bin/activate
 
-docker-compose kill
-docker-compose down
+pip3 install -q --upgrade pip
+pip3 install -q --upgrade -r requirements.txt

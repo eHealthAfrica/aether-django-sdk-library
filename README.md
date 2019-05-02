@@ -8,7 +8,8 @@ This library contains the most common features used by the different eHealth dja
 - [Installation](#installation)
 - [Distribution](#distribution)
 - [Tests](#tests)
-- [Modules](#modules)
+- [Usage](#usage)
+
 
 ## Requirements
 
@@ -38,26 +39,14 @@ Python libraries:
   A python library adding a json log formatter.
 - [requests](https://2.python-requests.org//en/master/)
   HTTP for Humans.
+- [uwsgi](https://uwsgi-docs.readthedocs.io/en/latest/)
+  The uWSGI server.
 
 Extra dependencies (based on settings):
 
 - **cas**
   - [django-cas-ng](https://github.com/mingchen/django-cas-ng)
     Django CAS (Central Authentication Service) client. (**Above 3.6**)
-
-- **storage**
-  - [django-minio-storage](https://github.com/py-pa/django-minio-storage)
-    A django storage driver for minio.
-  - [django-storages](https://django-storages.readthedocs.io/en/latest/)
-    A collection of custom storage backends for Django.
-    Enabled for [boto3](https://github.com/boto/boto3) and
-    [google-cloud-storage](https://github.com/googleapis/google-cloud-python).
-
-- **server**
-  - [sentry-sdk](https://github.com/getsentry/sentry-python)
-    Python client for Sentry.
-  - [uwsgi](https://uwsgi-docs.readthedocs.io/en/latest/)
-    The uWSGI server.
 
 - **scheduler**
   - [django-rq](https://github.com/rq/django-rq)
@@ -69,7 +58,19 @@ Extra dependencies (based on settings):
   - [rq-scheduler](https://github.com/rq/rq-scheduler)
     Small package that adds job scheduling capabilities to RQ.
 
-**test**
+- **server**
+  - [sentry-sdk](https://github.com/getsentry/sentry-python)
+    Python client for Sentry.
+
+- **storage**
+  - [django-minio-storage](https://github.com/py-pa/django-minio-storage)
+    A django storage driver for minio.
+  - [django-storages](https://django-storages.readthedocs.io/en/latest/)
+    A collection of custom storage backends for Django.
+    Enabled for [boto3](https://github.com/boto/boto3) and
+    [google-cloud-storage](https://github.com/googleapis/google-cloud-python).
+
+- **test**
   - [coverage](https://coverage.readthedocs.io/)
     A tool for measuring code coverage of Python programs.
   - [flake8](http://flake8.pycqa.org/en/latest/)
@@ -79,6 +80,10 @@ Extra dependencies (based on settings):
   - [tblib](https://github.com/ionelmc/python-tblib)
     Traceback serialization library.
 
+- **webpack**
+  - [django-webpack-loader](https://github.com/owais/django-webpack-loader)
+    Transparently use webpack with django.
+
 *[Return to TOC](#table-of-contents)*
 
 
@@ -86,11 +91,55 @@ Extra dependencies (based on settings):
 
 ```bash
 # standalone
-pip install django_eha_sdk
+pip3 install django_eha_sdk
 
 # with extra dependencies
-pip install django_eha_sdk[cas,storage,server,test]
+pip3 install django_eha_sdk[cas,scheduler,server,storage,test,webpack]
 ```
+
+*[Return to TOC](#table-of-contents)*
+
+
+## Distribution
+
+How to create the package distribution
+
+Execute the following command:
+
+```bash
+python3 setup.py bdist_wheel
+```
+
+or
+
+```bash
+./scripts/build.sh
+```
+
+*[Return to TOC](#table-of-contents)*
+
+## Tests
+
+How to test the library
+
+First install dependencies (execute it only once):
+
+```bash
+./scripts/install.sh
+```
+
+After that execute the following command:
+
+```bash
+./scripts/test.sh
+```
+
+The file `scripts/test.ini` contains the environment variables used in the tests.
+
+*[Return to TOC](#table-of-contents)*
+
+
+## Usage
 
 Add this snippet in the `settings.py` file to have the build the django app
 settings based on the environment variables.
@@ -113,40 +162,6 @@ from django_eha_sdk.conf.urls import generate_urlpatterns
 urlpatterns = generate_urlpatterns(token=True, app=[
     # include here the app specific urls
 ])
-```
-
-*[Return to TOC](#table-of-contents)*
-
-## Distribution
-
-How to create the package distribution
-
-Execute the following command in this folder.
-
-```bash
-python setup.py bdist_wheel --universal
-```
-
-or to ease the process the build is also run within a docker container.
-
-```bash
-# using the script
-# (this will run the test before building the library distribution)
-./build.sh
-# or manually
-docker-compose run sdk build
-```
-
-*[Return to TOC](#table-of-contents)*
-
-## Tests
-
-How to test the library
-
-To ease the process the tests are run within a docker container.
-
-```bash
-docker-compose run sdk test
 ```
 
 *[Return to TOC](#table-of-contents)*

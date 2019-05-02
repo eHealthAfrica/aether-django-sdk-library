@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #
 # Copyright (C) 2019 by eHealth Africa : http://www.eHealthAfrica.org
 #
@@ -17,13 +18,22 @@
 # specific language governing permissions and limitations
 # under the License.
 #
+set -Eeuo pipefail
 
-FROM python:3.7-slim-stretch
+# ----------------------------------------
+# remove previous packages if needed
+# ----------------------------------------
+rm -rf dist/*
+rm -rf build
+rm -rf django_eha_sdk.egg-info
 
-WORKDIR /code
-COPY ./ /code
+# ----------------------------------------
+# create the distribution package
+# ----------------------------------------
+python3 setup.py bdist_wheel
 
-RUN pip install -q --upgrade pip && \
-    pip install -q -r /code/requirements.txt
-
-ENTRYPOINT ["/code/entrypoint.sh"]
+# ----------------------------------------
+# remove useless content
+# ----------------------------------------
+rm -rf build
+rm -rf django_eha_sdk.egg-info

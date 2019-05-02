@@ -22,6 +22,7 @@ These settings are only used for testing purposes.
 
 from django_eha_sdk.conf.settings import *  # noqa
 
+
 # to check URLs builder
 # ------------------------------------------------------------------------------
 TEST_TOKEN_ACTIVE = True

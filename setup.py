@@ -58,27 +58,27 @@ setup(
         'cas': [
             'django-cas-ng>=3.6',
         ],
-        'storage': [
-            'django-minio-storage',
-            'django-storages[boto3,google]',
-        ],
-        'server': [
-            'sentry-sdk',
-        ],
-        'webpack': [
-            'django-webpack-loader',
-        ],
         'scheduler': [
             'django-rq',
             'redis',
             'rq',
             'rq-scheduler',
         ],
+        'server': [
+            'sentry-sdk',
+        ],
+        'storage': [
+            'django-minio-storage',
+            'django-storages[boto3,google]',
+        ],
         'test': [
             'coverage',
             'flake8',
             'flake8-quotes',
             'tblib',  # for paralell test runner
+        ],
+        'webpack': [
+            'django-webpack-loader',
         ],
     },
 
