@@ -1,21 +1,21 @@
-sudo: required
+dist: xenial
 language: python
 python:
   - '3.6'
-
-install: true
 
 # use matrix to split jobs and only re-execute the failing one
 matrix:
   fast_finish: true
   include:
+
     - name: "Test"
       stage: test
-      install: ./scripts/install.sh
+      install: pip3 install -q -r requirements.txt
       script: ./scripts/test.sh && ./scripts/build.sh
 
     - name: "Release"
       stage: deploy
+      install: true
       # TODO
       script: echo "releasing..."
       # release only if tag like #.#.#

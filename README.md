@@ -131,6 +131,7 @@ First install dependencies (execute it only once):
 After that execute the following command:
 
 ```bash
+source ./venv/bin/activate
 ./scripts/test.sh
 ```
 

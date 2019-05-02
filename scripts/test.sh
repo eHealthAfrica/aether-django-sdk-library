@@ -28,7 +28,6 @@ rm -R .coverage* 2>/dev/null || true
 # ----------------------------------------
 # set up test environment
 # ----------------------------------------
-source ./venv/bin/activate
 
 # copy VERSION and REVISION in temporal files
 mkdir -p /var/tmp
