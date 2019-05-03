@@ -1,0 +1,168 @@
+/*
+ * Copyright (C) 2019 by eHealth Africa : http://www.eHealthAfrica.org
+ *
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,600);
+
+body {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.3rem;
+}
+
+/* background classes */
+.eha-bg {
+  background: #0090fc;
+  color: #fff;
+}
+
+/* branding classes */
+.brand {
+  display: block;
+  height: 1rem;
+  margin: 10vh 0 5rem;
+  position: relative;
+  transition: opacity 0.4s;
+  width: 2.4rem;
+}
+
+.brand span {
+  color: #fff;
+  display: inline-block;
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 46px;
+  margin: 0 60px;
+}
+
+.brand span b {
+  font-weight: 600;
+}
+
+.logo-container {
+  perspective: 1000px;
+  position: absolute;
+}
+
+.logo-container:hover .flipper {
+  transform: rotateY(180deg);
+}
+
+.back,
+.front,
+.logo-container {
+  border-radius: 50%;
+  height: 46px;
+  width: 46px;
+}
+
+.flipper {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: 1s;
+}
+
+.back,
+.front {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  box-sizing: border-box;
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+
+.front {
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.back {
+  transform: rotateY(180deg);
+}
+
+/* navbar branding classes */
+.navbar-brand .back,
+.navbar-brand .front,
+.navbar-brand .logo-container {
+  height: 24px;
+  width: 24px;
+}
+
+.navbar-brand span {
+  display: inline-block;
+  margin-left: 32px;
+  line-height: 24px;
+}
+
+/* logged out info */
+.logout-info {
+  padding-left: 2rem;
+}
+
+.logout-info a,
+.logout-info a:visited {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* tokens page */
+.tokens-info {
+  padding: 2rem;
+}
+
+.tokens-info table {
+  margin-left: 32px;
+  margin-bottom: 1rem;
+  background-color: #0000003d;
+  border-bottom: 1px solid #fff;
+  border-top: 1px solid #fff;
+}
+
+.tokens-info table td,
+.tokens-info table th {
+  padding: 0.75rem 2rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.tokens-info table thead th {
+  vertical-align: bottom;
+}
+
+.tokens-info table thead th,
+.tokens-info table tbody+tbody {
+  border-bottom: 1px solid #fff;
+}
+
+.tokens-info table tbody tr:nth-of-type(odd) {
+  background-color: #0000003d;
+}
+
+.tokens-info table tbody tr:hover {
+  background-color: #00000013;
+}
+
+.tokens-info table a,
+.tokens-info table a:visited {
+  color: #fff;
+  text-decoration: underline;
+}
