@@ -22,4 +22,4 @@ from django.apps import AppConfig
 class Config(AppConfig):
 
     name = 'django_eha_sdk.multitenancy'
-    verbose_name = 'Django eHealth SDK Multitenancy library'
+    verbose_name = 'Multitenancy'

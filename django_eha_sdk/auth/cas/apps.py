@@ -22,4 +22,4 @@ from django.apps import AppConfig
 class Config(AppConfig):
 
     name = 'django_eha_sdk.auth.cas'
-    verbose_name = 'Django eHealth SDK CAS Client library'
+    verbose_name = 'Auth CAS'

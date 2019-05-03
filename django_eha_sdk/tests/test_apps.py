@@ -25,5 +25,5 @@ class AppsTests(TestCase):
     def test_app_config(self):
         self.assertEqual(
             apps.get_app_config('django_eha_sdk').verbose_name,
-            'Django eHealth SDK library'
+            'Django eHealth SDK'
         )
