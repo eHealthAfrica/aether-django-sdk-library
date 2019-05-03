@@ -20,6 +20,7 @@ import json
 import sys
 
 from importlib import reload, import_module
+from requests.exceptions import HTTPError
 
 from django.conf import settings
 from django.core.management import call_command
@@ -49,14 +50,15 @@ class MockResponse:
     Class to use in unit tests as HTTP Response.
     '''
 
-    def __init__(self, status_code=200, json_data={}):
-        self.json_data = json_data
+    def __init__(self, status_code=200, json_data={}, text=''):
         self.status_code = status_code
-        self.content = json.dumps(json_data).encode('utf-8')
+        self.json_data = json_data
+        self.text = text
+        self.content = json.dumps(json_data or text).encode('utf-8')
 
     def json(self):
         return self.json_data
 
     def raise_for_status(self):
         if self.status_code >= 400:
-            raise Exception(self.status_code)
+            raise HTTPError(self.status_code)
