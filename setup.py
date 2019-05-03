@@ -18,6 +18,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import os
 from io import open
 from setuptools import find_packages, setup
 
@@ -26,12 +27,23 @@ def read(f):
     return open(f, 'r', encoding='utf-8').read()
 
 
+VERSION = os.environ.get('VERSION', '0.0.1')
+
 setup(
-    version='0.0.1',
+    version=VERSION,
     name='django_eha_sdk',
     description='A python library with helpful django tools',
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
+    keywords=[
+        'django',
+        'setup',
+        'auth',
+        'cas',
+        'token',
+        'keycloak',
+        'multitenancy',
+    ],
 
     url='https://github.com/eHealthAfrica/django-eha-sdk/',
     author='eHealth Africa',

@@ -3,6 +3,8 @@ language: python
 python:
   - '3.7'
 
+install: true
+
 # use matrix to split jobs and only re-execute the failing one
 matrix:
   fast_finish: true
@@ -10,13 +12,10 @@ matrix:
 
     - name: "Test"
       stage: test
-      install: pip3 install -q -r requirements.txt
-      script: ./scripts/test.sh && ./scripts/build.sh
+      script: ./scripts/travis_test.sh
 
     - name: "Release"
       stage: deploy
-      install: true
-      # TODO
-      script: echo "releasing..."
+      script: ./scripts/travis_release.sh
       # release only if tag like #.#.#
       if: (tag =~ ^[0-9]+(\.[0-9]+){2}$)
