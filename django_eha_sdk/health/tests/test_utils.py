@@ -37,13 +37,13 @@ class UtilsTests(TestCase):
         mock_req.assert_has_calls([
             mock.call(
                 method='head',
-                url=settings.EXTERNAL_APPS['test-app-1']['url'],
+                url=settings.EXTERNAL_APPS['app-1']['test']['url'],
             ),
             mock.call(
                 method='get',
-                url=settings.EXTERNAL_APPS['test-app-1']['url'],
+                url=settings.EXTERNAL_APPS['app-1']['test']['url'],
                 headers={'Authorization': 'Token {}'.format(
-                    settings.EXTERNAL_APPS['test-app-1']['token']
+                    settings.EXTERNAL_APPS['app-1']['test']['token']
                 )},
             ),
         ])
@@ -53,7 +53,7 @@ class UtilsTests(TestCase):
         self.assertFalse(check_external_app('app-1'))
         mock_head.assert_called_with(
             method='head',
-            url=settings.EXTERNAL_APPS['test-app-1']['url'],
+            url=settings.EXTERNAL_APPS['app-1']['test']['url'],
         )
 
     @mock.patch('django_eha_sdk.health.utils.request',
@@ -67,13 +67,13 @@ class UtilsTests(TestCase):
         mock_req.assert_has_calls([
             mock.call(
                 method='head',
-                url=settings.EXTERNAL_APPS['test-app-1']['url'],
+                url=settings.EXTERNAL_APPS['app-1']['test']['url'],
             ),
             mock.call(
                 method='get',
-                url=settings.EXTERNAL_APPS['test-app-1']['url'],
+                url=settings.EXTERNAL_APPS['app-1']['test']['url'],
                 headers={'Authorization': 'Token {}'.format(
-                    settings.EXTERNAL_APPS['test-app-1']['token']
+                    settings.EXTERNAL_APPS['app-1']['test']['token']
                 )},
             ),
         ])

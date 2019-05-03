@@ -178,7 +178,7 @@ LOGGED_OUT_TEMPLATE = os.environ.get('LOGGED_OUT_TEMPLATE', 'eha/logged_out.html
 
 ADMIN_URL = os.environ.get('ADMIN_URL', 'admin')
 AUTH_URL = os.environ.get('AUTH_URL', 'accounts')
-LOGIN_URL = os.environ.get('LOGIN_URL', f'/{AUTH_URL}/login/')
+LOGIN_URL = os.environ.get('LOGIN_URL', f'/{AUTH_URL}/login')
 LOGIN_REDIRECT_URL = APP_URL
 
 DRF_API_RENDERER_TEMPLATE = os.environ.get('DRF_API_RENDERER_TEMPLATE', 'eha/api.html')
@@ -290,14 +290,17 @@ if _external_apps:
         token = get_required(f'{APP}_TOKEN')
         EXTERNAL_APPS[app] = {'url': url, 'token': token}
 
-        # add entry for TEST mode
-        EXTERNAL_APPS[f'test-{app}'] = {
+        # add key for TEST mode
+        EXTERNAL_APPS[app]['test'] = {
             # url for TEST mode
             'url': os.environ.get(f'{APP}_URL_TEST', url),
             'token': os.environ.get(f'{APP}_TOKEN_TEST', token),
         }
 
-if not EXTERNAL_APPS:
+if EXTERNAL_APPS:
+    INSTALLED_APPS += ['django_eha_sdk.auth.apptoken', ]
+
+else:
     logger.info('No linked external apps!')
 
 
@@ -394,7 +397,7 @@ if KEYCLOAK_SERVER_URL:
         # the endpoints are served behind the gateway
         ADMIN_URL = os.environ.get('ADMIN_URL', f'{GATEWAY_PUBLIC_PATH}/admin')
         AUTH_URL = os.environ.get('AUTH_URL', f'{GATEWAY_PUBLIC_PATH}/accounts')
-        LOGIN_URL = os.environ.get('LOGIN_URL', f'/{AUTH_URL}/login/')
+        LOGIN_URL = os.environ.get('LOGIN_URL', f'/{AUTH_URL}/login')
         STATIC_URL = os.environ.get('STATIC_URL', f'/{GATEWAY_PUBLIC_PATH}/static/')
         LOGIN_REDIRECT_URL = f'/{GATEWAY_PUBLIC_PATH}/'
 

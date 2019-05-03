@@ -47,14 +47,14 @@ class CasTests(UrlsTestCase):
     def test__urls(self):
         from django_cas_ng import views
 
-        self.assertEqual(reverse('rest_framework:login'), '/accounts/login/')
-        self.assertEqual(reverse('rest_framework:logout'), '/accounts/logout/')
+        self.assertEqual(reverse('rest_framework:login'), '/accounts/login')
+        self.assertEqual(reverse('rest_framework:logout'), '/accounts/logout')
 
-        self.assertEqual(resolve('/accounts/login/').func.view_class,
+        self.assertEqual(resolve('/accounts/login').func.view_class,
                          views.LoginView.as_view().view_class)
-        self.assertEqual(resolve('/accounts/logout/').func.view_class,
+        self.assertEqual(resolve('/accounts/logout').func.view_class,
                          views.LogoutView.as_view().view_class)
-        self.assertEqual(resolve('/logout/').func.view_class,
+        self.assertEqual(resolve('/logout').func.view_class,
                          views.LogoutView.as_view().view_class)
 
     def test__workflow(self):
@@ -72,7 +72,7 @@ class CasTests(UrlsTestCase):
         self.assertEqual(
             response.url,
             'http://cas:6666/login?'
-            'service=http%3A%2F%2Ftestserver%2Faccounts%2Flogin%2F%3Fnext%3D%252F'
+            'service=http%3A%2F%2Ftestserver%2Faccounts%2Flogin%3Fnext%3D%252F'
         )
 
         user = user_objects.create_user(username='cas_testing')

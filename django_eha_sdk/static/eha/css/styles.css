@@ -29,7 +29,6 @@ body {
 }
 
 /* background classes */
-
 .eha-bg {
   background: #0090fc;
   color: #fff;
@@ -121,6 +120,49 @@ body {
 
 .logout-info a,
 .logout-info a:visited {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* tokens page */
+.tokens-info {
+  padding: 2rem;
+}
+
+.tokens-info table {
+  margin-left: 32px;
+  margin-bottom: 1rem;
+  background-color: #0000003d;
+  border-bottom: 1px solid #fff;
+  border-top: 1px solid #fff;
+}
+
+.tokens-info table td,
+.tokens-info table th {
+  padding: 0.75rem 2rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.tokens-info table thead th {
+  vertical-align: bottom;
+}
+
+.tokens-info table thead th,
+.tokens-info table tbody+tbody {
+  border-bottom: 1px solid #fff;
+}
+
+.tokens-info table tbody tr:nth-of-type(odd) {
+  background-color: #0000003d;
+}
+
+.tokens-info table tbody tr:hover {
+  background-color: #00000013;
+}
+
+.tokens-info table a,
+.tokens-info table a:visited {
   color: #fff;
   text-decoration: underline;
 }

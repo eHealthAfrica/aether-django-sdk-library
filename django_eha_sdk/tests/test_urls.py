@@ -41,19 +41,19 @@ class UrlsTest(UrlsTestCase):
         self.assertEqual(reverse('admin:index'), '/admin/')
 
     def test__urls__auth(self):
-        self.assertEqual(reverse('rest_framework:login'), '/accounts/login/')
-        self.assertEqual(reverse('rest_framework:logout'), '/accounts/logout/')
-        self.assertEqual(reverse('rest_framework:token'), '/accounts/token')
-        self.assertEqual(reverse('logout'), '/logout/')
+        self.assertEqual(reverse('rest_framework:login'), '/accounts/login')
+        self.assertEqual(reverse('rest_framework:logout'), '/accounts/logout')
+        self.assertEqual(reverse('token'), '/token')
+        self.assertEqual(reverse('logout'), '/logout')
 
     def test__urls__auth__views(self):
         from django.contrib.auth.views import LoginView, LogoutView
 
-        self.assertEqual(resolve('/accounts/login/').func.view_class,
+        self.assertEqual(resolve('/accounts/login').func.view_class,
                          LoginView.as_view().view_class)
-        self.assertEqual(resolve('/accounts/logout/').func.view_class,
+        self.assertEqual(resolve('/accounts/logout').func.view_class,
                          LogoutView.as_view().view_class)
-        self.assertEqual(resolve('/logout/').func.view_class,
+        self.assertEqual(resolve('/logout').func.view_class,
                          LogoutView.as_view().view_class)
 
 
@@ -74,10 +74,10 @@ class UrlsAppUrlTest(UrlsTestCase):
         self.assertEqual(reverse('admin:index'), '/eha/admin/')
 
     def test__urls__auth(self):
-        self.assertEqual(reverse('rest_framework:login'), '/eha/accounts/login/')
-        self.assertEqual(reverse('rest_framework:logout'), '/eha/accounts/logout/')
-        self.assertEqual(reverse('rest_framework:token'), '/eha/accounts/token')
-        self.assertEqual(reverse('logout'), '/eha/logout/')
+        self.assertEqual(reverse('rest_framework:login'), '/eha/accounts/login')
+        self.assertEqual(reverse('rest_framework:logout'), '/eha/accounts/logout')
+        self.assertEqual(reverse('token'), '/eha/token')
+        self.assertEqual(reverse('logout'), '/eha/logout')
 
 
 @override_settings(EXTERNAL_APPS={})
@@ -111,14 +111,14 @@ class UrlsCASServerTest(UrlsTestCase):
     def test__urls(self):
         from django_cas_ng import views
 
-        self.assertEqual(reverse('rest_framework:login'), '/accounts/login/')
-        self.assertEqual(reverse('rest_framework:logout'), '/accounts/logout/')
+        self.assertEqual(reverse('rest_framework:login'), '/accounts/login')
+        self.assertEqual(reverse('rest_framework:logout'), '/accounts/logout')
 
-        self.assertEqual(resolve('/accounts/login/').func.view_class,
+        self.assertEqual(resolve('/accounts/login').func.view_class,
                          views.LoginView.as_view().view_class)
-        self.assertEqual(resolve('/accounts/logout/').func.view_class,
+        self.assertEqual(resolve('/accounts/logout').func.view_class,
                          views.LogoutView.as_view().view_class)
-        self.assertEqual(resolve('/logout/').func.view_class,
+        self.assertEqual(resolve('/logout').func.view_class,
                          views.LogoutView.as_view().view_class)
 
 
@@ -134,12 +134,12 @@ class UrlsKeycloakServerBehindTest(UrlsTestCase):
         from django.contrib.auth.views import LoginView
         from django_eha_sdk.auth.keycloak.views import KeycloakLogoutView
 
-        self.assertEqual(reverse('rest_framework:login'), '/accounts/login/')
-        self.assertEqual(resolve('/accounts/login/').func.view_class,
+        self.assertEqual(reverse('rest_framework:login'), '/accounts/login')
+        self.assertEqual(resolve('/accounts/login').func.view_class,
                          LoginView.as_view().view_class)
-        self.assertEqual(resolve('/accounts/logout/').func.view_class,
+        self.assertEqual(resolve('/accounts/logout').func.view_class,
                          KeycloakLogoutView.as_view().view_class)
-        self.assertEqual(resolve('/logout/').func.view_class,
+        self.assertEqual(resolve('/logout').func.view_class,
                          KeycloakLogoutView.as_view().view_class)
 
 
@@ -154,12 +154,12 @@ class UrlsKeycloakServerTest(UrlsTestCase):
     def test__urls(self):
         from django_eha_sdk.auth.keycloak.views import KeycloakLoginView, KeycloakLogoutView
 
-        self.assertEqual(reverse('rest_framework:login'), '/accounts/login/')
-        self.assertEqual(resolve('/accounts/login/').func.view_class,
+        self.assertEqual(reverse('rest_framework:login'), '/accounts/login')
+        self.assertEqual(resolve('/accounts/login').func.view_class,
                          KeycloakLoginView.as_view().view_class)
-        self.assertEqual(resolve('/accounts/logout/').func.view_class,
+        self.assertEqual(resolve('/accounts/logout').func.view_class,
                          KeycloakLogoutView.as_view().view_class)
-        self.assertEqual(resolve('/logout/').func.view_class,
+        self.assertEqual(resolve('/logout').func.view_class,
                          KeycloakLogoutView.as_view().view_class)
 
 
@@ -181,7 +181,7 @@ class UrlsGatewayUrlTest(UrlsTestCase):
         self.assertEqual(resolve('/health').kwargs, {})
 
         self.assertEqual(reverse('admin:index'), '/-/sdk-app/admin/')
-        self.assertEqual(reverse('rest_framework:login'), '/-/sdk-app/accounts/login/')
+        self.assertEqual(reverse('rest_framework:login'), '/-/sdk-app/accounts/login')
 
 
 @override_settings(GATEWAY_SERVICE_ID=None)
@@ -205,4 +205,4 @@ class AdminUrlsUrlTest(UrlsTestCase):
 class AuthUrlsUrlTest(UrlsTestCase):
 
     def test__urls(self):
-        self.assertEqual(reverse('rest_framework:login'), '/secure/login/')
+        self.assertEqual(reverse('rest_framework:login'), '/secure/login')

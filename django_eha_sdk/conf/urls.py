@@ -42,7 +42,7 @@ def generate_urlpatterns(token=False, app=[]):
 
         - `token`: indicates if the app should be able to create and return
                    user tokens via POST request and activates the URL.
-                   The url endpoint is `/accounts/token`.
+                   The url endpoint is `/token`.
 
     '''
 
@@ -63,6 +63,16 @@ def generate_urlpatterns(token=False, app=[]):
             # this is reachable using the gateway server
             path(route=f'<slug:realm>/{settings.GATEWAY_SERVICE_ID}/',
                  view=include(urlpatterns)),
+        ]
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # TOKENS endpoints
+    if settings.EXTERNAL_APPS:
+        from django_eha_sdk.auth.apptoken.views import user_app_token_view
+
+        urlpatterns += [
+            # shows the current user app tokens
+            path(route='check-user-tokens', view=user_app_token_view, name='check-user-tokens'),
         ]
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -101,11 +111,18 @@ def _get_health_urls():
     ]
 
     if settings.EXTERNAL_APPS:
-        # checks if the external app is reachable
+        from django_eha_sdk.auth.apptoken.decorators import app_token_required
+
         health_urls += [
+            # checks if the external app is reachable
             path(route='check-app/<slug:name>',
                  view=views.check_external,
                  name='check-external'),
+
+            # to check if the user tokens are valid
+            path(route='check-tokens',
+                 view=app_token_required(views.health),
+                 name='check-tokens'),
         ]
 
     return health_urls
@@ -147,22 +164,26 @@ def _get_auth_urls(token):
                 )
 
     auth_urls = [
-        path(route='login/', view=login_view, name='login'),
-        path(route='logout/', view=logout_view, name='logout'),
+        path(route='login', view=login_view, name='login'),
+        path(route='logout', view=logout_view, name='logout'),
+    ]
+
+    extra_auth_urls = [
+        path(route='logout', view=logout_view, name='logout'),
     ]
 
     if token:
         from django_eha_sdk.auth.views import obtain_auth_token
 
         # generates users token
-        auth_urls += [
+        extra_auth_urls += [
             path(route='token', view=obtain_auth_token, name='token'),
         ]
 
     ns = 'rest_framework'
     return [
+        path(route='', view=include(extra_auth_urls)),
         path(route=f'{settings.AUTH_URL}/', view=include((auth_urls, ns), namespace=ns)),
-        path(route='logout/', view=logout_view, name='logout'),
     ]
 
 

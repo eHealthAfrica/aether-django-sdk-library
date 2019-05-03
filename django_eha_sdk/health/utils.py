@@ -28,6 +28,12 @@ from django_eha_sdk.utils import request
 logger = logging.getLogger(__name__)
 logger.setLevel(settings.LOGGING_LEVEL)
 
+MSG_EXTERNAL_APP_ERR = _('"{app}" app is not registered as external app.')
+MSG_EXTERNAL_APP_UP = _('"{app}" app server ({url}) is up and responding!')
+MSG_EXTERNAL_APP_TOKEN_ERR = _('"{app}" app token is not valid for app server ({url}).')
+MSG_EXTERNAL_APP_SERVER_ERR = _('"{app}" app server ({url}) is not available.')
+MSG_EXTERNAL_APP_TOKEN_OK = '"{app}" app token is valid for app server ({url})!'
+
 
 def check_db_connection():
     try:
@@ -49,36 +55,39 @@ def check_external_app(app):
         url = get_external_app_url(app)
         token = get_external_app_token(app)
     except KeyError:
-        logger.warning(_('"{}" app is not a registered external app.').format(app))
+        logger.warning(MSG_EXTERNAL_APP_ERR.format(app=app))
         return False
 
     try:
         # check that the server is up
         h = request(method='head', url=url)
         assert h.status_code == 403  # expected response 403 Forbidden
-        logger.info(_('"{}" app server ({}) is up and responding!').format(app, url))
+        logger.info(MSG_EXTERNAL_APP_UP.format(app=app, url=url))
 
         try:
             # check that the token is valid
             g = request(method='get', url=url, headers={'Authorization': f'Token {token}'})
             assert g.status_code == 200, g.content
-            logger.info('"{}" app token is valid!')
+            logger.info(MSG_EXTERNAL_APP_TOKEN_OK.format(app=app, url=url))
 
             return True  # it's possible to connect with server :D
 
         except Exception:
-            logger.warning(_('"{}" app token is not valid for app server ({}).').format(app, url))
+            logger.warning(MSG_EXTERNAL_APP_TOKEN_ERR.format(app=app, url=url))
     except Exception:
-        logger.warning(_('"{}" app server ({}) is not available.').format(app, url))
+        logger.warning(MSG_EXTERNAL_APP_SERVER_ERR.format(app=app, url=url))
 
     return False  # it's not possible to connect with server :(
 
 
+def get_external_app_settings(app):
+    config = settings.EXTERNAL_APPS[app]
+    return config if not settings.TESTING else config['test']
+
+
 def get_external_app_url(app):
-    app = app if not settings.TESTING else f'test-{app}'
-    return settings.EXTERNAL_APPS[app]['url']
+    return get_external_app_settings(app)['url']
 
 
 def get_external_app_token(app):
-    app = app if not settings.TESTING else f'test-{app}'
-    return settings.EXTERNAL_APPS[app]['token']
+    return get_external_app_settings(app)['token']

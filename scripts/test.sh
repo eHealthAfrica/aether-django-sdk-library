@@ -46,7 +46,7 @@ flake8
 coverage run \
     --concurrency=multiprocessing \
     --parallel-mode \
-    test.py test --parallel --noinput
+    test.py test --parallel --noinput "${@:1}"
 
 coverage combine --append
 

@@ -43,8 +43,8 @@ class KeycloakBehindTests(UrlsTestCase):
     def test__urls__accounts__login(self):
         from django.contrib.auth import views
 
-        self.assertEqual(reverse('rest_framework:login'), '/accounts/login/')
-        self.assertEqual(resolve('/accounts/login/').func.view_class,
+        self.assertEqual(reverse('rest_framework:login'), '/accounts/login')
+        self.assertEqual(resolve('/accounts/login').func.view_class,
                          views.LoginView.as_view().view_class)
 
     def test__workflow(self):
@@ -355,8 +355,8 @@ class KeycloakTests(UrlsTestCase):
     def test__urls__accounts__login(self):
         from django_eha_sdk.auth.keycloak.views import KeycloakLoginView
 
-        self.assertEqual(reverse('rest_framework:login'), '/accounts/login/')
-        self.assertEqual(resolve('/accounts/login/').func.view_class,
+        self.assertEqual(reverse('rest_framework:login'), '/accounts/login')
+        self.assertEqual(resolve('/accounts/login').func.view_class,
                          KeycloakLoginView.as_view().view_class)
 
     def test__workflow(self):
@@ -686,7 +686,7 @@ class KeycloakGatewayTests(UrlsTestCase):
 
     def test_logout(self):
         logout_url = reverse('logout')
-        self.assertEqual(logout_url, '/logout/')
+        self.assertEqual(logout_url, '/logout')
         self.assertNotEqual(logout_url, reverse('rest_framework:logout'))
 
         response = self.client.get(logout_url)

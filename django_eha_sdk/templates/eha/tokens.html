@@ -1,0 +1,64 @@
+{% extends 'eha/base.html' %}
+
+{% comment 'LICENSE' %}
+Copyright (C) 2019 by eHealth Africa : http://www.eHealthAfrica.org
+
+See the NOTICE file distributed with this work for additional information
+regarding copyright ownership.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+{% endcomment %}
+
+{% load i18n %}
+{% load eha_tags %}
+
+
+{% block title %}{{ app_name }} - {% trans 'User tokens' %}{% endblock title %}
+
+{% block body_class %}eha-bg tokens-info{% endblock body_class %}
+
+{% block branding %}
+  {% include 'eha/branding.html' with classname='brand' link='#' %}
+{% endblock branding %}
+
+{% block content %}
+  <div>
+    <h2>
+      {% trans 'App tokens for' %} {{ request.user|get_fullname }}
+    </h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>{% trans 'App' %}</th>
+          <th>{% trans 'Token' %}</th>
+          <th>{% trans 'URL' %}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for app_token in user_app_tokens %}
+          <tr>
+            <td>{{ app_token.app }}</td>
+            <td>{{ app_token.token }}</td>
+            <td>
+              <a href="{{ app_token.base_url }}" target="_blank">{{ app_token.base_url }}</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+{% endblock content %}
