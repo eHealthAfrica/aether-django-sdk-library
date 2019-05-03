@@ -66,7 +66,15 @@ def generate_urlpatterns(token=False, app=[]):
         ]
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # TOKENS endpoints
+    # TOKEN endpoints
+    if token:
+        from django_eha_sdk.auth.views import obtain_auth_token
+
+        # generates users token
+        urlpatterns += [
+            path(route='token', view=obtain_auth_token, name='token'),
+        ]
+
     if settings.EXTERNAL_APPS:
         from django_eha_sdk.auth.apptoken.views import user_app_token_view
 
@@ -77,7 +85,7 @@ def generate_urlpatterns(token=False, app=[]):
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # AUTHORIZATION endpoints
-    urlpatterns += _get_auth_urls(token)
+    urlpatterns += _get_auth_urls()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # ADMIN endpoints
@@ -128,7 +136,7 @@ def _get_health_urls():
     return health_urls
 
 
-def _get_auth_urls(token):
+def _get_auth_urls():
     if settings.CAS_SERVER_URL:
         from django_cas_ng import views
 
@@ -172,14 +180,6 @@ def _get_auth_urls(token):
         path(route='logout', view=logout_view, name='logout'),
     ]
 
-    if token:
-        from django_eha_sdk.auth.views import obtain_auth_token
-
-        # generates users token
-        extra_auth_urls += [
-            path(route='token', view=obtain_auth_token, name='token'),
-        ]
-
     ns = 'rest_framework'
     return [
         path(route='', view=include(extra_auth_urls)),
@@ -193,7 +193,7 @@ def _get_admin_urls():
         path(route='prometheus/', view=include('django_prometheus.urls')),
         # uWSGI monitoring
         path(route='uwsgi/', view=include('django_uwsgi.urls')),
-        # `admin` section
+        # django admin section
         path(route='', view=admin.site.urls),
     ]
 
