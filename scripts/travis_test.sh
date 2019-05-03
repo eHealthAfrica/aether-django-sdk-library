@@ -37,10 +37,5 @@ echo "-------------------- install twine -------------------- "
 pip3 install -q --upgrade twine
 
 echo "-------------------- upload to TestPyPi repository -------------------- "
-twine upload \
-    --repository-url https://test.pypi.org/legacy/ \
-    -u $PYPI_USER \
-    -p $PYPI_PASSWORD \
-    --verbose \
-    --skip-existing \
-    dist/*
+export TWINE_REPOSITORY_URL=https://test.pypi.org/legacy/
+twine upload --verbose --skip-existing dist/*

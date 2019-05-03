@@ -32,8 +32,4 @@ echo "-------------------- install twine --------------------"
 pip3 install -q --upgrade twine
 
 echo "-------------------- upload to PyPi repository --------------------"
-twine upload \
-    -u $PYPI_USER \
-    -p $PYPI_PASSWORD \
-    --skip-existing \
-    dist/*
+twine upload --skip-existing dist/*
