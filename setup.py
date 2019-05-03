@@ -27,7 +27,7 @@ def read(f):
     return open(f, 'r', encoding='utf-8').read()
 
 
-VERSION = os.environ.get('VERSION', '0.0.1')
+VERSION = os.environ.get('VERSION', '1.0.0')
 
 setup(
     version=VERSION,
