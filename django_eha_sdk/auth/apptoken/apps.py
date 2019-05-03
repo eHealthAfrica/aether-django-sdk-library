@@ -17,9 +17,10 @@
 # under the License.
 
 from django.apps import AppConfig
+from django.utils.translation import gettext_lazy as _
 
 
 class Config(AppConfig):
 
     name = 'django_eha_sdk.auth.apptoken'
-    verbose_name = 'Auth App Token'
+    verbose_name = _('Auth App Token')

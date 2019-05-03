@@ -20,7 +20,7 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 from django_eha_sdk.auth.apptoken.models import AppToken
 

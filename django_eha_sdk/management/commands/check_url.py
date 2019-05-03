@@ -19,7 +19,7 @@
 # under the License.
 
 from django.core.management.base import BaseCommand
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 from django_eha_sdk.utils import request
 

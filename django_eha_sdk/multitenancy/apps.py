@@ -17,9 +17,10 @@
 # under the License.
 
 from django.apps import AppConfig
+from django.utils.translation import gettext_lazy as _
 
 
 class Config(AppConfig):
 
     name = 'django_eha_sdk.multitenancy'
-    verbose_name = 'Multitenancy'
+    verbose_name = _('Multitenancy')

@@ -18,7 +18,7 @@
 
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 from django_eha_sdk.health.utils import check_db_connection, check_external_app
 
