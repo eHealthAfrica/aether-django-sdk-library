@@ -140,7 +140,7 @@ def check_gateway_token(request):
     token = find_in_request_headers(request, settings.GATEWAY_HEADER_TOKEN)
     if token:
         try:
-            realm = resolve(request.get_full_path()).kwargs['realm']
+            realm = resolve(request.path).kwargs['realm']
             userinfo = _get_user_info(realm, token)
 
             # flags that we are using the gateway to authenticate
