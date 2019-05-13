@@ -29,7 +29,7 @@ def custom_reverse(viewname, args=None, kwargs=None, request=None, format=None, 
         kwargs = {}
 
     try:
-        realm = resolve(request.get_full_path()).kwargs.get('realm')
+        realm = resolve(request.path).kwargs.get('realm')
         if realm:
             kwargs['realm'] = realm
     except Exception:
