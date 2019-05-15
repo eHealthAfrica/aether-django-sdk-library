@@ -94,7 +94,7 @@ class UrlsNoExternalAppsTest(UrlsTestCase):
 class UrlsNoTokenTest(UrlsTestCase):
 
     def test__urls(self):
-        self.assertRaises(exceptions.NoReverseMatch, reverse, 'rest_framework:token')
+        self.assertRaises(exceptions.NoReverseMatch, reverse, 'token')
 
 
 @override_settings(
@@ -184,7 +184,7 @@ class UrlsGatewayUrlTest(UrlsTestCase):
         self.assertEqual(reverse('rest_framework:login'), '/-/sdk-app/accounts/login')
 
 
-@override_settings(GATEWAY_SERVICE_ID=None)
+@override_settings(GATEWAY_ENABLED=False)
 class UrlsNoGatewayUrlTest(UrlsTestCase):
 
     def test__urls(self):
