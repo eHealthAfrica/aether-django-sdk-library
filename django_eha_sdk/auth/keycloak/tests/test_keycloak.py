@@ -787,6 +787,34 @@ class KeycloakGatewayTests(UrlsTestCase):
                         'flagged as gateway authenticated')
         self.assertEqual(session.get(settings.REALM_COOKIE), REALM)
 
+        # visit same page with a valid token again
+        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+                        side_effect=[
+                            # get userinfo from keycloak
+                            MockResponse(status_code=200, json_data={
+                                'preferred_username': 'user',
+                                'given_name': 'John',
+                                'family_name': 'Smith',
+                                'email': 'john.smith@example.com',
+                            }),
+                        ]) as mock_req_3:
+            self.assertEqual(user_objects.filter(username='testing__user').count(), 1)
+
+            response = self.client.get(SAMPLE_URL, **{HTTP_HEADER: FAKE_TOKEN})
+            self.assertEqual(response.status_code, 200)
+
+            self.assertEqual(user_objects.filter(username='testing__user').count(), 1)
+            user = user_objects.get(username='testing__user')
+            self.assertEqual(user.first_name, 'John')
+            self.assertEqual(user.last_name, 'Smith')
+            self.assertEqual(user.email, 'john.smith@example.com')
+
+            mock_req_3.assert_called_once_with(
+                method='get',
+                url=f'{settings.KEYCLOAK_SERVER_URL}/{REALM}/protocol/openid-connect/userinfo',
+                headers={'Authorization': f'Bearer {FAKE_TOKEN}'},
+            )
+
         # visit any page without a valid token
         response = self.client.get(SAMPLE_URL)
         self.assertEqual(response.status_code, 403)
@@ -795,3 +823,9 @@ class KeycloakGatewayTests(UrlsTestCase):
         session = self.client.session
         self.assertIsNone(session.get(settings.GATEWAY_HEADER_TOKEN))
         self.assertIsNone(session.get(settings.REALM_COOKIE))
+
+        # visit a non gateway page with the token
+        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request') as mock_req_4:
+            response = self.client.get(reverse('testmodel-list'), **{HTTP_HEADER: FAKE_TOKEN})
+            self.assertEqual(response.status_code, 403)
+            mock_req_4.assert_not_called()
