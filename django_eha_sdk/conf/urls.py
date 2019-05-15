@@ -56,7 +56,7 @@ def generate_urlpatterns(token=False, app=[]):
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # KEYCLOAK GATEWAY endpoints
-    if settings.KEYCLOAK_SERVER_URL and settings.GATEWAY_SERVICE_ID:
+    if settings.GATEWAY_ENABLED:
         urlpatterns = [
             # this is reachable using internal network
             path(route='', view=include(urlpatterns)),
@@ -67,21 +67,7 @@ def generate_urlpatterns(token=False, app=[]):
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # TOKEN endpoints
-    if token:
-        from django_eha_sdk.auth.views import obtain_auth_token
-
-        # generates users token
-        urlpatterns += [
-            path(route='token', view=obtain_auth_token, name='token'),
-        ]
-
-    if settings.EXTERNAL_APPS:
-        from django_eha_sdk.auth.apptoken.views import user_app_token_view
-
-        urlpatterns += [
-            # shows the current user app tokens
-            path(route='check-user-tokens', view=user_app_token_view, name='check-user-tokens'),
-        ]
+    urlpatterns += _get_token_urls(token)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # AUTHORIZATION endpoints
@@ -134,6 +120,36 @@ def _get_health_urls():
         ]
 
     return health_urls
+
+
+def _get_token_urls(token):
+    token_urls = []
+
+    if token:
+        from django_eha_sdk.auth.views import obtain_auth_token
+
+        # generates users token
+        token_urls += [
+            path(route=settings.TOKEN_URL, view=obtain_auth_token, name='token'),
+        ]
+        if settings.GATEWAY_ENABLED:
+            token_urls += [
+                path(route=f'{settings.GATEWAY_PUBLIC_PATH}/{settings.TOKEN_URL}',
+                     view=obtain_auth_token,
+                     name='public-token'),
+            ]
+
+    if settings.EXTERNAL_APPS:
+        from django_eha_sdk.auth.apptoken.views import user_app_token_view
+
+        token_urls += [
+            # shows the current user app tokens
+            path(route=settings.CHECK_TOKEN_URL,
+                 view=user_app_token_view,
+                 name='check-user-tokens'),
+        ]
+
+    return token_urls
 
 
 def _get_auth_urls():

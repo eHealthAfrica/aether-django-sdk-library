@@ -44,6 +44,7 @@ def _token_required(function=None, redirect_field_name=None, login_url=None):
         '''
         Checks for each external app that the user can currently connect to it.
         '''
+
         try:
             for app in settings.EXTERNAL_APPS:
                 # checks if there is a valid token for this app
@@ -55,8 +56,8 @@ def _token_required(function=None, redirect_field_name=None, login_url=None):
             return False
 
     actual_decorator = user_passes_test(
-        lambda u: u.is_authenticated and user_token_test(u),
-        login_url=login_url or f'{settings.APP_URL}check-user-tokens',
+        test_func=lambda u: user_token_test(u),
+        login_url=login_url or f'/{settings.CHECK_TOKEN_URL}',
         redirect_field_name=redirect_field_name,
     )
     return actual_decorator(function) if function else actual_decorator

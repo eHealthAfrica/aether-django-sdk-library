@@ -180,6 +180,8 @@ ADMIN_URL = os.environ.get('ADMIN_URL', 'admin')
 AUTH_URL = os.environ.get('AUTH_URL', 'accounts')
 LOGIN_URL = os.environ.get('LOGIN_URL', f'/{AUTH_URL}/login')
 LOGIN_REDIRECT_URL = APP_URL
+TOKEN_URL = os.environ.get('TOKEN_URL', 'token')
+_CHECK_TOKEN_URL = os.environ.get('CHECK_TOKEN_URL', 'check-user-tokens')
 
 DRF_API_RENDERER_TEMPLATE = os.environ.get('DRF_API_RENDERER_TEMPLATE', 'eha/api.html')
 DRF_ADMIN_RENDERER_TEMPLATE = os.environ.get('DRF_ADMIN_RENDERER_TEMPLATE', 'eha/admin.html')
@@ -284,17 +286,17 @@ _external_apps = os.environ.get('EXTERNAL_APPS')
 if _external_apps:
     for app in _external_apps.split(','):
         # get url and token to check connection to external app
-        APP = app.upper().replace('-', '_')  # my-app -> MY_APP
+        _APP = app.upper().replace('-', '_')  # my-app -> MY_APP
 
-        url = get_required(f'{APP}_URL')
-        token = get_required(f'{APP}_TOKEN')
+        url = get_required(f'{_APP}_URL')
+        token = get_required(f'{_APP}_TOKEN')
         EXTERNAL_APPS[app] = {'url': url, 'token': token}
 
         # add key for TEST mode
         EXTERNAL_APPS[app]['test'] = {
             # url for TEST mode
-            'url': os.environ.get(f'{APP}_URL_TEST', url),
-            'token': os.environ.get(f'{APP}_TOKEN_TEST', token),
+            'url': os.environ.get(f'{_APP}_URL_TEST', url),
+            'token': os.environ.get(f'{_APP}_TOKEN_TEST', token),
         }
 
 if EXTERNAL_APPS:
@@ -371,6 +373,7 @@ else:
     logger.info('No CAS enabled!')
 
 
+GATEWAY_ENABLED = False
 KEYCLOAK_SERVER_URL = os.environ.get('KEYCLOAK_SERVER_URL')
 if KEYCLOAK_SERVER_URL:
     KEYCLOAK_CLIENT_ID = os.environ.get('KEYCLOAK_CLIENT_ID', 'eha')
@@ -390,6 +393,7 @@ if KEYCLOAK_SERVER_URL:
 
     GATEWAY_SERVICE_ID = os.environ.get('GATEWAY_SERVICE_ID')
     if GATEWAY_SERVICE_ID:
+        GATEWAY_ENABLED = True
         GATEWAY_HEADER_TOKEN = os.environ.get('GATEWAY_HEADER_TOKEN', 'X-Oauth-Token')
         GATEWAY_PUBLIC_REALM = os.environ.get('GATEWAY_PUBLIC_REALM', '-')
         GATEWAY_PUBLIC_PATH = f'{GATEWAY_PUBLIC_REALM}/{GATEWAY_SERVICE_ID}'
@@ -413,6 +417,11 @@ if KEYCLOAK_SERVER_URL:
 
 else:
     logger.info('No Keycloak enabled!')
+
+if GATEWAY_ENABLED:
+    CHECK_TOKEN_URL = GATEWAY_PUBLIC_PATH + _CHECK_TOKEN_URL
+else:
+    CHECK_TOKEN_URL = APP_URL[1:] + _CHECK_TOKEN_URL
 
 
 # Multitenancy Configuration
@@ -547,7 +556,7 @@ if not TESTING and DEBUG:
     INSTALLED_APPS += ['debug_toolbar', ]
     MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware', ]
     DEBUG_TOOLBAR_URL = os.environ.get('DEBUG_TOOLBAR_URL', '__debug__')
-    if KEYCLOAK_SERVER_URL and GATEWAY_SERVICE_ID:
+    if GATEWAY_ENABLED:
         DEBUG_TOOLBAR_URL = os.environ.get('DEBUG_TOOLBAR_URL', f'{GATEWAY_PUBLIC_PATH}/__debug__')
 
     DEBUG_TOOLBAR_CONFIG = {
