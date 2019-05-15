@@ -27,6 +27,7 @@ from django.test import RequestFactory, override_settings
 from django.urls import reverse, resolve
 
 from django_eha_sdk.unittest import MockResponse, UrlsTestCase
+from django_eha_sdk.utils import get_meta_http_name
 from django_eha_sdk.auth.keycloak.utils import _KC_TOKEN_SESSION as TOKEN_KEY
 from django_eha_sdk.auth.keycloak.views import KeycloakLogoutView
 
@@ -732,7 +733,7 @@ class KeycloakGatewayTests(UrlsTestCase):
         FAKE_TOKEN = 'access-keycloak'
         REALM = 'testing'
         SAMPLE_URL = reverse('testmodel-list', kwargs={'realm': REALM})
-        HTTP_HEADER = 'HTTP_' + settings.GATEWAY_HEADER_TOKEN.replace('-', '_').upper()
+        HTTP_HEADER = get_meta_http_name(settings.GATEWAY_HEADER_TOKEN)
 
         self.assertEqual(SAMPLE_URL, f'/{REALM}/{settings.GATEWAY_SERVICE_ID}/testtestmodel/')
 
