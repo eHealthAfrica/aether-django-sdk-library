@@ -40,7 +40,7 @@ class UserRole(models.Model):
                              on_delete=models.CASCADE,
                              verbose_name=_('user'))
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return f'{self.user.username} - {self.name}'
 
     class Meta:
