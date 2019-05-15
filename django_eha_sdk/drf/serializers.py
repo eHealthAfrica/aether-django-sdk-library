@@ -18,23 +18,19 @@
 
 import urllib
 
-from django.urls import resolve
-
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+
+from django_eha_sdk.auth.keycloak.utils import get_gateway_realm
 
 
 def custom_reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra):
     if not kwargs:
         kwargs = {}
 
-    try:
-        realm = resolve(request.path).kwargs.get('realm')
-        if realm:
-            kwargs['realm'] = realm
-    except Exception:
-        # sometimes there is no valid path or resolve fails...
-        pass
+    realm = get_gateway_realm(request)
+    if realm:
+        kwargs['realm'] = realm
 
     return reverse(viewname=viewname,
                    args=args,

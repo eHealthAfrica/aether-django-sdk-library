@@ -132,6 +132,15 @@ def check_user_token(request):
             logout(request)
 
 
+def get_gateway_realm(request, default_realm=None, raise_exception=False):
+    try:
+        return resolve(request.path).kwargs['realm']
+    except Exception as e:
+        if raise_exception:
+            raise e
+    return default_realm
+
+
 def check_gateway_token(request):
     '''
     Checks if the gateway token is valid fetching the user info from keycloak server.
@@ -140,14 +149,19 @@ def check_gateway_token(request):
     token = find_in_request_headers(request, settings.GATEWAY_HEADER_TOKEN)
     if token:
         try:
-            realm = resolve(request.path).kwargs['realm']
+            realm = get_gateway_realm(request, raise_exception=True)
             userinfo = _get_user_info(realm, token)
 
             # flags that we are using the gateway to authenticate
             request.session[settings.GATEWAY_HEADER_TOKEN] = True
             request.session[settings.REALM_COOKIE] = realm
 
-            login(request, _get_or_create_user(request, userinfo))
+            user = _get_or_create_user(request, userinfo)
+            # only login if the user changed otherwise it will refresh the Csrf
+            # token and make the AJAX calls fail.
+            if not hasattr(request, 'user') or request.user.pk != user.pk:
+                login(request, user)
+            request.user = user
 
         except Exception:
             # something went wrong
