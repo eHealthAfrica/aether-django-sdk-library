@@ -16,15 +16,16 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from django.test import RequestFactory, TestCase
+from django.test import override_settings, RequestFactory
 
 from django_eha_sdk.context_processors import eha_context
+from django_eha_sdk.unittest import UrlsTestCase
 
 
-class ContextProcessorsTests(TestCase):
+class ContextProcessorsTests(UrlsTestCase):
 
     def test_eha_context(self):
-        request = RequestFactory().get('/')
+        request = RequestFactory().get('/my-realm/sdk-app/health')
         context = eha_context(request)
 
         self.assertFalse(context['dev_mode'])
@@ -35,3 +36,22 @@ class ContextProcessorsTests(TestCase):
 
         self.assertNotEqual(context['app_version'], '#.#.#')
         self.assertNotEqual(context['app_revision'], '---')
+
+        # uses gateway path
+        self.assertEqual(context['app_url'], '/my-realm/sdk-app')
+
+    def test_eha_context__outside_gateway(self):
+        request = RequestFactory().get('/')
+        context = eha_context(request)
+
+        self.assertEqual(context['app_url'], '/')
+
+
+@override_settings(GATEWAY_ENABLED=False)
+class ContextProcessorsNoGatewayTests(UrlsTestCase):
+
+    def test_eha_context(self):
+        request = RequestFactory().get('/something/sdk-app/')
+        context = eha_context(request)
+
+        self.assertEqual(context['app_url'], '/')
