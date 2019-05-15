@@ -28,8 +28,12 @@ from django.views import View
 from django_eha_sdk.auth.apptoken.models import AppToken
 from django_eha_sdk.auth.keycloak.utils import get_gateway_realm
 from django_eha_sdk.health.utils import get_external_app_url
-from django_eha_sdk.multitenancy.utils import add_current_realm_in_headers
-from django_eha_sdk.utils import request as exec_request
+from django_eha_sdk.multitenancy.utils import get_current_realm
+from django_eha_sdk.utils import (
+    request as exec_request,
+    get_meta_http_name,
+    normalize_meta_http_name,
+)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(settings.LOGGING_LEVEL)
@@ -78,6 +82,11 @@ class TokenProxyView(View):
             # change "{realm}" argument with the current realm
             base_url = base_url.format(realm=realm)
 
+            if not needs_token:
+                # include the protected realm in the headers
+                http_realm = get_meta_http_name(settings.REALM_COOKIE)
+                request.META[http_realm] = realm
+
         if needs_token:
             app_token = AppToken.get_or_create_token(request.user, self.app_name)
             if app_token is None:
@@ -85,7 +94,10 @@ class TokenProxyView(View):
                 logger.error(err)
                 raise RuntimeError(err)
 
-            request.META['HTTP_AUTHORIZATION'] = f'Token {app_token.token}'
+            request.META[get_meta_http_name('authorization')] = f'Token {app_token.token}'
+            if settings.MULTITENANCY:
+                http_realm = get_meta_http_name(settings.REALM_COOKIE)
+                request.META[http_realm] = get_current_realm(request)
 
         _path = path or ''
         if not _path.startswith('/'):
@@ -138,9 +150,6 @@ class TokenProxyView(View):
                 (name.startswith('HTTP_') and name not in ['HTTP_HOST'])
             )
 
-        def _normalize_header(name):
-            return name.replace('HTTP_', '').title().replace('_', '-')
-
         def _get_method(request):
             # Fixes:
             # django.http.request.RawPostDataException:
@@ -159,11 +168,10 @@ class TokenProxyView(View):
 
         # builds request headers
         headers = {
-            _normalize_header(header): str(value)
+            normalize_meta_http_name(header): str(value)
             for header, value in request.META.items()
             if _valid_header(header)
         }
-        headers = add_current_realm_in_headers(request, headers)
 
         method = _get_method(request)
         logger.debug(f'{method}  {request.external_url}')
