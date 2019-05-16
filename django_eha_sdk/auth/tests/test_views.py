@@ -19,33 +19,47 @@
 from unittest import mock
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase, override_settings
+from django.test import override_settings
 from django.urls import reverse
 
 from rest_framework import status
+from rest_framework.authtoken.models import Token
+
+from django_eha_sdk.unittest import UrlsTestCase
 
 user_objects = get_user_model().objects
 
 
-@override_settings(MULTITENANCY=False)
-class ViewsTest(TestCase):
+@override_settings(GATEWAY_ENABLED=False, MULTITENANCY=False)
+class ViewsTest(UrlsTestCase):
 
     def setUp(self):
         self.token_url = reverse('token')
+        self.assertEqual(self.token_url, '/token')
 
     def test_obtain_auth_token__as_normal_user(self):
         username = 'user'
         email = 'user@example.com'
         password = 'useruser'
-        user_objects.create_user(username, email, password)
+        user = user_objects.create_user(username, email, password)
         self.assertTrue(self.client.login(username=username, password=password))
 
         token_username = 'username-for-token'
         self.assertEqual(user_objects.filter(username=token_username).count(), 0)
 
+        # no token yet
+        response = self.client.get(self.token_url)
+        self.assertIsNone(response.json()['token'])
+
         response = self.client.post(self.token_url, data={'username': token_username})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.content)
+        token = response.json()['token']
+
         self.assertEqual(user_objects.filter(username=token_username).count(), 0)
+        self.assertEqual(Token.objects.get(user=user).key, token)
+
+        response = self.client.get(self.token_url)
+        self.assertEqual(response.json()['token'], token)
 
     def test_obtain_auth_token__as_admin(self):
         username = 'admin'
@@ -58,7 +72,7 @@ class ViewsTest(TestCase):
         self.assertEqual(user_objects.filter(username=token_username).count(), 0)
 
         response = self.client.post(self.token_url, data={'username': token_username})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.content)
         token = response.json()['token']
         self.assertNotEqual(token, None)
 
@@ -94,5 +108,25 @@ class ViewsTest(TestCase):
             side_effect=Exception(':('),
         ):
             response = self.client.post(self.token_url, data={'username': token_username})
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
         self.assertEqual(response.json()['message'], ':(')
+
+    def test_check_obtained_token(self):
+        username = 'admin'
+        email = 'admin@example.com'
+        password = 'adminadmin'
+        user_objects.create_superuser(username, email, password)
+        self.assertTrue(self.client.login(username=username, password=password))
+
+        token_username = 'username-for-token'
+        self.assertEqual(user_objects.filter(username=token_username).count(), 0)
+
+        response = self.client.post(self.token_url, data={'username': token_username})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        token = response.json()['token']
+
+        self.client.logout()
+
+        headers = {'HTTP_AUTHORIZATION': f'Token {token}'}
+        response = self.client.get(self.token_url, **headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.content)

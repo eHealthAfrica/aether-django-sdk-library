@@ -44,10 +44,12 @@ class UrlsTest(UrlsTestCase):
         self.assertEqual(reverse('rest_framework:login'), '/accounts/login')
         self.assertEqual(reverse('rest_framework:logout'), '/accounts/logout')
         self.assertEqual(reverse('token'), '/token')
+        self.assertEqual(reverse('public-token'), '/-/sdk-app/token')
         self.assertEqual(reverse('logout'), '/logout')
 
     def test__urls__auth__views(self):
         from django.contrib.auth.views import LoginView, LogoutView
+        from django_eha_sdk.auth.views import auth_token
 
         self.assertEqual(resolve('/accounts/login').func.view_class,
                          LoginView.as_view().view_class)
@@ -55,6 +57,8 @@ class UrlsTest(UrlsTestCase):
                          LogoutView.as_view().view_class)
         self.assertEqual(resolve('/logout').func.view_class,
                          LogoutView.as_view().view_class)
+        self.assertEqual(resolve('/token').func, auth_token)
+        self.assertEqual(resolve('/-/sdk-app/token').func, auth_token)
 
 
 @override_settings(

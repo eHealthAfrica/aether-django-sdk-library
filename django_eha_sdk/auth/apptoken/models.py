@@ -50,8 +50,8 @@ class AppToken(models.Model):
     )
 
     @property
-    def base_url(self):
-        return get_external_app_url(self.app)
+    def token_url(self):
+        return get_external_app_url(self.app) + '/' + settings.TOKEN_URL
 
     def obtain_token(self):
         '''
@@ -64,7 +64,7 @@ class AppToken(models.Model):
         auxiliary_token = get_external_app_token(self.app)
         response = request(
             method='post',
-            url=f'{self.base_url}/token',
+            url=self.token_url,
             data={'username': self.user.username},
             headers={'Authorization': f'Token {auxiliary_token}'},
         )
@@ -84,7 +84,7 @@ class AppToken(models.Model):
 
         response = request(
             method='get',
-            url=self.base_url,
+            url=self.token_url,
             headers={'Authorization': f'Token {self.token}'},
         )
         return response.status_code == 200

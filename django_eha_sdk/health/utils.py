@@ -54,7 +54,7 @@ def check_external_app(app, request=None):
     '''
 
     try:
-        url = get_external_app_url(app, request)
+        url = get_external_app_url(app, request) + '/' + settings.TOKEN_URL
         token = get_external_app_token(app)
     except KeyError:
         logger.warning(MSG_EXTERNAL_APP_ERR.format(app=app))
@@ -68,8 +68,8 @@ def check_external_app(app, request=None):
 
         try:
             # check that the token is valid
-            g = exec_request(method='get', url=url, headers={'Authorization': f'Token {token}'})
-            assert g.status_code == 200, g.content
+            g = exec_request(method='head', url=url, headers={'Authorization': f'Token {token}'})
+            assert g.status_code == 204  # expected response 204 No Content
             logger.info(MSG_EXTERNAL_APP_TOKEN_OK.format(app=app, url=url))
 
             return True  # it's possible to connect with server :D

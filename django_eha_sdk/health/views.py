@@ -31,7 +31,7 @@ def health(request, *args, **kwargs):
     Simple view to check if the system is up.
     '''
 
-    return HttpResponse(status=200)
+    return HttpResponse()
 
 
 def check_db(request, *args, **kwargs):

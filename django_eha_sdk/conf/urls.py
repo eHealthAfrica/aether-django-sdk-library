@@ -42,7 +42,8 @@ def generate_urlpatterns(token=False, app=[]):
 
         - `token`: indicates if the app should be able to create and return
                    user tokens via POST request and activates the URL.
-                   The url endpoint is `/token`.
+                   The url endpoint is indicated in the `TOKEN_URL` setting.
+                   Defaults to `/token`.
 
     '''
 
@@ -126,16 +127,16 @@ def _get_token_urls(token):
     token_urls = []
 
     if token:
-        from django_eha_sdk.auth.views import obtain_auth_token
+        from django_eha_sdk.auth.views import auth_token
 
         # generates users token
         token_urls += [
-            path(route=settings.TOKEN_URL, view=obtain_auth_token, name='token'),
+            path(route=settings.TOKEN_URL, view=auth_token, name='token'),
         ]
         if settings.GATEWAY_ENABLED:
             token_urls += [
                 path(route=f'{settings.GATEWAY_PUBLIC_PATH}/{settings.TOKEN_URL}',
-                     view=obtain_auth_token,
+                     view=auth_token,
                      name='public-token'),
             ]
 
