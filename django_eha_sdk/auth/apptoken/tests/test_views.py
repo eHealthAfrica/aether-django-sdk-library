@@ -26,7 +26,7 @@ from django.urls import reverse
 
 from django_eha_sdk.auth.apptoken.views import TokenProxyView
 from django_eha_sdk.unittest import UrlsTestCase
-from django_eha_sdk.utils import get_meta_http_name, normalize_meta_http_name
+from django_eha_sdk.utils import get_meta_http_name
 
 
 RESPONSE_MOCK = mock.Mock(
@@ -342,7 +342,7 @@ class MultitenancyViewsTest(UrlsTestCase):
             headers={
                 'Cookie': '',
                 'Authorization': 'Token ABCDEFGH',
-                normalize_meta_http_name(settings.REALM_COOKIE): settings.DEFAULT_REALM,
+                settings.REALM_COOKIE: settings.DEFAULT_REALM,
             }
         )
 
@@ -377,8 +377,8 @@ class GatewayViewsTest(UrlsTestCase):
             data=None,
             headers={
                 'Cookie': '',
-                normalize_meta_http_name(settings.GATEWAY_HEADER_TOKEN): FAKE_TOKEN,
-                normalize_meta_http_name(settings.REALM_COOKIE): REALM,
+                settings.GATEWAY_HEADER_TOKEN: FAKE_TOKEN,
+                settings.REALM_COOKIE: REALM,
             }
         )
 
@@ -399,6 +399,6 @@ class GatewayViewsTest(UrlsTestCase):
             headers={
                 'Cookie': '',
                 'Authorization': 'Token ABCDEFGH',
-                normalize_meta_http_name(settings.REALM_COOKIE): settings.DEFAULT_REALM,
+                settings.REALM_COOKIE: settings.DEFAULT_REALM,
             }
         )

@@ -18,7 +18,7 @@
 
 
 from django.conf import settings
-from django_eha_sdk.auth.keycloak.utils import get_gateway_realm
+from django_eha_sdk.multitenancy.utils import get_path_realm
 
 
 def eha_context(request):
@@ -43,7 +43,7 @@ def eha_context(request):
     }
 
     if settings.GATEWAY_ENABLED:
-        realm = get_gateway_realm(request)
+        realm = get_path_realm(request)
         if realm:
             context['app_url'] = f'/{realm}/{settings.GATEWAY_SERVICE_ID}'
 

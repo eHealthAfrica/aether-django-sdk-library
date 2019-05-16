@@ -22,9 +22,10 @@ from django.conf import settings
 from django.contrib.auth import login, logout
 from django.contrib.auth.signals import user_logged_out
 from django.dispatch import receiver
-from django.urls import reverse, resolve
+from django.urls import reverse
 
 from django_eha_sdk.auth.utils import get_or_create_user
+from django_eha_sdk.multitenancy.utils import get_path_realm
 from django_eha_sdk.utils import find_in_request_headers, request as exec_request
 
 _KC_TOKEN_SESSION = '__keycloak__token__session__'
@@ -132,15 +133,6 @@ def check_user_token(request):
             logout(request)
 
 
-def get_gateway_realm(request, default_realm=None, raise_exception=False):
-    try:
-        return resolve(request.path).kwargs['realm']
-    except Exception as e:
-        if raise_exception:
-            raise e
-    return default_realm
-
-
 def check_gateway_token(request):
     '''
     Checks if the gateway token is valid fetching the user info from keycloak server.
@@ -149,7 +141,7 @@ def check_gateway_token(request):
     token = find_in_request_headers(request, settings.GATEWAY_HEADER_TOKEN)
     if token:
         try:
-            realm = get_gateway_realm(request, raise_exception=True)
+            realm = get_path_realm(request, raise_exception=True)
             userinfo = _get_user_info(realm, token)
 
             # flags that we are using the gateway to authenticate

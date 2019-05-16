@@ -21,14 +21,14 @@ import urllib
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from django_eha_sdk.auth.keycloak.utils import get_gateway_realm
+from django_eha_sdk.multitenancy.utils import get_path_realm
 
 
 def custom_reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra):
     if not kwargs:
         kwargs = {}
 
-    realm = get_gateway_realm(request)
+    realm = get_path_realm(request)
     if realm:
         kwargs['realm'] = realm
 

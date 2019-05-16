@@ -20,6 +20,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db.models import F
+from django.urls import resolve
 
 from django_eha_sdk.utils import find_in_request
 
@@ -36,6 +37,19 @@ def get_multitenancy_model():
     return apps.get_model(app_label, model_name, require_ready=True)
 
 
+def get_path_realm(request, default_realm=None, raise_exception=False):
+    '''
+    Returns the realm contained in the request path.
+    '''
+
+    try:
+        return resolve(request.path).kwargs['realm']
+    except Exception as e:
+        if raise_exception:
+            raise e
+    return default_realm
+
+
 def get_current_realm(request):
     '''
     Returns the current realm or the default one if missing.
@@ -43,6 +57,11 @@ def get_current_realm(request):
 
     if not settings.MULTITENANCY:
         return None
+
+    if settings.GATEWAY_ENABLED:
+        realm = get_path_realm(request, default_realm=settings.GATEWAY_PUBLIC_REALM)
+        if realm != settings.GATEWAY_PUBLIC_REALM:
+            return realm
 
     return find_in_request(request, settings.REALM_COOKIE, settings.DEFAULT_REALM)
 
