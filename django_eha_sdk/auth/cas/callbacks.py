@@ -16,10 +16,16 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import logging
+
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django_cas_ng.signals import cas_user_authenticated
 
 from django_eha_sdk.auth.cas.models import UserRole
+
+logger = logging.getLogger(__name__)
+logger.setLevel(settings.LOGGING_LEVEL)
 
 
 def set_user_roles(user, roles):
@@ -34,7 +40,7 @@ def set_user_roles(user, roles):
             group = Group.objects.get(name__iexact=role_name)
             user_role.group = group
         except Group.DoesNotExist:
-            print('local Group with name "{}" does not exist'.format(role_name))
+            logger.warning(f'local Group with name "{role_name}" does not exist')
 
         user_role.save()
 
