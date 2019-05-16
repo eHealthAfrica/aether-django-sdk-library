@@ -30,8 +30,8 @@ class UtilsTests(TestCase):
 
     @mock.patch('django_eha_sdk.health.utils.exec_request',
                 side_effect=[
-                    MockResponse(status_code=403),  # First HEAD
-                    MockResponse(status_code=204),  # Second HEAD
+                    MockResponse(status_code=403),  # HEAD
+                    MockResponse(status_code=200),  # GET
                 ])
     def test__check_external_app__ok(self, mock_req):
         self.assertTrue(check_external_app('app-1'))
@@ -43,7 +43,7 @@ class UtilsTests(TestCase):
                 url=test_url,
             ),
             mock.call(
-                method='head',
+                method='get',
                 url=test_url,
                 headers={'Authorization': 'Token {}'.format(
                     settings.EXTERNAL_APPS['app-1']['test']['token']
@@ -62,8 +62,8 @@ class UtilsTests(TestCase):
 
     @mock.patch('django_eha_sdk.health.utils.exec_request',
                 side_effect=[
-                    MockResponse(status_code=403),  # First HEAD
-                    MockResponse(status_code=401),  # Second HEAD
+                    MockResponse(status_code=403),  # HEAD
+                    MockResponse(status_code=401),  # GET
                 ])
     def test__check_external_app__get_fail(self, mock_req):
         self.assertFalse(check_external_app('app-1'))
@@ -75,7 +75,7 @@ class UtilsTests(TestCase):
                 url=test_url,
             ),
             mock.call(
-                method='head',
+                method='get',
                 url=test_url,
                 headers={'Authorization': 'Token {}'.format(
                     settings.EXTERNAL_APPS['app-1']['test']['token']
