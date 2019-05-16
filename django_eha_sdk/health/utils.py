@@ -68,8 +68,8 @@ def check_external_app(app, request=None):
 
         try:
             # check that the token is valid
-            g = exec_request(method='head', url=url, headers={'Authorization': f'Token {token}'})
-            assert g.status_code == 204  # expected response 204 No Content
+            g = exec_request(method='get', url=url, headers={'Authorization': f'Token {token}'})
+            g.raise_for_status()  # expected response 200 OK
             logger.info(MSG_EXTERNAL_APP_TOKEN_OK.format(app=app, url=url))
 
             return True  # it's possible to connect with server :D
