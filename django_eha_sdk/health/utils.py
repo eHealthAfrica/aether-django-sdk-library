@@ -23,7 +23,9 @@ from django.db import connection
 from django.db.utils import OperationalError
 from django.utils.translation import gettext_lazy as _
 
-from django_eha_sdk.utils import request
+from django_eha_sdk.utils import request as exec_request
+from django_eha_sdk.multitenancy.utils import get_path_realm
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(settings.LOGGING_LEVEL)
@@ -46,13 +48,13 @@ def check_db_connection():
     return True
 
 
-def check_external_app(app):
+def check_external_app(app, request=None):
     '''
     Checks possible connection with any application server
     '''
 
     try:
-        url = get_external_app_url(app)
+        url = get_external_app_url(app, request)
         token = get_external_app_token(app)
     except KeyError:
         logger.warning(MSG_EXTERNAL_APP_ERR.format(app=app))
@@ -60,13 +62,13 @@ def check_external_app(app):
 
     try:
         # check that the server is up
-        h = request(method='head', url=url)
+        h = exec_request(method='head', url=url)
         assert h.status_code == 403  # expected response 403 Forbidden
         logger.info(MSG_EXTERNAL_APP_UP.format(app=app, url=url))
 
         try:
             # check that the token is valid
-            g = request(method='get', url=url, headers={'Authorization': f'Token {token}'})
+            g = exec_request(method='get', url=url, headers={'Authorization': f'Token {token}'})
             assert g.status_code == 200, g.content
             logger.info(MSG_EXTERNAL_APP_TOKEN_OK.format(app=app, url=url))
 
@@ -85,8 +87,19 @@ def get_external_app_settings(app):
     return config if not settings.TESTING else config['test']
 
 
-def get_external_app_url(app):
-    return get_external_app_settings(app)['url']
+def get_external_app_url(app, request=None):
+    base_url = get_external_app_settings(app)['url']
+
+    # if the current url refers to any of the gateway protected ones
+    # it might happen that the external url has the realm as an option like
+    # http://gateway-server/{realm}/app-id/
+    # in that case we need to replace it with the current realm
+    if settings.GATEWAY_ENABLED:
+        realm = get_path_realm(request, default_realm=settings.GATEWAY_PUBLIC_REALM)
+        # change "{realm}" argument with the current realm
+        base_url = base_url.format(realm=realm)
+
+    return base_url
 
 
 def get_external_app_token(app):

@@ -73,7 +73,7 @@ class TokenProxyView(View):
             raise RuntimeError(err)
 
         needs_token = True
-        base_url = get_external_app_url(self.app_name)
+        base_url = get_external_app_url(self.app_name, request)
 
         # if the current url refers to any of the gateway protected ones
         # instead of using the App User Token we rely security in the Gateway
