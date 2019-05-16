@@ -36,6 +36,7 @@ from django_eha_sdk.multitenancy.tests.fakeapp.serializers import (
 )
 from django_eha_sdk.multitenancy.models import MtInstance
 from django_eha_sdk.multitenancy import utils
+from django_eha_sdk.utils import get_meta_http_name
 
 TEST_REALM = 'realm-test'
 TEST_REALM_2 = 'realm-test-2'
@@ -268,7 +269,7 @@ class MultitenancyTests(TestCase):
         request = RequestFactory().get('/')
         self.assertEqual(utils.get_current_realm(request), settings.DEFAULT_REALM)
 
-        meta_key = 'HTTP_' + settings.REALM_COOKIE.replace('-', '_').upper()  # HTTP_<KEY>,
+        meta_key = get_meta_http_name(settings.REALM_COOKIE)
         request.META[meta_key] = 'in-headers'
         self.assertEqual(utils.get_current_realm(request), 'in-headers')
 

@@ -51,7 +51,7 @@ class ModelsTests(TestCase):
         self.assertIsNone(get_or_create_token(self.user, 'app-1'))
         mock_request.assert_called_once_with(
             method='post',
-            url=settings.EXTERNAL_APPS['app-1']['url'] + '/token',
+            url=settings.EXTERNAL_APPS['app-1']['url'] + f'/{settings.TOKEN_URL}',
             data={'username': self.user.username},
             headers={'Authorization': 'Token ' + settings.EXTERNAL_APPS['app-1']['token']},
         )
@@ -61,17 +61,18 @@ class ModelsTests(TestCase):
         AppToken.objects.create(user=self.user, app='app-1', token='not-valid')
 
         self.assertIsNone(get_or_create_token(self.user, 'app-1'))
+        test_url = settings.EXTERNAL_APPS['app-1']['url'] + f'/{settings.TOKEN_URL}'
         mock_request.assert_has_calls([
             # validate
             mock.call(
                 method='get',
-                url=settings.EXTERNAL_APPS['app-1']['url'],
+                url=test_url,
                 headers={'Authorization': 'Token not-valid'},
             ),
             # obtain
             mock.call(
                 method='post',
-                url=settings.EXTERNAL_APPS['app-1']['url'] + '/token',
+                url=test_url,
                 data={'username': self.user.username},
                 headers={'Authorization': 'Token ' + settings.EXTERNAL_APPS['app-1']['token']},
             )
@@ -84,10 +85,12 @@ class ModelsTests(TestCase):
         app_token = get_or_create_token(self.user, 'app-1')
         self.assertIsNotNone(app_token)
         self.assertEqual(app_token.token, 'valid')
+        self.assertEqual(app_token.token_url,
+                         settings.EXTERNAL_APPS['app-1']['url'] + f'/{settings.TOKEN_URL}')
 
         mock_request.assert_called_once_with(
             method='get',
-            url=settings.EXTERNAL_APPS['app-1']['url'],
+            url=app_token.token_url,
             headers={'Authorization': 'Token valid'},
         )
 
@@ -108,20 +111,20 @@ class ModelsTests(TestCase):
         self.assertIsNotNone(app_token)
         self.assertEqual(app_token.user, self.user)
         self.assertEqual(app_token.app, 'app-2')
-        self.assertEqual(app_token.base_url, APP2['url'])
+        self.assertEqual(app_token.token_url, APP2['url'] + '/token')
         self.assertEqual(app_token.token, 'valid')
 
         mock_request.assert_has_calls([
             # validate
             mock.call(
                 method='get',
-                url=APP2['url'],
+                url=app_token.token_url,
                 headers={'Authorization': 'Token not-valid'},
             ),
             # obtain
             mock.call(
                 method='post',
-                url=APP2['url'] + '/token',
+                url=app_token.token_url,
                 data={'username': self.user.username},
                 headers={'Authorization': 'Token ' + APP2['token']},
             )

@@ -16,28 +16,45 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes, renderer_classes
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
 from django_eha_sdk.auth.utils import get_or_create_user
 
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 @renderer_classes([JSONRenderer])
-@permission_classes([IsAuthenticated, IsAdminUser])
-def obtain_auth_token(request, *args, **kwargs):
+@permission_classes([IsAuthenticated])
+def auth_token(request, *args, **kwargs):
     '''
-    Given a username generates an auth token for him/her.
-    If the username does not belong to an existing user,
-    it's going to be created with a long and random password.
+    GET:
+    Returns the user token if exists
+
+    POST:
+    If logged in user is not admin:
+        Generates and returns an auth token for him/her.
+
+    If logged in user is admin:
+        Given a username (POST entry) generates an auth token for him/her.
+        If the username does not belong to an existing user,
+        it's going to be created with a long and random password.
     '''
 
     try:
-        username = request.data['username']
+        if request.method == 'GET':
+            # return the own token
+            token = Token.objects.filter(user=request.user)
+            if token.exists():
+                return Response({'token': token.first().key})
+            return Response({'token': None})
+
+        username = request.data.get('username', request.user.username)
+        if not request.user.is_staff:
+            # only admin user can create tokens for other users
+            username = request.user.username
         user = get_or_create_user(request, username)
 
         # gets the user token
@@ -46,4 +63,4 @@ def obtain_auth_token(request, *args, **kwargs):
         return Response({'token': token.key})
 
     except Exception as e:
-        return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'message': str(e)}, status=500)

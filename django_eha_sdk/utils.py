@@ -50,6 +50,14 @@ def json_prettified(value, indent=2):
     return __prettified__(json.dumps(value, indent=indent), JsonLexer())
 
 
+def get_meta_http_name(name):
+    return 'HTTP_' + name.replace('-', '_').upper()  # HTTP_<KEY>,
+
+
+def normalize_meta_http_name(name):
+    return name.replace('HTTP_', '').title().replace('_', '-')
+
+
 def find_in_request(request, key, default_value=None):
     '''
     Finds the key in
@@ -82,7 +90,7 @@ def find_in_request_headers(request, key, default_value=None):
     return getattr(request, 'headers', {}).get(  # New in Django 2.2
         key,
         getattr(request, 'META', {}).get(
-            'HTTP_' + key.replace('-', '_').upper(),  # HTTP_<KEY>,
+            get_meta_http_name(key),
             default_value
         )
     )

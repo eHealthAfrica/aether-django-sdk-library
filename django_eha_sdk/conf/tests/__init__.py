@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-#
 # Copyright (C) 2019 by eHealth Africa : http://www.eHealthAfrica.org
 #
 # See the NOTICE file distributed with this work for additional information
@@ -17,17 +15,3 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-#
-set -Eeuo pipefail
-
-# ----------------------------------------
-# install requirements in virtual env
-# ----------------------------------------
-pip3 install -q virtualenv
-rm -rf ./venv
-virtualenv -p python3 ./venv
-
-source ./venv/bin/activate
-
-pip3 install -q --upgrade pip
-pip3 install -q --upgrade -r requirements.txt

@@ -26,15 +26,15 @@ BAD_RESPONSE = _('Always Look on the Bright Side of Life!!!')
 OK_RESPONSE = _('Brought to you by eHealth Africa - good tech for hard places')
 
 
-def health(*args, **kwargs):
+def health(request, *args, **kwargs):
     '''
     Simple view to check if the system is up.
     '''
 
-    return HttpResponse(status=200)
+    return HttpResponse()
 
 
-def check_db(*args, **kwargs):
+def check_db(request, *args, **kwargs):
     '''
     Health check for the default DB connection.
     '''
@@ -45,7 +45,7 @@ def check_db(*args, **kwargs):
     return HttpResponse(OK_RESPONSE)
 
 
-def check_app(*args, **kwargs):
+def check_app(request, *args, **kwargs):
     '''
     Health check for the current app version and more.
     '''
@@ -57,13 +57,12 @@ def check_app(*args, **kwargs):
     })
 
 
-def check_external(*args, **kwargs):
+def check_external(request, name, *args, **kwargs):
     '''
     Check if the connection with external server is possible
     '''
 
-    app_name = kwargs.get('name')
-
-    if not check_external_app(app_name):
+    if not check_external_app(name, request):
         return HttpResponse(BAD_RESPONSE, status=500)
+
     return HttpResponse(OK_RESPONSE)

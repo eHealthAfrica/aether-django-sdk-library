@@ -22,9 +22,10 @@ from django.conf import settings
 from django.contrib.auth import login, logout
 from django.contrib.auth.signals import user_logged_out
 from django.dispatch import receiver
-from django.urls import reverse, resolve
+from django.urls import reverse
 
 from django_eha_sdk.auth.utils import get_or_create_user
+from django_eha_sdk.multitenancy.utils import get_path_realm
 from django_eha_sdk.utils import find_in_request_headers, request as exec_request
 
 _KC_TOKEN_SESSION = '__keycloak__token__session__'
@@ -140,14 +141,19 @@ def check_gateway_token(request):
     token = find_in_request_headers(request, settings.GATEWAY_HEADER_TOKEN)
     if token:
         try:
-            realm = resolve(request.path).kwargs['realm']
+            realm = get_path_realm(request, raise_exception=True)
             userinfo = _get_user_info(realm, token)
 
             # flags that we are using the gateway to authenticate
             request.session[settings.GATEWAY_HEADER_TOKEN] = True
             request.session[settings.REALM_COOKIE] = realm
 
-            login(request, _get_or_create_user(request, userinfo))
+            user = _get_or_create_user(request, userinfo)
+            # only login if the user changed otherwise it will refresh the Csrf
+            # token and make the AJAX calls fail.
+            if not hasattr(request, 'user') or request.user.pk != user.pk:
+                login(request, user)
+            request.user = user
 
         except Exception:
             # something went wrong

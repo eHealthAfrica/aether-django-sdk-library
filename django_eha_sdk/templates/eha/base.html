@@ -46,6 +46,7 @@ under the License.
 
   <body class="{% block body_class %}{% endblock body_class %}">
     {% csrf_token %}
+    <input type="hidden" id="__app_url__" name="app_url" value="{{ app_url }}">
 
     {% block branding %}
       {# This is the block BRANDING, redefine it in the child template #}

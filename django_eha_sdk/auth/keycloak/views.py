@@ -16,6 +16,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import urllib.parse
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
@@ -71,7 +73,9 @@ class KeycloakLogoutView(LogoutView):
     def get_next_page(self):
         next_page = super(KeycloakLogoutView, self).get_next_page()
         try:
-            realm = resolve(next_page).kwargs.get('realm')
+            # remove query string or "resolve" method will fail
+            page = urllib.parse.unquote(next_page).split('?')[0]
+            realm = resolve(page).kwargs.get('realm')
             if realm and realm != settings.GATEWAY_PUBLIC_REALM:
                 url = f'/{realm}/{settings.GATEWAY_SERVICE_ID}/logout'
                 return self.request.build_absolute_uri(url)
