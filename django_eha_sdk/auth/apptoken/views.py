@@ -72,17 +72,13 @@ class TokenProxyView(View):
             logger.error(err)
             raise RuntimeError(err)
 
-        needs_token = True
-        base_url = get_external_app_url(self.app_name, request)
-
         # if the current url refers to any of the gateway protected ones
         # instead of using the App User Token we rely security in the Gateway
+        needs_token = True
         if settings.GATEWAY_ENABLED:
             realm = get_path_realm(request, default_realm=settings.GATEWAY_PUBLIC_REALM)
             # needs user token if url refers to the public realm
             needs_token = (realm == settings.GATEWAY_PUBLIC_REALM)
-            # change "{realm}" argument with the current realm
-            base_url = base_url.format(realm=realm)
 
         if needs_token:
             app_token = AppToken.get_or_create_token(request.user, self.app_name)
@@ -97,6 +93,7 @@ class TokenProxyView(View):
             _path = '/' + _path
 
         # build request path info with `base_url` + `path` + `query string`
+        base_url = get_external_app_url(self.app_name, request)
         query_string = request.GET.urlencode()
         url = f'{base_url}{_path}' + (f'?{query_string}' if query_string else '')
         request.external_url = url
@@ -183,7 +180,7 @@ class TokenProxyView(View):
                 content_type=response.headers.get('Content-Type'),
             )
 
-        # copy from the original response headers the exposed ones
+        # copy the exposed headers from the original response ones
         # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
         # https://fetch.spec.whatwg.org/#http-access-control-expose-headers
         expose_headers = response.headers.get('Access-Control-Expose-Headers', '').split(', ')
