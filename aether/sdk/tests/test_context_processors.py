@@ -31,7 +31,7 @@ class ContextProcessorsTests(UrlsTestCase):
         self.assertFalse(context['dev_mode'])
 
         self.assertEqual(context['app_name'], 'eha-test')
-        self.assertEqual(context['app_name_html'], '<b>eha</b> test')
+        self.assertEqual(context['app_name_html'], '<b>ae</b>ther')
         self.assertEqual(context['app_link'], 'http://eha-link-test')
 
         self.assertNotEqual(context['app_version'], '#.#.#')

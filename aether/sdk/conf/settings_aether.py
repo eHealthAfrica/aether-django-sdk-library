@@ -16,31 +16,24 @@
 # specific language governing permissions and limitations
 # under the License.
 
-'''
-These settings are only used for testing purposes.
-'''
+import os
+from django.utils.translation import gettext_lazy as _
 
-from aether.sdk.conf.settings_aether import *  # noqa
-
-
-# to check URLs builder
-# ------------------------------------------------------------------------------
-TEST_TOKEN_ACTIVE = True
-ROOT_URLCONF = 'aether.sdk.tests.urls'
+from aether.sdk.conf.settings import *  # noqa
 
 
-# Database Configuration
+# Common Aether Configuration
 # ------------------------------------------------------------------------------
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
-    },
-}
+APP_NAME = os.environ.get('APP_NAME', 'aether')
+APP_LINK = os.environ.get('APP_LINK', 'http://aether.ehealthafrica.org')
 
+APP_NAME_HTML = '<b>ae</b>ther'
+APP_FAVICON = 'aether/images/aether.png'
+APP_LOGO = 'aether/images/aether-white.png'
 
-# Multitenancy Configuration
-# ------------------------------------------------------------------------------
-
-MULTITENANCY_MODEL = 'fakeapp.TestModel'
+APP_EXTRA_STYLE = 'aether/css/styles.css'
+APP_EXTRA_META = _(
+    'A free, open source development platform'
+    ' for data curation, exchange, and publication'
+)
