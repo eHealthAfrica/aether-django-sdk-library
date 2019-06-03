@@ -18,8 +18,8 @@
 
 from django.test import override_settings, RequestFactory
 
-from django_eha_sdk.context_processors import eha_context
-from django_eha_sdk.unittest import UrlsTestCase
+from aether.sdk.context_processors import eha_context
+from aether.sdk.unittest import UrlsTestCase
 
 
 class ContextProcessorsTests(UrlsTestCase):

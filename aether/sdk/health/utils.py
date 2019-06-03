@@ -23,8 +23,8 @@ from django.db import connection
 from django.db.utils import OperationalError
 from django.utils.translation import gettext_lazy as _
 
-from django_eha_sdk.utils import request as exec_request
-from django_eha_sdk.multitenancy.utils import get_path_realm
+from aether.sdk.utils import request as exec_request
+from aether.sdk.multitenancy.utils import get_path_realm
 
 
 logger = logging.getLogger(__name__)

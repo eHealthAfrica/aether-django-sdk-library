@@ -25,7 +25,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 
-from django_eha_sdk.unittest import UrlsTestCase
+from aether.sdk.unittest import UrlsTestCase
 
 user_objects = get_user_model().objects
 
@@ -104,7 +104,7 @@ class ViewsTest(UrlsTestCase):
         self.assertEqual(user_objects.filter(username=token_username).count(), 0)
 
         with mock.patch(
-            'django_eha_sdk.auth.views.Token.objects.get_or_create',
+            'aether.sdk.auth.views.Token.objects.get_or_create',
             side_effect=Exception(':('),
         ):
             response = self.client.post(self.token_url, data={'username': token_username})

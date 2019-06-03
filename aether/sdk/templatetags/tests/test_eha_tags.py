@@ -19,7 +19,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from django_eha_sdk.templatetags.eha_tags import get_fullname, prettified
+from aether.sdk.templatetags.eha_tags import get_fullname, prettified
 
 
 class TagsTests(TestCase):

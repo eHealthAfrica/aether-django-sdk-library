@@ -22,13 +22,13 @@ from django.conf import settings
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
-from django_eha_sdk.health.utils import check_external_app, get_external_app_url
-from django_eha_sdk.unittest import MockResponse
+from aether.sdk.health.utils import check_external_app, get_external_app_url
+from aether.sdk.unittest import MockResponse
 
 
 class UtilsTests(TestCase):
 
-    @mock.patch('django_eha_sdk.health.utils.exec_request',
+    @mock.patch('aether.sdk.health.utils.exec_request',
                 side_effect=[
                     MockResponse(status_code=403),  # HEAD
                     MockResponse(status_code=200),  # GET
@@ -51,7 +51,7 @@ class UtilsTests(TestCase):
             ),
         ])
 
-    @mock.patch('django_eha_sdk.health.utils.exec_request',
+    @mock.patch('aether.sdk.health.utils.exec_request',
                 return_value=MockResponse(status_code=404))
     def test__check_external_app__head_fail(self, mock_head):
         self.assertFalse(check_external_app('app-1'))
@@ -60,7 +60,7 @@ class UtilsTests(TestCase):
             url=settings.EXTERNAL_APPS['app-1']['test']['url'] + '/token',
         )
 
-    @mock.patch('django_eha_sdk.health.utils.exec_request',
+    @mock.patch('aether.sdk.health.utils.exec_request',
                 side_effect=[
                     MockResponse(status_code=403),  # HEAD
                     MockResponse(status_code=401),  # GET

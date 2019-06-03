@@ -21,7 +21,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from django_eha_sdk.multitenancy.utils import get_current_realm
+from aether.sdk.multitenancy.utils import get_current_realm
 
 
 class MtInstance(models.Model):

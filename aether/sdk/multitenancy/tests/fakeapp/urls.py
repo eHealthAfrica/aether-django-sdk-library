@@ -18,7 +18,7 @@
 
 from rest_framework.routers import DefaultRouter
 
-from django_eha_sdk.multitenancy.tests.fakeapp.views import (
+from aether.sdk.multitenancy.tests.fakeapp.views import (
     TestModelViewSet,
     TestChildModelViewSet,
     TestUserViewSet,

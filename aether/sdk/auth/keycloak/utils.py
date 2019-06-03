@@ -24,9 +24,9 @@ from django.contrib.auth.signals import user_logged_out
 from django.dispatch import receiver
 from django.urls import reverse
 
-from django_eha_sdk.auth.utils import get_or_create_user
-from django_eha_sdk.multitenancy.utils import get_path_realm
-from django_eha_sdk.utils import find_in_request_headers, request as exec_request
+from aether.sdk.auth.utils import get_or_create_user
+from aether.sdk.multitenancy.utils import get_path_realm
+from aether.sdk.utils import find_in_request_headers, request as exec_request
 
 _KC_TOKEN_SESSION = '__keycloak__token__session__'
 _KC_URL = settings.KEYCLOAK_SERVER_URL

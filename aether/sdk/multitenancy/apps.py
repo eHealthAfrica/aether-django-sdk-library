@@ -22,5 +22,5 @@ from django.utils.translation import gettext_lazy as _
 
 class Config(AppConfig):
 
-    name = 'django_eha_sdk.multitenancy'
+    name = 'aether.sdk.multitenancy'
     verbose_name = _('Multitenancy')

@@ -26,8 +26,8 @@ from django.http import HttpResponseRedirect
 from django.urls import resolve
 from django.utils.translation import gettext_lazy as _
 
-from django_eha_sdk.auth.keycloak.forms import RealmForm
-from django_eha_sdk.auth.keycloak.utils import post_authenticate, get_realm_auth_url
+from aether.sdk.auth.keycloak.forms import RealmForm
+from aether.sdk.auth.keycloak.utils import post_authenticate, get_realm_auth_url
 
 
 class KeycloakLoginView(LoginView):

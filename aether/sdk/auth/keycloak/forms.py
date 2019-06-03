@@ -20,7 +20,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.forms import Form, CharField, TextInput, ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from django_eha_sdk.auth.keycloak.utils import authenticate, check_realm
+from aether.sdk.auth.keycloak.utils import authenticate, check_realm
 
 
 class RealmMixin(object):

@@ -30,7 +30,7 @@ Read more: [multi-tenancy wikipedia entry](https://en.wikipedia.org/wiki/Multite
 
 ## Technical implementation
 
-The module `django_eha_sdk.multitenancy` contains all the relevant code to make
+The module `aether.sdk.multitenancy` contains all the relevant code to make
 multi-tenancy work.
 
 Check the [tests sample](/tests/fakeapp/) to understand how to use it in the app.
@@ -39,7 +39,7 @@ In each module/app `settings.py` file is mandatory to indicate the setting
 `MULTITENANCY_MODEL` with the model that supports the multi-tenancy one to one
 relation, e.g. `MULTITENANCY_MODEL='my_app.MyModel'`.
 
-### `django_eha_sdk.multitenancy.permissions.py`
+### `aether.sdk.multitenancy.permissions.py`
 
 #### `IsAccessibleByRealm`
 
@@ -51,7 +51,7 @@ This permission is included in the REST-Framework `DEFAULT_PERMISSION_CLASSES`
 list if multi-tenacy is enabled.
 
 
-### `django_eha_sdk.multitenancy.models.py`
+### `aether.sdk.multitenancy.models.py`
 
 #### `MtInstance`
 
@@ -128,7 +128,7 @@ class EvenAnotherModel(MtModelChildAbstract):
 ```
 
 
-### `django_eha_sdk.multitenancy.serializers.py`
+### `aether.sdk.multitenancy.serializers.py`
 
 #### `MtModelSerializer`
 
@@ -216,7 +216,7 @@ class WithUserModelSerializer(rest_framework.serializers.ModelSerializer):
 ```
 
 
-### `django_eha_sdk.multitenancy.views.py`
+### `aether.sdk.multitenancy.views.py`
 
 #### `MtViewSetMixin`
 
@@ -319,7 +319,7 @@ class UserModelViewSet(MtUserViewSetMixin, rest_framework.viewsets.ReadOnlyModel
 ```
 
 
-### `django_eha_sdk.multitenancy.utils.py`
+### `aether.sdk.multitenancy.utils.py`
 
 A collection of useful methods.
 

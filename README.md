@@ -91,10 +91,10 @@ Extra dependencies (based on settings):
 
 ```bash
 # standalone
-pip3 install django_eha_sdk
+pip3 install aether.sdk
 
 # with extra dependencies
-pip3 install django_eha_sdk[cas,scheduler,server,storage,test,webpack]
+pip3 install aether.sdk[cas,scheduler,server,storage,test,webpack]
 ```
 
 *[Return to TOC](#table-of-contents)*
@@ -146,18 +146,18 @@ Add this snippet in the `settings.py` file to have the build the django app
 settings based on the environment variables.
 
 ```python
-from django_eha_sdk.conf.settings import *  # noqa
+from aether.sdk.conf.settings import *  # noqa
 
 # continue with the app specific settings
 # and re-import the settings variables you need to reuse
-# from django_eha_sdk.conf.settings import WHATEVER YOU NEED TO...
+# from aether.sdk.conf.settings import WHATEVER YOU NEED TO...
 ```
 
 Add this snippet in the `urls.py` file to generate default `urlpatterns`
 based on the app settings.
 
 ```python
-from django_eha_sdk.conf.urls import generate_urlpatterns
+from aether.sdk.conf.urls import generate_urlpatterns
 
 
 urlpatterns = generate_urlpatterns(token=True, app=[

@@ -16,15 +16,4 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from django.apps import apps
-from django.test import TestCase
-
-
-class AppsTests(TestCase):
-
-    def test_app_config(self):
-        # this is only valid in tests, the correct name is `aether.sdk`
-        self.assertEqual(
-            apps.get_app_config('sdk').verbose_name,
-            'Aether Django SDK'
-        )
+__path__ = __import__('pkgutil').extend_path(__path__, __name__)

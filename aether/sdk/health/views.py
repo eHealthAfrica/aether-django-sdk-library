@@ -20,7 +20,7 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.utils.translation import gettext_lazy as _
 
-from django_eha_sdk.health.utils import check_db_connection, check_external_app
+from aether.sdk.health.utils import check_db_connection, check_external_app
 
 BAD_RESPONSE = _('Always Look on the Bright Side of Life!!!')
 OK_RESPONSE = _('Brought to you by eHealth Africa - good tech for hard places')

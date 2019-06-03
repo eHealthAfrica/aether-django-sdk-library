@@ -40,7 +40,7 @@ class ViewsTest(TestCase):
             'Brought to you by eHealth Africa - good tech for hard places',
         )
 
-    @mock.patch('django_eha_sdk.health.views.check_db_connection', return_value=False)
+    @mock.patch('aether.sdk.health.views.check_db_connection', return_value=False)
     def test__check_db_down(self, *args):
         response = self.client.get(reverse('check-db'))
         self.assertEqual(response.status_code, 500)
@@ -49,7 +49,7 @@ class ViewsTest(TestCase):
             'Always Look on the Bright Side of Life!!!',
         )
 
-    @mock.patch('django_eha_sdk.health.utils.connection.cursor', side_effect=OperationalError)
+    @mock.patch('aether.sdk.health.utils.connection.cursor', side_effect=OperationalError)
     def test__check_db__operational_error(self, *args):
         response = self.client.get(reverse('check-db'))
         self.assertEqual(response.status_code, 500)
@@ -58,7 +58,7 @@ class ViewsTest(TestCase):
             'Always Look on the Bright Side of Life!!!',
         )
 
-    @mock.patch('django_eha_sdk.health.utils.connection.cursor', side_effect=RuntimeError)
+    @mock.patch('aether.sdk.health.utils.connection.cursor', side_effect=RuntimeError)
     def test__check_db__another_error(self, *args):
         response = self.client.get(reverse('check-db'))
         self.assertEqual(response.status_code, 500)
@@ -89,7 +89,7 @@ class ViewsTest(TestCase):
     def test__check_external_app__error(self):
         # "app-1" is an external app
         url = reverse('check-external', kwargs={'name': 'app-1'})
-        with mock.patch('django_eha_sdk.health.views.check_external_app', return_value=False):
+        with mock.patch('aether.sdk.health.views.check_external_app', return_value=False):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 500)
             self.assertEqual(
@@ -100,7 +100,7 @@ class ViewsTest(TestCase):
     def test__check_external_app__ok(self):
         # "app-2" is also an external app
         url = reverse('check-external', kwargs={'name': 'app-2'})
-        with mock.patch('django_eha_sdk.health.views.check_external_app', return_value=True):
+        with mock.patch('aether.sdk.health.views.check_external_app', return_value=True):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(

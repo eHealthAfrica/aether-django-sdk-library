@@ -1,2 +1,2 @@
-graft django_eha_sdk/static
-graft django_eha_sdk/templates
+graft aether/sdk/static
+graft aether/sdk/templates

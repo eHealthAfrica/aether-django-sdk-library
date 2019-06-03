@@ -20,8 +20,8 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from django_eha_sdk.utils import request
-from django_eha_sdk.health.utils import get_external_app_url, get_external_app_token
+from aether.sdk.utils import request
+from aether.sdk.health.utils import get_external_app_url, get_external_app_token
 
 
 class AppToken(models.Model):

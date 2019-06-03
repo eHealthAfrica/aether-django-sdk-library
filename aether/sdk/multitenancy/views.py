@@ -23,7 +23,7 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
-from django_eha_sdk.multitenancy.utils import (
+from aether.sdk.multitenancy.utils import (
     filter_by_realm,
     filter_users_by_realm,
     is_accessible_by_realm,

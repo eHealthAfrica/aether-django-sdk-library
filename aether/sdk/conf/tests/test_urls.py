@@ -20,7 +20,7 @@ from django.conf import settings
 from django.test import override_settings
 from django.urls import reverse, resolve, exceptions
 
-from django_eha_sdk.unittest import UrlsTestCase
+from aether.sdk.unittest import UrlsTestCase
 
 
 @override_settings(
@@ -49,7 +49,7 @@ class UrlsTest(UrlsTestCase):
 
     def test__urls__auth__views(self):
         from django.contrib.auth.views import LoginView, LogoutView
-        from django_eha_sdk.auth.views import auth_token
+        from aether.sdk.auth.views import auth_token
 
         self.assertEqual(resolve('/accounts/login').func.view_class,
                          LoginView.as_view().view_class)
@@ -107,7 +107,7 @@ class UrlsNoTokenTest(UrlsTestCase):
     INSTALLED_APPS=[
         *settings.INSTALLED_APPS,
         'django_cas_ng',
-        'django_eha_sdk.auth.cas',
+        'aether.sdk.auth.cas',
     ],
 )
 class UrlsCASServerTest(UrlsTestCase):
@@ -136,7 +136,7 @@ class UrlsKeycloakServerBehindTest(UrlsTestCase):
 
     def test__urls(self):
         from django.contrib.auth.views import LoginView
-        from django_eha_sdk.auth.keycloak.views import KeycloakLogoutView
+        from aether.sdk.auth.keycloak.views import KeycloakLogoutView
 
         self.assertEqual(reverse('rest_framework:login'), '/accounts/login')
         self.assertEqual(resolve('/accounts/login').func.view_class,
@@ -156,7 +156,7 @@ class UrlsKeycloakServerBehindTest(UrlsTestCase):
 class UrlsKeycloakServerTest(UrlsTestCase):
 
     def test__urls(self):
-        from django_eha_sdk.auth.keycloak.views import KeycloakLoginView, KeycloakLogoutView
+        from aether.sdk.auth.keycloak.views import KeycloakLoginView, KeycloakLogoutView
 
         self.assertEqual(reverse('rest_framework:login'), '/accounts/login')
         self.assertEqual(resolve('/accounts/login').func.view_class,

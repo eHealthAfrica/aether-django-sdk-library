@@ -20,8 +20,8 @@ from unittest import mock
 
 from django.test import TestCase, RequestFactory
 
-from django_eha_sdk import utils
-from django_eha_sdk.unittest import MockResponse
+from aether.sdk import utils
+from aether.sdk.unittest import MockResponse
 
 
 class UtilsTests(TestCase):
@@ -36,20 +36,20 @@ class UtilsTests(TestCase):
     # check that the custom request method tries to execute at least three
     # times before failing
     def test__request__once(self):
-        with mock.patch('django_eha_sdk.utils.requests.request',
+        with mock.patch('aether.sdk.utils.requests.request',
                         return_value='ok') as mock_req_args:
             resp_args = utils.request('no matter what')
             self.assertEqual(resp_args, 'ok')
             mock_req_args.assert_called_once_with('no matter what')
 
-        with mock.patch('django_eha_sdk.utils.requests.request',
+        with mock.patch('aether.sdk.utils.requests.request',
                         return_value='ok') as mock_req_kwargs:
             resp_kwargs = utils.request(url='localhost', method='get')
             self.assertEqual(resp_kwargs, 'ok')
             mock_req_kwargs.assert_called_once_with(url='localhost', method='get')
 
     def test__request__twice(self):
-        with mock.patch('django_eha_sdk.utils.requests.request',
+        with mock.patch('aether.sdk.utils.requests.request',
                         side_effect=[Exception, 'ok']) as mock_req:
             response = utils.request(url='trying twice')
             self.assertEqual(response, 'ok')
@@ -60,7 +60,7 @@ class UtilsTests(TestCase):
             ])
 
     def test__request__3_times(self):
-        with mock.patch('django_eha_sdk.utils.requests.request',
+        with mock.patch('aether.sdk.utils.requests.request',
                         side_effect=[Exception, Exception, 'ok']) as mock_req:
             response = utils.request(url='trying three times')
             self.assertEqual(response, 'ok')
@@ -72,7 +72,7 @@ class UtilsTests(TestCase):
             ])
 
     def test__request__3_times__raises(self):
-        with mock.patch('django_eha_sdk.utils.requests.request',
+        with mock.patch('aether.sdk.utils.requests.request',
                         side_effect=[
                             Exception('1'),
                             Exception('2'),
@@ -96,7 +96,7 @@ class UtilsTests(TestCase):
             else:
                 return MockResponse(json_data={'results': [1], 'next': None})
 
-        with mock.patch('django_eha_sdk.utils.request', side_effect=my_side_effect) as mock_get:
+        with mock.patch('aether.sdk.utils.request', side_effect=my_side_effect) as mock_get:
             iterable = utils.get_all_docs('http://first', headers={})
 
             self.assertEqual(next(iterable), 2)

@@ -18,7 +18,7 @@
 
 from rest_framework.serializers import PrimaryKeyRelatedField, ModelSerializer
 
-from django_eha_sdk.multitenancy.utils import filter_by_realm, filter_users_by_realm
+from aether.sdk.multitenancy.utils import filter_by_realm, filter_users_by_realm
 
 
 class MtModelSerializer(ModelSerializer):

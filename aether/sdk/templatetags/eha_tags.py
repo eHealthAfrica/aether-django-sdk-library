@@ -19,7 +19,7 @@
 from django import template
 from django.utils.html import escape
 
-from django_eha_sdk.utils import json_prettified
+from aether.sdk.utils import json_prettified
 
 register = template.Library()
 

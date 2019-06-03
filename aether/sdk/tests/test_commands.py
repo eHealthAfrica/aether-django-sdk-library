@@ -98,7 +98,7 @@ class TestCheckUrlCommand(TestCase):
             stdout=self.out,
         )
 
-    @mock.patch('django_eha_sdk.management.commands.check_url.request',
+    @mock.patch('aether.sdk.management.commands.check_url.request',
                 return_value=MockRequestHeadOK())
     def test__check_url__ok(self, *args):
         try:
@@ -120,7 +120,7 @@ class TestCheckUrlCommand(TestCase):
         except Exception:
             self.assertTrue(False)
 
-    @mock.patch('django_eha_sdk.management.commands.check_url.request',
+    @mock.patch('aether.sdk.management.commands.check_url.request',
                 return_value=MockRequestHeadError())
     def test__check_url__error(self, *args):
         self.assertRaises(

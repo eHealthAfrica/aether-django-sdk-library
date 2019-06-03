@@ -24,9 +24,9 @@ from django.contrib.auth import get_user_model
 from django.test import RequestFactory, override_settings
 from django.urls import reverse
 
-from django_eha_sdk.auth.apptoken.views import TokenProxyView
-from django_eha_sdk.unittest import UrlsTestCase
-from django_eha_sdk.utils import get_meta_http_name
+from aether.sdk.auth.apptoken.views import TokenProxyView
+from aether.sdk.unittest import UrlsTestCase
+from aether.sdk.utils import get_meta_http_name
 
 
 RESPONSE_MOCK = mock.Mock(
@@ -74,21 +74,21 @@ class ViewsTest(UrlsTestCase):
         self.assertIn('App tokens for test', response.content.decode('utf-8'))
 
         # redirects to `tokens` url if something unexpected happens
-        with mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token',
+        with mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
                         side_effect=RuntimeError):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302)
             self.assertEqual(response.url, tokens_url)
 
         # redirects to `tokens` url if the tokens are not valid
-        with mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token',
+        with mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
                         return_value=None):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302)
             self.assertEqual(response.url, tokens_url)
 
         # with valid tokens it does not redirect
-        with mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token',
+        with mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
                         return_value=APP_TOKEN_MOCK) as mock_get_app_token:
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
@@ -100,7 +100,7 @@ class ViewsTest(UrlsTestCase):
                 mock.call(self.user, 'app-3'),
             ])
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token')
+    @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token')
     def test_proxy_view_without_valid_app(self, mock_get_token):
         request = RequestFactory().get('/go_to_proxy')
         request.user = self.user
@@ -114,7 +114,7 @@ class ViewsTest(UrlsTestCase):
         )
         mock_get_token.assert_not_called()
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token',
+    @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
                 return_value=None)
     def test_proxy_view_without_valid_token(self, mock_get_token):
         request = RequestFactory().get('/go_to_proxy')
@@ -128,7 +128,7 @@ class ViewsTest(UrlsTestCase):
         )
         mock_get_token.assert_called_once()
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token',
+    @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
                 return_value=APP_TOKEN_MOCK)
     @mock.patch('requests.request',
                 return_value=mock.Mock(status_code=204, headers={}))
@@ -146,7 +146,7 @@ class ViewsTest(UrlsTestCase):
             headers={'Cookie': '', 'Authorization': 'Token ABCDEFGH'}
         )
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token',
+    @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
                 return_value=APP_TOKEN_MOCK)
     @mock.patch('requests.request', return_value=RESPONSE_MOCK_WITH_HEADERS)
     def test_proxy_view_get(self, mock_request, mock_get_token):
@@ -170,7 +170,7 @@ class ViewsTest(UrlsTestCase):
             headers={'Cookie': '', 'Authorization': 'Token ABCDEFGH'}
         )
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token',
+    @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
                 return_value=APP_TOKEN_MOCK)
     @mock.patch('requests.request', return_value=RESPONSE_MOCK)
     def test_proxy_view_head(self, mock_request, mock_get_token):
@@ -187,7 +187,7 @@ class ViewsTest(UrlsTestCase):
             headers={'Cookie': '', 'Authorization': 'Token ABCDEFGH'}
         )
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token',
+    @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
                 return_value=APP_TOKEN_MOCK)
     @mock.patch('requests.request', return_value=RESPONSE_MOCK)
     def test_proxy_view_options(self, mock_request, mock_get_token):
@@ -204,7 +204,7 @@ class ViewsTest(UrlsTestCase):
             headers={'Cookie': '', 'Authorization': 'Token ABCDEFGH'}
         )
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token',
+    @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
                 return_value=APP_TOKEN_MOCK)
     @mock.patch('requests.request', return_value=RESPONSE_MOCK)
     def test_proxy_view_patch(self, mock_request, mock_get_token):
@@ -221,7 +221,7 @@ class ViewsTest(UrlsTestCase):
             headers={'Cookie': '', 'Authorization': 'Token ABCDEFGH'}
         )
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token',
+    @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
                 return_value=APP_TOKEN_MOCK)
     @mock.patch('requests.request', return_value=RESPONSE_MOCK)
     def test_proxy_view_post(self, mock_request, mock_get_token):
@@ -244,7 +244,7 @@ class ViewsTest(UrlsTestCase):
             }
         )
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token',
+    @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
                 return_value=APP_TOKEN_MOCK)
     @mock.patch('requests.request', return_value=RESPONSE_MOCK)
     def test_proxy_view_put(self, mock_request, mock_get_token):
@@ -265,7 +265,7 @@ class ViewsTest(UrlsTestCase):
             }
         )
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token',
+    @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
                 return_value=APP_TOKEN_MOCK)
     @mock.patch('requests.request', return_value=RESPONSE_MOCK)
     def test_proxy_view_put_but_post(self, mock_request, mock_get_token):
@@ -289,7 +289,7 @@ class ViewsTest(UrlsTestCase):
             }
         )
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token',
+    @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
                 return_value=APP_TOKEN_MOCK)
     @mock.patch('requests.request', return_value=RESPONSE_MOCK)
     def test_proxy_view_put_but_other(self, mock_request, mock_get_token):
@@ -325,7 +325,7 @@ class MultitenancyViewsTest(UrlsTestCase):
         self.user = get_user_model().objects.create_user(username, email, password)
         self.view = TokenProxyView.as_view(app_name='app-2')
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token',
+    @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
                 return_value=APP_TOKEN_MOCK)
     @mock.patch('requests.request', return_value=RESPONSE_MOCK)
     def test_proxy_view_head(self, mock_request, mock_get_token):
@@ -357,7 +357,7 @@ class GatewayViewsTest(UrlsTestCase):
         self.user = get_user_model().objects.create_user(username, email, password)
         self.view = TokenProxyView.as_view(app_name='app-3')
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token')
+    @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token')
     @mock.patch('requests.request', return_value=RESPONSE_MOCK)
     def test_proxy_view_head(self, mock_request, mock_get_token):
         FAKE_TOKEN = 'access-keycloak'
@@ -382,7 +382,7 @@ class GatewayViewsTest(UrlsTestCase):
             }
         )
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.AppToken.get_or_create_token',
+    @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
                 return_value=APP_TOKEN_MOCK)
     @mock.patch('requests.request', return_value=RESPONSE_MOCK)
     def test_proxy_view_head__outside_gateway(self, mock_request, mock_get_token):

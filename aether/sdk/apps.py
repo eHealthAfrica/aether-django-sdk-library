@@ -21,5 +21,5 @@ from django.apps import AppConfig
 
 class Config(AppConfig):
 
-    name = 'django_eha_sdk'
-    verbose_name = 'Django eHealth SDK'
+    name = 'aether.sdk'
+    verbose_name = 'Aether Django SDK'

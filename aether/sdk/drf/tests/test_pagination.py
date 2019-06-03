@@ -20,7 +20,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, RequestFactory
 from rest_framework import generics, serializers, status
 
-from django_eha_sdk.drf.pagination import CustomPagination
+from aether.sdk.drf.pagination import CustomPagination
 
 factory = RequestFactory()
 

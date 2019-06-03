@@ -22,13 +22,13 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from django_eha_sdk.multitenancy.views import MtViewSetMixin, MtUserViewSetMixin
+from aether.sdk.multitenancy.views import MtViewSetMixin, MtUserViewSetMixin
 
-from django_eha_sdk.multitenancy.tests.fakeapp.models import (
+from aether.sdk.multitenancy.tests.fakeapp.models import (
     TestModel,
     TestChildModel,
 )
-from django_eha_sdk.multitenancy.tests.fakeapp.serializers import (
+from aether.sdk.multitenancy.tests.fakeapp.serializers import (
     TestModelSerializer,
     TestChildModelSerializer,
     TestUserSerializer,

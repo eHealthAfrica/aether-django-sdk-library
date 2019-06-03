@@ -18,7 +18,7 @@
 
 from django.contrib import admin
 
-from django_eha_sdk.auth.cas.models import UserRole
+from aether.sdk.auth.cas.models import UserRole
 
 
 class UserRoleAdmin(admin.ModelAdmin):

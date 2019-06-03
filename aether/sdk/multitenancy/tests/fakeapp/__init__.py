@@ -22,8 +22,8 @@ This app is only used for testing purposes.
 
 from django.apps import AppConfig
 
-default_app_config = 'django_eha_sdk.multitenancy.tests.fakeapp.Config'
+default_app_config = 'aether.sdk.multitenancy.tests.fakeapp.Config'
 
 
 class Config(AppConfig):
-    name = 'django_eha_sdk.multitenancy.tests.fakeapp'
+    name = 'aether.sdk.multitenancy.tests.fakeapp'

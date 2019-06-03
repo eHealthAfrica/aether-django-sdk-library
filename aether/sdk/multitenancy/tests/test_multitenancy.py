@@ -24,19 +24,19 @@ from django.urls import reverse
 
 from rest_framework import status
 
-from django_eha_sdk.multitenancy.tests.fakeapp.models import (
+from aether.sdk.multitenancy.tests.fakeapp.models import (
     TestModel,
     TestChildModel,
     TestGrandChildModel,
     TestNoMtModel,
 )
-from django_eha_sdk.multitenancy.tests.fakeapp.serializers import (
+from aether.sdk.multitenancy.tests.fakeapp.serializers import (
     TestModelSerializer,
     TestChildModelSerializer,
 )
-from django_eha_sdk.multitenancy.models import MtInstance
-from django_eha_sdk.multitenancy import utils
-from django_eha_sdk.utils import get_meta_http_name
+from aether.sdk.multitenancy.models import MtInstance
+from aether.sdk.multitenancy import utils
+from aether.sdk.utils import get_meta_http_name
 
 TEST_REALM = 'realm-test'
 TEST_REALM_2 = 'realm-test-2'

@@ -97,7 +97,7 @@ def generate_urlpatterns(token=False, app=[]):
 
 
 def _get_health_urls():
-    from django_eha_sdk.health import views
+    from aether.sdk.health import views
 
     health_urls = [
         path(route='health', view=views.health, name='health'),
@@ -106,7 +106,7 @@ def _get_health_urls():
     ]
 
     if settings.EXTERNAL_APPS:
-        from django_eha_sdk.auth.apptoken.decorators import app_token_required
+        from aether.sdk.auth.apptoken.decorators import app_token_required
 
         health_urls += [
             # checks if the external app is reachable
@@ -127,7 +127,7 @@ def _get_token_urls(token):
     token_urls = []
 
     if token:
-        from django_eha_sdk.auth.views import auth_token
+        from aether.sdk.auth.views import auth_token
 
         # generates users token
         token_urls += [
@@ -141,7 +141,7 @@ def _get_token_urls(token):
             ]
 
     if settings.EXTERNAL_APPS:
-        from django_eha_sdk.auth.apptoken.views import user_app_token_view
+        from aether.sdk.auth.apptoken.views import user_app_token_view
 
         token_urls += [
             # shows the current user app tokens
@@ -168,20 +168,20 @@ def _get_auth_urls():
             login_view = LoginView.as_view(template_name=settings.LOGIN_TEMPLATE)
 
         else:
-            from django_eha_sdk.auth.keycloak.views import KeycloakLogoutView
+            from aether.sdk.auth.keycloak.views import KeycloakLogoutView
 
             logout_view = KeycloakLogoutView.as_view(template_name=settings.LOGGED_OUT_TEMPLATE)
 
             if not settings.KEYCLOAK_BEHIND_SCENES:
-                from django_eha_sdk.auth.keycloak.forms import RealmForm
-                from django_eha_sdk.auth.keycloak.views import KeycloakLoginView
+                from aether.sdk.auth.keycloak.forms import RealmForm
+                from aether.sdk.auth.keycloak.views import KeycloakLoginView
 
                 login_view = KeycloakLoginView.as_view(
                     template_name=settings.KEYCLOAK_TEMPLATE,
                     authentication_form=RealmForm,
                 )
             else:
-                from django_eha_sdk.auth.keycloak.forms import RealmAuthenticationForm
+                from aether.sdk.auth.keycloak.forms import RealmAuthenticationForm
 
                 login_view = LoginView.as_view(
                     template_name=settings.KEYCLOAK_BEHIND_TEMPLATE,

@@ -22,7 +22,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django_cas_ng.signals import cas_user_authenticated
 
-from django_eha_sdk.auth.cas.models import UserRole
+from aether.sdk.auth.cas.models import UserRole
 
 logger = logging.getLogger(__name__)
 logger.setLevel(settings.LOGGING_LEVEL)

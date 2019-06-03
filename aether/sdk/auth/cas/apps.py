@@ -22,5 +22,5 @@ from django.utils.translation import gettext_lazy as _
 
 class Config(AppConfig):
 
-    name = 'django_eha_sdk.auth.cas'
+    name = 'aether.sdk.auth.cas'
     verbose_name = _('Auth CAS')

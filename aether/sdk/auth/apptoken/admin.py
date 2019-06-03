@@ -18,7 +18,7 @@
 
 from django.contrib import admin
 
-from django_eha_sdk.auth.apptoken.models import AppToken
+from aether.sdk.auth.apptoken.models import AppToken
 
 
 class AppTokenAdmin(admin.ModelAdmin):

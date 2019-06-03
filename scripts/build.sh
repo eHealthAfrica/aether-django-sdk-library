@@ -20,12 +20,14 @@
 #
 set -Eeuo pipefail
 
+EGG_INFO=aether.sdk.egg-info
+
 # ----------------------------------------
 # remove previous packages if needed
 # ----------------------------------------
 rm -rf dist/*
 rm -rf build
-rm -rf django_eha_sdk.egg-info
+rm -rf $EGG_INFO
 
 # ----------------------------------------
 # create the distribution package
@@ -36,4 +38,4 @@ python3 setup.py bdist_wheel
 # remove useless content
 # ----------------------------------------
 rm -rf build
-rm -rf django_eha_sdk.egg-info
+rm -rf $EGG_INFO

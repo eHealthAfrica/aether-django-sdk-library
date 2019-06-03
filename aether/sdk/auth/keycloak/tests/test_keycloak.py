@@ -26,10 +26,10 @@ from django.contrib.auth import get_user_model
 from django.test import RequestFactory, override_settings
 from django.urls import reverse, resolve
 
-from django_eha_sdk.unittest import MockResponse, UrlsTestCase
-from django_eha_sdk.utils import get_meta_http_name
-from django_eha_sdk.auth.keycloak.utils import _KC_TOKEN_SESSION as TOKEN_KEY
-from django_eha_sdk.auth.keycloak.views import KeycloakLogoutView
+from aether.sdk.unittest import MockResponse, UrlsTestCase
+from aether.sdk.utils import get_meta_http_name
+from aether.sdk.auth.keycloak.utils import _KC_TOKEN_SESSION as TOKEN_KEY
+from aether.sdk.auth.keycloak.views import KeycloakLogoutView
 
 user_objects = get_user_model().objects
 
@@ -72,7 +72,7 @@ class KeycloakBehindTests(UrlsTestCase):
         self.assertEqual(response.status_code, 403)
 
         # make realm check fail
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # check realm request
                             MockResponse(status_code=404),
@@ -101,7 +101,7 @@ class KeycloakBehindTests(UrlsTestCase):
         self.assertIsNone(session.get(settings.REALM_COOKIE))
 
         # make get `token` from keycloack fail
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # check realm request
                             MockResponse(status_code=204),
@@ -140,7 +140,7 @@ class KeycloakBehindTests(UrlsTestCase):
         self.assertIsNone(session.get(settings.REALM_COOKIE))
 
         # make get `userinfo` from keyclock fail (unlikely if `token` doesn't)
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # check realm request
                             MockResponse(status_code=204),
@@ -186,7 +186,7 @@ class KeycloakBehindTests(UrlsTestCase):
         self.assertIsNone(session.get(settings.REALM_COOKIE))
 
         # finally, logs in
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # check realm request
                             MockResponse(status_code=204),
@@ -239,7 +239,7 @@ class KeycloakBehindTests(UrlsTestCase):
             ])
 
         # visit any page that requires authentication
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # refresh token in keycloak
                             MockResponse(status_code=200, json_data=FAKE_TOKEN),
@@ -259,7 +259,7 @@ class KeycloakBehindTests(UrlsTestCase):
             )
 
         # visit any page that requires authentication and fails
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # refresh token in keycloak
                             MockResponse(status_code=400),
@@ -296,7 +296,7 @@ class KeycloakBehindTests(UrlsTestCase):
         self.assertIsNone(session.get(settings.REALM_COOKIE))
 
         # logs in again
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # check realm request
                             MockResponse(status_code=204),
@@ -322,7 +322,7 @@ class KeycloakBehindTests(UrlsTestCase):
             self.assertEqual(user.email, 'john.doe@example.com')
 
         # logs out
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request') as mock_req_7:
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request') as mock_req_7:
             self.client.logout()
 
             mock_req_7.assert_called_once_with(
@@ -339,7 +339,7 @@ class KeycloakBehindTests(UrlsTestCase):
         self.assertIsNone(session.get(settings.REALM_COOKIE))
 
         # logs out and visit any page again
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request') as mock_req_8:
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request') as mock_req_8:
             self.client.logout()
             self.assertEqual(self.client.get(SAMPLE_URL).status_code, 403)
 
@@ -354,7 +354,7 @@ class KeycloakBehindTests(UrlsTestCase):
 class KeycloakTests(UrlsTestCase):
 
     def test__urls__accounts__login(self):
-        from django_eha_sdk.auth.keycloak.views import KeycloakLoginView
+        from aether.sdk.auth.keycloak.views import KeycloakLoginView
 
         self.assertEqual(reverse('rest_framework:login'), '/accounts/login')
         self.assertEqual(resolve('/accounts/login').func.view_class,
@@ -384,7 +384,7 @@ class KeycloakTests(UrlsTestCase):
         self.assertEqual(response.status_code, 403)
 
         # make realm check fail
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # check realm request
                             MockResponse(status_code=404),
@@ -404,7 +404,7 @@ class KeycloakTests(UrlsTestCase):
             )
 
         # check that the login response is a redirection to keycloak server
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # check realm request
                             MockResponse(status_code=204),
@@ -438,7 +438,7 @@ class KeycloakTests(UrlsTestCase):
         self.assertEqual(session.get(settings.REALM_COOKIE), REALM)
 
         # make get `token` from keycloack fail
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # get token from keycloak
                             MockResponse(status_code=404),
@@ -466,7 +466,7 @@ class KeycloakTests(UrlsTestCase):
         self.assertIsNone(session.get(settings.REALM_COOKIE))
 
         # make get `userinfo` from keyclock fail (unlikely if `token` doesn't)
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # check realm request
                             MockResponse(status_code=204),
@@ -518,7 +518,7 @@ class KeycloakTests(UrlsTestCase):
             ])
 
         # finally, logs in
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # check realm request
                             MockResponse(status_code=204),
@@ -575,7 +575,7 @@ class KeycloakTests(UrlsTestCase):
             ])
 
         # visit any page that requires authentication
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # refresh token in keycloak
                             MockResponse(status_code=200, json_data=FAKE_TOKEN),
@@ -595,7 +595,7 @@ class KeycloakTests(UrlsTestCase):
             )
 
         # visit any page that requires authentication and fails
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # refresh token in keycloak
                             MockResponse(status_code=400),
@@ -632,7 +632,7 @@ class KeycloakTests(UrlsTestCase):
         self.assertIsNone(session.get(settings.REALM_COOKIE))
 
         # logs in again
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # check realm request
                             MockResponse(status_code=204),
@@ -658,7 +658,7 @@ class KeycloakTests(UrlsTestCase):
             self.assertEqual(user.email, 'john.doe@example.com')
 
         # logs out
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request') as mock_req_8:
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request') as mock_req_8:
             self.client.logout()
 
             mock_req_8.assert_called_once_with(
@@ -675,7 +675,7 @@ class KeycloakTests(UrlsTestCase):
         self.assertIsNone(session.get(settings.REALM_COOKIE))
 
         # logs out and visit any page again
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request') as mock_req_9:
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request') as mock_req_9:
             self.client.logout()
             self.assertEqual(self.client.get(SAMPLE_URL).status_code, 403)
 
@@ -741,7 +741,7 @@ class KeycloakGatewayTests(UrlsTestCase):
         response = self.client.get(SAMPLE_URL)
         self.assertEqual(response.status_code, 403)
 
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # get userinfo from keycloak
                             MockResponse(status_code=404),
@@ -756,7 +756,7 @@ class KeycloakGatewayTests(UrlsTestCase):
             )
 
         # visit any page with a valid token
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # get userinfo from keycloak
                             MockResponse(status_code=200, json_data={
@@ -789,7 +789,7 @@ class KeycloakGatewayTests(UrlsTestCase):
         self.assertEqual(session.get(settings.REALM_COOKIE), REALM)
 
         # visit same page with a valid token again
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request',
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request',
                         side_effect=[
                             # get userinfo from keycloak
                             MockResponse(status_code=200, json_data={
@@ -826,7 +826,7 @@ class KeycloakGatewayTests(UrlsTestCase):
         self.assertIsNone(session.get(settings.REALM_COOKIE))
 
         # visit a non gateway page with the token
-        with mock.patch('django_eha_sdk.auth.keycloak.utils.exec_request') as mock_req_4:
+        with mock.patch('aether.sdk.auth.keycloak.utils.exec_request') as mock_req_4:
             response = self.client.get(reverse('testmodel-list'), **{HTTP_HEADER: FAKE_TOKEN})
             self.assertEqual(response.status_code, 403)
             mock_req_4.assert_not_called()

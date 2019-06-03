@@ -25,13 +25,13 @@ from django.utils.translation import gettext_lazy as _
 from django.shortcuts import render
 from django.views import View
 
-from django_eha_sdk.auth.apptoken.models import AppToken
-from django_eha_sdk.health.utils import get_external_app_url
-from django_eha_sdk.multitenancy.utils import (
+from aether.sdk.auth.apptoken.models import AppToken
+from aether.sdk.health.utils import get_external_app_url
+from aether.sdk.multitenancy.utils import (
     add_current_realm_in_headers,
     get_path_realm,
 )
-from django_eha_sdk.utils import (
+from aether.sdk.utils import (
     request as exec_request,
     get_meta_http_name,
     normalize_meta_http_name,

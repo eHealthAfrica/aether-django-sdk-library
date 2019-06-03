@@ -18,7 +18,7 @@
 
 from rest_framework.permissions import IsAuthenticated
 
-from django_eha_sdk.multitenancy.utils import is_accessible_by_realm
+from aether.sdk.multitenancy.utils import is_accessible_by_realm
 
 
 class IsAccessibleByRealm(IsAuthenticated):

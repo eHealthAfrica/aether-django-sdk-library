@@ -18,7 +18,7 @@
 
 from django.contrib import admin
 
-from django_eha_sdk.multitenancy.models import MtInstance
+from aether.sdk.multitenancy.models import MtInstance
 
 
 class MtInstanceAdmin(admin.ModelAdmin):

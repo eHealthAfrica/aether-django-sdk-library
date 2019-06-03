@@ -32,8 +32,8 @@ class SettingsTest(TestCase):
         self.assertFalse(settings.SCHEDULER_REQUIRED)
         self.assertFalse(settings.WEBPACK_REQUIRED)
 
-        self.assertEqual(settings.APP_MODULE, 'django_eha_sdk.multitenancy.tests.fakeapp')
-        self.assertEqual(settings.ROOT_URLCONF, 'django_eha_sdk.tests.urls')
+        self.assertEqual(settings.APP_MODULE, 'aether.sdk.multitenancy.tests.fakeapp')
+        self.assertEqual(settings.ROOT_URLCONF, 'aether.sdk.tests.urls')
 
         self.assertNotEqual(settings.VERSION, '#.#.#')
         self.assertNotEqual(settings.REVISION, '---')

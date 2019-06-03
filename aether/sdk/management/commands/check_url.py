@@ -21,7 +21,7 @@
 from django.core.management.base import BaseCommand
 from django.utils.translation import gettext_lazy as _
 
-from django_eha_sdk.utils import request
+from aether.sdk.utils import request
 
 MESSAGE_ERROR = _('{url} is not responding.') + '\n'
 MESSAGE_OK = _('{url} is responding.') + '\n'

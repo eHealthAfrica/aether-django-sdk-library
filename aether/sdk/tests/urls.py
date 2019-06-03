@@ -23,10 +23,10 @@ These urls are only used for testing purposes.
 from django.conf import settings
 from django.conf.urls import include, url
 
-from django_eha_sdk.conf.urls import generate_urlpatterns
+from aether.sdk.conf.urls import generate_urlpatterns
 
 
 urlpatterns = generate_urlpatterns(
     token=settings.TEST_TOKEN_ACTIVE,
-    app=[url(r'^test', include('django_eha_sdk.multitenancy.tests.fakeapp.urls'))],
+    app=[url(r'^test', include('aether.sdk.multitenancy.tests.fakeapp.urls'))],
 )

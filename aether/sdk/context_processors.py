@@ -18,7 +18,7 @@
 
 
 from django.conf import settings
-from django_eha_sdk.multitenancy.utils import get_path_realm
+from aether.sdk.multitenancy.utils import get_path_realm
 
 
 def eha_context(request):

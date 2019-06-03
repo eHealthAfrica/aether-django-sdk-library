@@ -19,7 +19,7 @@
 from django.contrib.auth.middleware import AuthenticationMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
 
-from django_eha_sdk.auth.keycloak.utils import check_user_token, check_gateway_token
+from aether.sdk.auth.keycloak.utils import check_user_token, check_gateway_token
 
 
 class GatewayAuthenticationMiddleware(SessionMiddleware):

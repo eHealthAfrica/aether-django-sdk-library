@@ -16,4 +16,4 @@
 # specific language governing permissions and limitations
 # under the License.
 
-default_app_config = 'django_eha_sdk.auth.apptoken.apps.Config'
+default_app_config = 'aether.sdk.auth.apptoken.apps.Config'

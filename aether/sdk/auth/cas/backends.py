@@ -19,7 +19,7 @@
 from django_cas_ng.backends import CASBackend
 
 # to store the roles on successful callback
-from django_eha_sdk.auth.cas.callbacks import setup_callbacks
+from aether.sdk.auth.cas.callbacks import setup_callbacks
 
 setup_callbacks()
 

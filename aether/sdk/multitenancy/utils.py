@@ -22,7 +22,7 @@ from django.contrib.auth.models import Group
 from django.db.models import F
 from django.urls import resolve
 
-from django_eha_sdk.utils import find_in_request
+from aether.sdk.utils import find_in_request
 
 
 def get_multitenancy_model():

@@ -19,7 +19,7 @@
 from django.conf import settings
 from django.db import models
 
-from django_eha_sdk.multitenancy.models import MtModelAbstract, MtModelChildAbstract
+from aether.sdk.multitenancy.models import MtModelAbstract, MtModelChildAbstract
 
 
 class TestModel(MtModelAbstract):

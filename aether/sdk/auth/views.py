@@ -22,7 +22,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
-from django_eha_sdk.auth.utils import get_or_create_user
+from aether.sdk.auth.utils import get_or_create_user
 
 
 @api_view(['GET', 'POST'])

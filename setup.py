@@ -31,8 +31,8 @@ VERSION = os.environ.get('VERSION', '1.0.0')
 
 setup(
     version=VERSION,
-    name='django_eha_sdk',
-    description='A python library with helpful django tools',
+    name='aether.sdk',
+    description='A python library with helpful django tools for Aether',
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
     keywords=[
@@ -63,7 +63,6 @@ setup(
         'pygments',
         'python-json-logger',
         'requests',
-        'urllib3>=1.25',
         'uwsgi',
     ],
     extras_require={

@@ -22,9 +22,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from django_eha_sdk.unittest import MockResponse
+from aether.sdk.unittest import MockResponse
 
-from django_eha_sdk.auth.apptoken.models import AppToken
+from aether.sdk.auth.apptoken.models import AppToken
 
 
 get_or_create_token = AppToken.get_or_create_token
@@ -46,7 +46,7 @@ class ModelsTests(TestCase):
         self.assertFalse(app_token.validate_token())
         self.assertIsNone(get_or_create_token(self.user, 'other'))
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.request', return_value=MockResponse(404))
+    @mock.patch('aether.sdk.auth.apptoken.models.request', return_value=MockResponse(404))
     def test__get_or_create_user_app_token__obtain__none(self, mock_request):
         self.assertIsNone(get_or_create_token(self.user, 'app-1'))
         mock_request.assert_called_once_with(
@@ -56,7 +56,7 @@ class ModelsTests(TestCase):
             headers={'Authorization': 'Token ' + settings.EXTERNAL_APPS['app-1']['token']},
         )
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.request', return_value=MockResponse(404))
+    @mock.patch('aether.sdk.auth.apptoken.models.request', return_value=MockResponse(404))
     def test_get_or_create_user_app_token__not_valid_token__obtain__none(self, mock_request):
         AppToken.objects.create(user=self.user, app='app-1', token='not-valid')
 
@@ -78,7 +78,7 @@ class ModelsTests(TestCase):
             )
         ])
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.request', return_value=MockResponse(200))
+    @mock.patch('aether.sdk.auth.apptoken.models.request', return_value=MockResponse(200))
     def test_get_or_create_user_app_token__valid_token(self, mock_request):
         AppToken.objects.create(user=self.user, app='app-1', token='valid')
 
@@ -94,7 +94,7 @@ class ModelsTests(TestCase):
             headers={'Authorization': 'Token valid'},
         )
 
-    @mock.patch('django_eha_sdk.auth.apptoken.models.request',
+    @mock.patch('aether.sdk.auth.apptoken.models.request',
                 side_effect=[
                     # validate token
                     MockResponse(404),

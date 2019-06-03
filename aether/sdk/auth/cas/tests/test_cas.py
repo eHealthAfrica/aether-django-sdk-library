@@ -23,7 +23,7 @@ from django.contrib.auth import get_user_model
 from django.test import override_settings
 from django.urls import reverse, resolve
 
-from django_eha_sdk.unittest import UrlsTestCase
+from aether.sdk.unittest import UrlsTestCase
 
 user_objects = get_user_model().objects
 
@@ -39,7 +39,7 @@ class MockCASClient(object):
     INSTALLED_APPS=[
         *settings.INSTALLED_APPS,
         'django_cas_ng',
-        'django_eha_sdk.auth.cas',
+        'aether.sdk.auth.cas',
     ],
 )
 class CasTests(UrlsTestCase):

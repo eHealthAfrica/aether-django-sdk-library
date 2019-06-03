@@ -19,18 +19,18 @@
 from django.contrib.auth import get_user_model
 from rest_framework.serializers import ModelSerializer
 
-from django_eha_sdk.drf.serializers import (
+from aether.sdk.drf.serializers import (
     FilteredHyperlinkedRelatedField,
     HyperlinkedIdentityField,
     HyperlinkedRelatedField,
 )
-from django_eha_sdk.multitenancy.serializers import (
+from aether.sdk.multitenancy.serializers import (
     MtModelSerializer,
     MtPrimaryKeyRelatedField,
     MtUserRelatedField,
 )
 
-from django_eha_sdk.multitenancy.tests.fakeapp.models import (
+from aether.sdk.multitenancy.tests.fakeapp.models import (
     TestModel,
     TestChildModel,
 )

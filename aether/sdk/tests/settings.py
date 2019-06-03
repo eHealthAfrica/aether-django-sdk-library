@@ -20,13 +20,13 @@
 These settings are only used for testing purposes.
 '''
 
-from django_eha_sdk.conf.settings import *  # noqa
+from aether.sdk.conf.settings import *  # noqa
 
 
 # to check URLs builder
 # ------------------------------------------------------------------------------
 TEST_TOKEN_ACTIVE = True
-ROOT_URLCONF = 'django_eha_sdk.tests.urls'
+ROOT_URLCONF = 'aether.sdk.tests.urls'
 
 
 # Database Configuration
