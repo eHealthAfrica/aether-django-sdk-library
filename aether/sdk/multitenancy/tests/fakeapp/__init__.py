@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-#
 # Copyright (C) 2019 by eHealth Africa : http://www.eHealthAfrica.org
 #
 # See the NOTICE file distributed with this work for additional information
@@ -17,17 +15,15 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-#
-set -Eeuo pipefail
 
-# ----------------------------------------
-# install requirements in virtual env
-# ----------------------------------------
-pip3 install -q --upgrade virtualenv
-rm -rf ./venv
-virtualenv -p python3 ./venv
+'''
+This app is only used for testing purposes.
+'''
 
-source ./venv/bin/activate
+from django.apps import AppConfig
 
-pip3 install -q --upgrade pip
-pip3 install -q --upgrade -r requirements.txt
+default_app_config = 'aether.sdk.multitenancy.tests.fakeapp.Config'
+
+
+class Config(AppConfig):
+    name = 'aether.sdk.multitenancy.tests.fakeapp'

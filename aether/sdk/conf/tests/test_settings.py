@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-#
 # Copyright (C) 2019 by eHealth Africa : http://www.eHealthAfrica.org
 #
 # See the NOTICE file distributed with this work for additional information
@@ -17,17 +15,25 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-#
-set -Eeuo pipefail
 
-# ----------------------------------------
-# install requirements in virtual env
-# ----------------------------------------
-pip3 install -q --upgrade virtualenv
-rm -rf ./venv
-virtualenv -p python3 ./venv
+from django.conf import settings
+from django.test import TestCase
 
-source ./venv/bin/activate
 
-pip3 install -q --upgrade pip
-pip3 install -q --upgrade -r requirements.txt
+class SettingsTest(TestCase):
+
+    def test_default_variables(self):
+
+        self.assertTrue(settings.MULTITENANCY)
+        self.assertTrue(settings.TESTING)
+        self.assertFalse(settings.DEBUG)
+
+        self.assertFalse(settings.STORAGE_REQUIRED)
+        self.assertFalse(settings.SCHEDULER_REQUIRED)
+        self.assertFalse(settings.WEBPACK_REQUIRED)
+
+        self.assertEqual(settings.APP_MODULE, 'aether.sdk.multitenancy.tests.fakeapp')
+        self.assertEqual(settings.ROOT_URLCONF, 'aether.sdk.tests.urls')
+
+        self.assertNotEqual(settings.VERSION, '#.#.#')
+        self.assertNotEqual(settings.REVISION, '---')

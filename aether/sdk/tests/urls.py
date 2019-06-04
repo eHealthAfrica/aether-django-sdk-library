@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-#
 # Copyright (C) 2019 by eHealth Africa : http://www.eHealthAfrica.org
 #
 # See the NOTICE file distributed with this work for additional information
@@ -17,17 +15,18 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-#
-set -Eeuo pipefail
 
-# ----------------------------------------
-# install requirements in virtual env
-# ----------------------------------------
-pip3 install -q --upgrade virtualenv
-rm -rf ./venv
-virtualenv -p python3 ./venv
+'''
+These urls are only used for testing purposes.
+'''
 
-source ./venv/bin/activate
+from django.conf import settings
+from django.conf.urls import include, url
 
-pip3 install -q --upgrade pip
-pip3 install -q --upgrade -r requirements.txt
+from aether.sdk.conf.urls import generate_urlpatterns
+
+
+urlpatterns = generate_urlpatterns(
+    token=settings.TEST_TOKEN_ACTIVE,
+    app=[url(r'^test', include('aether.sdk.multitenancy.tests.fakeapp.urls'))],
+)

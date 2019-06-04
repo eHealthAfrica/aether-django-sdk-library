@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-#
 # Copyright (C) 2019 by eHealth Africa : http://www.eHealthAfrica.org
 #
 # See the NOTICE file distributed with this work for additional information
@@ -17,17 +15,32 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-#
-set -Eeuo pipefail
 
-# ----------------------------------------
-# install requirements in virtual env
-# ----------------------------------------
-pip3 install -q --upgrade virtualenv
-rm -rf ./venv
-virtualenv -p python3 ./venv
+'''
+These settings are only used for testing purposes.
+'''
 
-source ./venv/bin/activate
+from aether.sdk.conf.settings_aether import *  # noqa
 
-pip3 install -q --upgrade pip
-pip3 install -q --upgrade -r requirements.txt
+
+# to check URLs builder
+# ------------------------------------------------------------------------------
+TEST_TOKEN_ACTIVE = True
+ROOT_URLCONF = 'aether.sdk.tests.urls'
+
+
+# Database Configuration
+# ------------------------------------------------------------------------------
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    },
+}
+
+
+# Multitenancy Configuration
+# ------------------------------------------------------------------------------
+
+MULTITENANCY_MODEL = 'fakeapp.TestModel'

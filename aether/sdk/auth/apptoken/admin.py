@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-#
 # Copyright (C) 2019 by eHealth Africa : http://www.eHealthAfrica.org
 #
 # See the NOTICE file distributed with this work for additional information
@@ -17,17 +15,17 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-#
-set -Eeuo pipefail
 
-# ----------------------------------------
-# install requirements in virtual env
-# ----------------------------------------
-pip3 install -q --upgrade virtualenv
-rm -rf ./venv
-virtualenv -p python3 ./venv
+from django.contrib import admin
 
-source ./venv/bin/activate
+from aether.sdk.auth.apptoken.models import AppToken
 
-pip3 install -q --upgrade pip
-pip3 install -q --upgrade -r requirements.txt
+
+class AppTokenAdmin(admin.ModelAdmin):
+
+    list_display = ('user', 'app', 'token',)
+    search_fields = ('user', 'app',)
+    ordering = list_display
+
+
+admin.site.register(AppToken, AppTokenAdmin)

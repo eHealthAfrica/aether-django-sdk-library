@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-#
 # Copyright (C) 2019 by eHealth Africa : http://www.eHealthAfrica.org
 #
 # See the NOTICE file distributed with this work for additional information
@@ -17,17 +15,16 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-#
-set -Eeuo pipefail
 
-# ----------------------------------------
-# install requirements in virtual env
-# ----------------------------------------
-pip3 install -q --upgrade virtualenv
-rm -rf ./venv
-virtualenv -p python3 ./venv
+from rest_framework.permissions import IsAuthenticated
 
-source ./venv/bin/activate
+from aether.sdk.multitenancy.utils import is_accessible_by_realm
 
-pip3 install -q --upgrade pip
-pip3 install -q --upgrade -r requirements.txt
+
+class IsAccessibleByRealm(IsAuthenticated):
+    '''
+    Object-level permission to allow access to objects linked to the current realm.
+    '''
+
+    def has_object_permission(self, request, view, obj):
+        return is_accessible_by_realm(request, obj)

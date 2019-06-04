@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-#
 # Copyright (C) 2019 by eHealth Africa : http://www.eHealthAfrica.org
 #
 # See the NOTICE file distributed with this work for additional information
@@ -17,17 +15,24 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-#
-set -Eeuo pipefail
 
-# ----------------------------------------
-# install requirements in virtual env
-# ----------------------------------------
-pip3 install -q --upgrade virtualenv
-rm -rf ./venv
-virtualenv -p python3 ./venv
+import os
 
-source ./venv/bin/activate
+from aether.sdk.conf.settings import *  # noqa
 
-pip3 install -q --upgrade pip
-pip3 install -q --upgrade -r requirements.txt
+
+# Common Aether Configuration
+# ------------------------------------------------------------------------------
+
+APP_NAME = os.environ.get('APP_NAME', 'aether')
+APP_LINK = os.environ.get('APP_LINK', 'http://aether.ehealthafrica.org')
+
+APP_NAME_HTML = '<b>ae</b>ther'
+APP_FAVICON = 'aether/images/aether.png'
+APP_LOGO = 'aether/images/aether-white.png'
+
+APP_EXTRA_STYLE = 'aether/css/styles.css'
+APP_EXTRA_META = (
+    'A free, open source development platform'
+    ' for data curation, exchange, and publication'
+)
