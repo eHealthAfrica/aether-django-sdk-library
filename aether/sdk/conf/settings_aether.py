@@ -17,7 +17,6 @@
 # under the License.
 
 import os
-from django.utils.translation import gettext_lazy as _
 
 from aether.sdk.conf.settings import *  # noqa
 
@@ -33,7 +32,7 @@ APP_FAVICON = 'aether/images/aether.png'
 APP_LOGO = 'aether/images/aether-white.png'
 
 APP_EXTRA_STYLE = 'aether/css/styles.css'
-APP_EXTRA_META = _(
+APP_EXTRA_META = (
     'A free, open source development platform'
     ' for data curation, exchange, and publication'
 )

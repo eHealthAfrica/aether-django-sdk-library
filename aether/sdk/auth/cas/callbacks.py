@@ -20,6 +20,8 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.utils.translation import gettext_lazy as _
+
 from django_cas_ng.signals import cas_user_authenticated
 
 from aether.sdk.auth.cas.models import UserRole
@@ -40,7 +42,7 @@ def set_user_roles(user, roles):
             group = Group.objects.get(name__iexact=role_name)
             user_role.group = group
         except Group.DoesNotExist:
-            logger.warning(f'local Group with name "{role_name}" does not exist')
+            logger.warning(_('local Group with name "{}" does not exist').format(role_name))
 
         user_role.save()
 

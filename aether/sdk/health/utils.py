@@ -34,7 +34,7 @@ MSG_EXTERNAL_APP_ERR = _('"{app}" app is not registered as external app.')
 MSG_EXTERNAL_APP_UP = _('"{app}" app server ({url}) is up and responding!')
 MSG_EXTERNAL_APP_TOKEN_ERR = _('"{app}" app token is not valid for app server ({url}).')
 MSG_EXTERNAL_APP_SERVER_ERR = _('"{app}" app server ({url}) is not available.')
-MSG_EXTERNAL_APP_TOKEN_OK = '"{app}" app token is valid for app server ({url})!'
+MSG_EXTERNAL_APP_TOKEN_OK = _('"{app}" app token is valid for app server ({url})!')
 
 
 def check_db_connection():

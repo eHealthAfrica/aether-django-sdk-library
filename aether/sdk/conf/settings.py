@@ -459,7 +459,7 @@ if STORAGE_REQUIRED:
         )
         raise RuntimeError(msg.format(DJANGO_STORAGE_BACKEND))
     else:
-        logger.info('Using storage backend "{}"'.format(DJANGO_STORAGE_BACKEND))
+        logger.info(f'Using storage backend "{DJANGO_STORAGE_BACKEND}"')
 
     if DJANGO_STORAGE_BACKEND == 'minio':
         INSTALLED_APPS += ['minio_storage', ]
@@ -513,7 +513,7 @@ if WEBPACK_REQUIRED:
         'WEBPACK_STATS_FILE',
         os.path.join(STATIC_ROOT, 'webpack-stats.json')
     )
-    logger.debug(f'Assets served by file:  {WEBPACK_STATS_FILE}')
+    logger.debug('Assets served by file:  {WEBPACK_STATS_FILE}')
 
     # Javascript/CSS Files:
     # https://github.com/owais/django-webpack-loader#default-configuration
@@ -591,9 +591,7 @@ if not TESTING and DEBUG:
 MIDDLEWARE = [
     # Make sure this stays as the first middleware
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
-
     *MIDDLEWARE,
-
     # Make sure this stays as the last middleware
     'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]

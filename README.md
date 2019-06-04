@@ -1,6 +1,6 @@
-# Django eHealth SDK
+# Aether Django SDK Library
 
-This library contains the most common features used by the different eHealth django apps.
+This library contains the most common features used by the different Aether django modules.
 
 ## Table of contents
 
@@ -146,11 +146,15 @@ Add this snippet in the `settings.py` file to have the build the django app
 settings based on the environment variables.
 
 ```python
+# if it's an aether module
+from aether.sdk.conf.settings_aether import *  # noqa
+
+# if it's an external aether product
 from aether.sdk.conf.settings import *  # noqa
 
 # continue with the app specific settings
 # and re-import the settings variables you need to reuse
-# from aether.sdk.conf.settings import WHATEVER YOU NEED TO...
+# from aether.sdk.conf.settings[_aether] import WHATEVER YOU NEED TO...
 ```
 
 Add this snippet in the `urls.py` file to generate default `urlpatterns`

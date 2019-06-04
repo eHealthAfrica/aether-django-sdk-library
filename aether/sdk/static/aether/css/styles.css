@@ -26,13 +26,9 @@
   -webkit-font-smoothing: antialiased;
   background: #50aef3;
   background-image: linear-gradient(to right, #50aef3, #7175dd);
-  color: #fff;
-  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
-  font-size: 15px;
-  line-height: 1.3rem;
 }
 
-.eha-bg:before {
+.eha-bg::before {
   content: '';
   display: block;
   position: fixed;
@@ -47,7 +43,7 @@
   z-index: -1;
 }
 
-.eha-bg:after {
+.eha-bg::after {
   content: '';
   display: block;
   position: fixed;
