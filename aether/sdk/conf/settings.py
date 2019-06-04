@@ -257,10 +257,7 @@ if SENTRY_DSN:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
 
-    sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        integrations=[DjangoIntegration(), ]
-    )
+    sentry_sdk.init(integrations=[DjangoIntegration(), ])
 
 else:
     logger.info('No SENTRY enabled!')
@@ -359,9 +356,15 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Authentication Server Configuration
 # ------------------------------------------------------------------------------
+# First check Keycloak option
+# Second if not Keycloak then check CAS option
 
 CAS_SERVER_URL = os.environ.get('CAS_SERVER_URL')
-if CAS_SERVER_URL:
+KEYCLOAK_SERVER_URL = os.environ.get('KEYCLOAK_SERVER_URL')
+GATEWAY_ENABLED = False
+
+
+if not KEYCLOAK_SERVER_URL and CAS_SERVER_URL:
     INSTALLED_APPS += [
         'django_cas_ng',
         'aether.sdk.auth.cas',
@@ -377,8 +380,6 @@ else:
     logger.info('No CAS enabled!')
 
 
-GATEWAY_ENABLED = False
-KEYCLOAK_SERVER_URL = os.environ.get('KEYCLOAK_SERVER_URL')
 if KEYCLOAK_SERVER_URL:
     KEYCLOAK_CLIENT_ID = os.environ.get('KEYCLOAK_CLIENT_ID', 'eha')
     KEYCLOAK_BEHIND_SCENES = bool(os.environ.get('KEYCLOAK_BEHIND_SCENES'))
@@ -421,6 +422,7 @@ if KEYCLOAK_SERVER_URL:
 
 else:
     logger.info('No Keycloak enabled!')
+
 
 if GATEWAY_ENABLED:
     CHECK_TOKEN_URL = GATEWAY_PUBLIC_PATH + _CHECK_TOKEN_URL
