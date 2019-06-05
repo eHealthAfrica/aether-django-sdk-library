@@ -24,27 +24,6 @@ from django.urls import include, path
 def generate_urlpatterns(token=False, app=[]):
     '''
     Generates the most common url patterns in the apps based on settings.
-
-    Default URLs included:
-
-        - the `/health` URL. Always responds with `200` status and an empty content.
-        - the `/check-db` URL. Responds with `500` status if the database is not available.
-        - the `/check-app` URL. Responds with current app version and more.
-        - the `/check-app/{name}` URL. Responds with `500` status if the external
-          app is not reachable with the url and token indicated in the settings.
-        - the `/admin` section URLs.
-        - the `/accounts` URLs, checks if the REST Framework ones, using the templates
-          indicated in `LOGIN_TEMPLATE` and `LOGGED_OUT_TEMPLATE` environment variables,
-          or the CAS ones.
-        - the `debug toolbar` URLs only in DEBUG mode.
-
-    Based on the arguments:
-
-        - `token`: indicates if the app should be able to create and return
-                   user tokens via POST request and activates the URL.
-                   The url endpoint is indicated in the `TOKEN_URL` setting.
-                   Defaults to `/token`.
-
     '''
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
