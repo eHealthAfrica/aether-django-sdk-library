@@ -45,7 +45,7 @@ setup(
         'multitenancy',
     ],
 
-    url='https://github.com/eHealthAfrica/django-eha-sdk/',
+    url='https://github.com/eHealthAfrica/aether-django-sdk-library/',
     author='eHealth Africa',
     author_email='info@ehealthafrica.org',
     license='Apache2 License',
