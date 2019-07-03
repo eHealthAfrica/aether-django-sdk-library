@@ -198,11 +198,28 @@ class UrlsNoGatewayUrlTest(UrlsTestCase):
                           kwargs={'realm': 'my-realm'})
 
 
-@override_settings(ADMIN_URL='private')
+@override_settings(ADMIN_URL='private', PROFILING_ENABLED=False)
 class AdminUrlsUrlTest(UrlsTestCase):
 
     def test__urls(self):
         self.assertEqual(reverse('admin:index'), '/private/')
+        self.assertIsNotNone(resolve('/private/~prometheus/metrics'))
+        self.assertIsNotNone(resolve('/private/~uwsgi/'))
+        self.assertRaises(exceptions.Resolver404, resolve, '/private/~silk/')
+
+
+@override_settings(
+    ADMIN_URL='admin-with-profiling',
+    PROFILING_ENABLED=True,
+    INSTALLED_APPS=[*settings.INSTALLED_APPS, 'silk'],
+)
+class AdminUrlsProfilingUrlTest(UrlsTestCase):
+
+    def test__urls(self):
+        self.assertEqual(reverse('admin:index'), '/admin-with-profiling/')
+        self.assertIsNotNone(resolve('/admin-with-profiling/~prometheus/metrics'))
+        self.assertIsNotNone(resolve('/admin-with-profiling/~uwsgi/'))
+        self.assertIsNotNone(resolve('/admin-with-profiling/~silk/'))
 
 
 @override_settings(AUTH_URL='secure')
@@ -210,3 +227,21 @@ class AuthUrlsUrlTest(UrlsTestCase):
 
     def test__urls(self):
         self.assertEqual(reverse('rest_framework:login'), '/secure/login')
+
+
+@override_settings(
+    DEBUG=True,
+    DEBUG_TOOLBAR_URL='__debug__',
+    INSTALLED_APPS=[*settings.INSTALLED_APPS, 'debug_toolbar'],
+)
+class DebugUrlsUrlTest(UrlsTestCase):
+
+    def test__urls(self):
+        self.assertIsNotNone(resolve('/__debug__/render_panel/'))
+
+
+@override_settings(DEBUG=False, DEBUG_TOOLBAR_URL='__debug__')
+class NoDebugUrlsUrlTest(UrlsTestCase):
+
+    def test__urls(self):
+        self.assertRaises(exceptions.Resolver404, resolve, '/__debug__/render_panel/')

@@ -589,6 +589,33 @@ if not TESTING and DEBUG:
     ]
 
 
+# Profiling Configuration
+# ------------------------------------------------------------------------------
+
+PROFILING_ENABLED = bool(os.environ.get('PROFILING_ENABLED'))
+if PROFILING_ENABLED:
+    INSTALLED_APPS += ['silk', ]
+    MIDDLEWARE = ['silk.middleware.SilkyMiddleware', *MIDDLEWARE, ]
+
+    SILKY_AUTHENTICATION = True  # User must login
+    SILKY_AUTHORISATION = True   # User must have permissions (is_staff)
+
+    SILKY_PYTHON_PROFILER = bool(os.environ.get('SILKY_PYTHON_PROFILER'))
+    SILKY_PYTHON_PROFILER_BINARY = bool(os.environ.get('SILKY_PYTHON_PROFILER_BINARY'))
+    SILKY_PYTHON_PROFILER_RESULT_PATH = os.environ.get('SILKY_PYTHON_PROFILER_RESULT_PATH', '/tmp/')
+
+    SILKY_META = bool(os.environ.get('SILKY_META'))
+
+    SILKY_MAX_REQUEST_BODY_SIZE = int(os.environ.get('SILKY_MAX_REQUEST_BODY_SIZE', -1))
+    SILKY_MAX_RESPONSE_BODY_SIZE = int(os.environ.get('SILKY_MAX_RESPONSE_BODY_SIZE', -1))
+    SILKY_INTERCEPT_PERCENT = int(os.environ.get('SILKY_INTERCEPT_PERCENT', 100))
+
+    SILKY_MAX_RECORDED_REQUESTS = int(os.environ.get('SILKY_MAX_RECORDED_REQUESTS', 10000))
+    SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = int(
+        os.environ.get('SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT', 10)
+    )
+
+
 # Prometheus Configuration
 # ------------------------------------------------------------------------------
 

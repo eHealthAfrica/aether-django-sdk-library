@@ -8,8 +8,10 @@
 django
 django-cas-ng
 django-cors-headers
+django-debug-toolbar
 django-minio-storage
 django-prometheus
+django-silk
 django-uwsgi
 djangorestframework
 psycopg2-binary

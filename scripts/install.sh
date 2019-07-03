@@ -23,7 +23,7 @@ set -Eeuo pipefail
 # ----------------------------------------
 # install requirements in virtual env
 # ----------------------------------------
-pip3 install -q --upgrade virtualenv
+pip3 install -q --upgrade virtualenv --user
 rm -rf ./venv
 virtualenv -p python3 ./venv
 

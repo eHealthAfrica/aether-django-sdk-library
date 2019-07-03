@@ -186,19 +186,24 @@ def _get_auth_urls():
 def _get_admin_urls():
     admin_urls = [
         # monitoring
-        path(route='prometheus/', view=include('django_prometheus.urls')),
+        path(route='~prometheus/', view=include('django_prometheus.urls')),
         # uWSGI monitoring
-        path(route='uwsgi/', view=include('django_uwsgi.urls')),
+        path(route='~uwsgi/', view=include('django_uwsgi.urls')),
         # django admin section
         path(route='', view=admin.site.urls),
     ]
+
+    if settings.PROFILING_ENABLED:
+        admin_urls += [
+            path(route='~silk/', view=include('silk.urls', namespace='silk')),
+        ]
 
     return [
         path(route=f'{settings.ADMIN_URL}/', view=include(admin_urls)),
     ]
 
 
-def _get_debug_urls():  # pragma: no cover
+def _get_debug_urls():
     if settings.DEBUG and 'debug_toolbar' in settings.INSTALLED_APPS:
         import debug_toolbar
 
