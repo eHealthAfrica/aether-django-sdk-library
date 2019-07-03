@@ -26,7 +26,7 @@ Python libraries:
 - [django-debug-toolbar](https://github.com/jazzband/django-debug-toolbar)
   A configurable set of panels that display various debug information about the current request/response.
 - [django-prometheus](https://github.com/korfuri/django-prometheus)
-  to monitor the application with Prometheus.io.
+  To monitor the application with Prometheus.io.
 - [django-uwsgi](https://github.com/unbit/django-uwsgi)
   Django related examples/tricks/modules for uWSGI.
 - [djangorestframework](https://www.django-rest-framework.org/)
@@ -316,6 +316,7 @@ More information in https://docs.djangoproject.com/en/2.2/ref/settings/#database
   - `DB_NAME`: Postgres database name (**mandatory**).
   - `PGUSER`: Postgres user (**mandatory**).
   - `PGPASSWORD`: Postgres user password (**mandatory**).
+  - `DB_CONN_MAX_AGE`: The lifetime of a database connection, in seconds.
 
 ##### Endpoints
 

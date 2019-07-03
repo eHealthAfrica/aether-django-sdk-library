@@ -158,6 +158,8 @@ DATABASES = {
         'HOST': get_required('PGHOST'),
         'PORT': get_required('PGPORT'),
         'TESTING': {'CHARSET': 'UTF8'},
+        # the default value is 0 (non persistent connections)
+        'CONN_MAX_AGE': int(os.environ.get('DB_CONN_MAX_AGE', 600))
     },
 }
 
