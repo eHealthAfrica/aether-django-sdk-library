@@ -22,6 +22,7 @@ import requests
 from time import sleep
 
 from django.conf import settings
+from django.http import HttpResponse
 from django.utils.safestring import mark_safe
 
 from pygments import highlight
@@ -135,3 +136,23 @@ def get_all_docs(url, **kwargs):
         data = _get_data(data['next'])
         for x in data['results']:
             yield x
+
+
+def get_file_content(file_name, file_url):
+    '''
+    Gets file content usually from File Storage URL and returns it back.
+    '''
+
+    response = request(method='get', url=file_url)
+
+    http_response = HttpResponse(
+        content=response,
+        status=response.status_code,
+        content_type=response.headers.get('Content-Type'),
+    )
+
+    http_response['Content-Type'] = response.headers.get('Content-Type')
+    http_response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+    http_response['Access-Control-Expose-Headers'] = 'Content-Disposition'
+
+    return http_response
