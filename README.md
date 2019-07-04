@@ -45,7 +45,7 @@ Python libraries:
 - [requests](https://2.python-requests.org//en/master/)
   HTTP for Humans.
 - [uwsgi](https://uwsgi-docs.readthedocs.io/en/latest/)
-  The uWSGI server.
+  The Python Web Server Gateway Interface.
 
 Extra dependencies (based on settings):
 
