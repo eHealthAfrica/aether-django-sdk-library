@@ -33,30 +33,34 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='AppToken',
             fields=[
-                ('id', models.AutoField(auto_created=True,
-                                        primary_key=True,
-                                        serialize=False,
-                                        verbose_name='ID',
-                                        )
-                ),
-                ('app', models.TextField(help_text='This value corresponds to any of the ``settings.EXTERNAL_APPS`` values.',
-                                         verbose_name='application',
-                                         )
-                ),
-                ('token', models.CharField(blank=True,
-                                           editable=False,
-                                           help_text='This token corresponds to an authorization token linked to this user.',
-                                           max_length=40,
-                                           null=True,
-                                           verbose_name='token',
-                                           )
-                ),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                           related_name='app_tokens',
-                                           to=settings.AUTH_USER_MODEL,
-                                           verbose_name='user',
-                                           )
-                ),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID',
+                    )),
+                ('app', models.TextField(
+                    help_text=(
+                        'This value corresponds to any of the ``settings.EXTERNAL_APPS`` values.'
+                    ),
+                    verbose_name='application',
+                    )),
+                ('token', models.CharField(
+                    blank=True,
+                    editable=False,
+                    help_text=(
+                        'This token corresponds to an authorization token linked to this user.'
+                    ),
+                    max_length=40,
+                    null=True,
+                    verbose_name='token',
+                    )),
+                ('user', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='app_tokens',
+                    to=settings.AUTH_USER_MODEL,
+                    verbose_name='user',
+                    )),
             ],
             options={
                 'verbose_name': 'application token',

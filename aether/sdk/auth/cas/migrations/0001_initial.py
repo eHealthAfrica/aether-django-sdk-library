@@ -34,27 +34,27 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserRole',
             fields=[
-                ('id', models.AutoField(auto_created=True,
-                                        primary_key=True,
-                                        serialize=False,
-                                        verbose_name='ID',
-                                        )
-                ),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID',
+                    )),
                 ('name', models.TextField(verbose_name='name')),
-                ('group', models.ForeignKey(blank=True,
-                                            null=True,
-                                            on_delete=django.db.models.deletion.CASCADE,
-                                            to='auth.Group',
-                                            verbose_name='group',
-                                            )
-                ),
-                ('user', models.ForeignKey(blank=True,
-                                           null=True,
-                                           on_delete=django.db.models.deletion.CASCADE,
-                                           to=settings.AUTH_USER_MODEL,
-                                           verbose_name='user',
-                                           )
-                ),
+                ('group', models.ForeignKey(
+                    blank=True,
+                    null=True,
+                    on_delete=django.db.models.deletion.CASCADE,
+                    to='auth.Group',
+                    verbose_name='group',
+                    )),
+                ('user', models.ForeignKey(
+                    blank=True,
+                    null=True,
+                    on_delete=django.db.models.deletion.CASCADE,
+                    to=settings.AUTH_USER_MODEL,
+                    verbose_name='user',
+                    )),
             ],
             options={
                 'verbose_name': 'user role',
