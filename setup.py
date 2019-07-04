@@ -56,6 +56,7 @@ setup(
         'django-cors-headers',
         'django-debug-toolbar',
         'django-prometheus',
+        'django-silk',
         'django-uwsgi',
         'djangorestframework>=3.8',
         'drf-dynamic-fields',

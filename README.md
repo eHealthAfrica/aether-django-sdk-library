@@ -26,7 +26,9 @@ Python libraries:
 - [django-debug-toolbar](https://github.com/jazzband/django-debug-toolbar)
   A configurable set of panels that display various debug information about the current request/response.
 - [django-prometheus](https://github.com/korfuri/django-prometheus)
-  to monitor the application with Prometheus.io.
+  To monitor the application with Prometheus.io.
+- [django-silk](https://github.com/jazzband/django-silk)
+  A live profiling and inspection tool for the Django framework.
 - [django-uwsgi](https://github.com/unbit/django-uwsgi)
   Django related examples/tricks/modules for uWSGI.
 - [djangorestframework](https://www.django-rest-framework.org/)
@@ -43,7 +45,7 @@ Python libraries:
 - [requests](https://2.python-requests.org//en/master/)
   HTTP for Humans.
 - [uwsgi](https://uwsgi-docs.readthedocs.io/en/latest/)
-  The uWSGI server.
+  The Python Web Server Gateway Interface.
 
 Extra dependencies (based on settings):
 
@@ -186,6 +188,9 @@ Default URLs included:
       Uses `aether.sdk.health.views.check_app` view.
 
   - the `/admin` section URLs (`ADMIN_URL` setting).
+  - the `/admin/~prometheus/metrics` URL. Displays the raw monitoring data.
+  - the `/admin/~uwsgi/` URL. If uWSGI is running displays the server uWSGI settings.
+
   - the `/accounts` URLs (`AUTH_URL` setting), checks if the REST Framework ones,
     using the templates indicated in `LOGIN_TEMPLATE` and `LOGGED_OUT_TEMPLATE`
     settings, or the Keycloak/CAS ones.
@@ -207,6 +212,10 @@ Based on the application settings:
 - If `DEBUG` is enabled:
 
   - the `debug toolbar` URLs.
+
+- If `PROFILING_ENABLED` is set:
+
+  - the `/admin/~silk/` URL. Displays the profiling data.
 
 - If `EXTERNAL_APPS` is set and valid:
 
@@ -316,6 +325,7 @@ More information in https://docs.djangoproject.com/en/2.2/ref/settings/#database
   - `DB_NAME`: Postgres database name (**mandatory**).
   - `PGUSER`: Postgres user (**mandatory**).
   - `PGPASSWORD`: Postgres user password (**mandatory**).
+  - `DB_CONN_MAX_AGE`: The lifetime of a database connection, in seconds.
 
 ##### Endpoints
 
@@ -337,6 +347,30 @@ More information in https://docs.djangoproject.com/en/2.2/ref/settings/#database
   to get the realm and redirect to keycloak login page.
 - `KEYCLOAK_BEHIND_TEMPLATE`: `eha/login_keycloak.html`. Template used in the
   login page when keycloak is enabled behind the scenes.
+
+##### Profiling
+
+- `PROFILING_ENABLED`: Used to indicate if the profiling tool (Silk) is enabled.
+  Is `false` if unset or set to empty string, anything else is considered `true`.
+- `SILKY_PYTHON_PROFILER`. Used to indicate if uses Python's built-in cProfile profiler.
+  Is `false` if unset or set to empty string, anything else is considered `true`.
+- `SILKY_PYTHON_PROFILER_BINARY`. Used to indicate if generates a binary `.prof` file.
+  Is `false` if unset or set to empty string, anything else is considered `true`.
+- `SILKY_PYTHON_PROFILER_RESULT_PATH`: `/tmp/`. Local directory where the `*.prof`
+  files are stored.
+- `SILKY_META`. To see what effect Silk is having on the request/response time.
+  Is `false` if unset or set to empty string, anything else is considered `true`.
+- `SILKY_MAX_REQUEST_BODY_SIZE`: `-1`. Silk saves the request body if its size (in bytes)
+  is less than the indicated value. Any value less than `0` means no limit.
+- `SILKY_MAX_RESPONSE_BODY_SIZE`: `-1`. Silk saves the response body if its size (in bytes)
+  is less than the indicated value. Any value less than `0` means no limit.
+- `SILKY_INTERCEPT_PERCENT`: `100`. Indicates the percentage of requests that are recorded.
+- `SILKY_MAX_RECORDED_REQUESTS`: `10000`. The number of request/responses stored.
+- `SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT`: `10`.
+
+The `/admin/~silk/` URL displays the profiling data (accessible to admin users only).
+
+See more in https://github.com/jazzband/django-silk
 
 *[Return to TOC](#table-of-contents)*
 
