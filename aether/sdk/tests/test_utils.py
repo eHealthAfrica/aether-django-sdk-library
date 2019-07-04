@@ -141,14 +141,31 @@ class UtilsTests(TestCase):
         mock_response.headers = {'Content-Type': 'testing'}
 
         with mock.patch('aether.sdk.utils.request', return_value=mock_response) as mock_get:
-            response = utils.get_file_content('sample.txt', 'http://any-server/sample.txt')
+            response = utils.get_file_content('sample.txt', 'http://any-server/sample.txt', False)
+            mock_get.assert_called_once_with(url='http://any-server/sample.txt', method='get')
 
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.content, b'abc')
             self.assertEqual(response['Content-Type'], 'testing')
+
+            self.assertNotIn('Content-Disposition', response)
+            self.assertNotIn('Access-Control-Expose-Headers', response)
+
+    def test__get_file_content_as_attachment(self):
+        mock_response = Response()
+        mock_response.status_code = 200
+        mock_response.raw = SimpleUploadedFile('sample.txt', b'abc')
+        mock_response.headers = {'Content-Type': 'testing'}
+
+        with mock.patch('aether.sdk.utils.request', return_value=mock_response) as mock_get:
+            response = utils.get_file_content('sample.txt', 'http://any-server/sample.txt', True)
+            mock_get.assert_called_once_with(url='http://any-server/sample.txt', method='get')
+
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.content, b'abc')
+            self.assertEqual(response['Content-Type'], 'testing')
+
             self.assertEqual(response['Content-Disposition'],
                              'attachment; filename="sample.txt"')
             self.assertEqual(response['Access-Control-Expose-Headers'],
                              'Content-Disposition')
-
-            mock_get.assert_called_once_with(url='http://any-server/sample.txt', method='get')

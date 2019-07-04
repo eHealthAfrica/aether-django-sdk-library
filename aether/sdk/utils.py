@@ -138,7 +138,7 @@ def get_all_docs(url, **kwargs):
             yield x
 
 
-def get_file_content(file_name, file_url):
+def get_file_content(file_name, file_url, as_attachment=False):
     '''
     Gets file content usually from File Storage URL and returns it back.
     '''
@@ -152,7 +152,8 @@ def get_file_content(file_name, file_url):
     )
 
     http_response['Content-Type'] = response.headers.get('Content-Type')
-    http_response['Content-Disposition'] = f'attachment; filename="{file_name}"'
-    http_response['Access-Control-Expose-Headers'] = 'Content-Disposition'
+    if as_attachment:
+        http_response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+        http_response['Access-Control-Expose-Headers'] = 'Content-Disposition'
 
     return http_response
