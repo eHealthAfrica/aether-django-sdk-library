@@ -24,11 +24,11 @@ from rest_framework.viewsets import ModelViewSet
 
 from aether.sdk.multitenancy.views import MtViewSetMixin, MtUserViewSetMixin
 
-from aether.sdk.multitenancy.tests.fakeapp.models import (
+from aether.sdk.tests.fakeapp.models import (
     TestModel,
     TestChildModel,
 )
-from aether.sdk.multitenancy.tests.fakeapp.serializers import (
+from aether.sdk.tests.fakeapp.serializers import (
     TestModelSerializer,
     TestChildModelSerializer,
     TestUserSerializer,

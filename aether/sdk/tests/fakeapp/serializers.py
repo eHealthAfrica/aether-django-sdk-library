@@ -17,9 +17,9 @@
 # under the License.
 
 from django.contrib.auth import get_user_model
-from rest_framework.serializers import ModelSerializer
 
 from aether.sdk.drf.serializers import (
+    DynamicFieldsModelSerializer,
     FilteredHyperlinkedRelatedField,
     HyperlinkedIdentityField,
     HyperlinkedRelatedField,
@@ -30,7 +30,7 @@ from aether.sdk.multitenancy.serializers import (
     MtUserRelatedField,
 )
 
-from aether.sdk.multitenancy.tests.fakeapp.models import (
+from aether.sdk.tests.fakeapp.models import (
     TestModel,
     TestChildModel,
 )
@@ -59,7 +59,7 @@ class TestModelSerializer(MtModelSerializer):
         fields = '__all__'
 
 
-class TestChildModelSerializer(ModelSerializer):
+class TestChildModelSerializer(DynamicFieldsModelSerializer):
 
     url = HyperlinkedIdentityField(view_name='testchildmodel-detail')
     parent_url = HyperlinkedRelatedField(
@@ -77,7 +77,7 @@ class TestChildModelSerializer(ModelSerializer):
         fields = '__all__'
 
 
-class TestUserSerializer(ModelSerializer):
+class TestUserSerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = UserModel

@@ -15,19 +15,3 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-
-from rest_framework.routers import DefaultRouter
-
-from aether.sdk.multitenancy.tests.fakeapp.views import (
-    TestModelViewSet,
-    TestChildModelViewSet,
-    TestUserViewSet,
-)
-
-
-router = DefaultRouter()
-router.register('testmodel', TestModelViewSet)
-router.register('testchildmodel', TestChildModelViewSet)
-router.register('user', TestUserViewSet)
-
-urlpatterns = router.urls

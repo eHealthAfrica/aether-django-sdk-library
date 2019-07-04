@@ -16,12 +16,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from rest_framework.serializers import PrimaryKeyRelatedField, ModelSerializer
+from rest_framework.serializers import PrimaryKeyRelatedField
 
+from aether.sdk.drf.serializers import DynamicFieldsModelSerializer
 from aether.sdk.multitenancy.utils import filter_by_realm, filter_users_by_realm
 
 
-class MtModelSerializer(ModelSerializer):
+class MtModelSerializer(DynamicFieldsModelSerializer):
     '''
     Overrides ``create`` method to add the new instance to the current realm.
 
