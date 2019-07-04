@@ -81,4 +81,4 @@ class TestUserSerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = UserModel
-        fields = ('id', 'username',)
+        fields = ('id', 'username', 'email',)
