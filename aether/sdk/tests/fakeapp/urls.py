@@ -16,24 +16,18 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from django.conf import settings
-from django.test import TestCase
+from rest_framework.routers import DefaultRouter
+
+from aether.sdk.tests.fakeapp.views import (
+    TestModelViewSet,
+    TestChildModelViewSet,
+    TestUserViewSet,
+)
 
 
-class SettingsTest(TestCase):
+router = DefaultRouter()
+router.register('testmodel', TestModelViewSet)
+router.register('testchildmodel', TestChildModelViewSet)
+router.register('user', TestUserViewSet)
 
-    def test_default_variables(self):
-
-        self.assertTrue(settings.MULTITENANCY)
-        self.assertTrue(settings.TESTING)
-        self.assertFalse(settings.DEBUG)
-
-        self.assertFalse(settings.STORAGE_REQUIRED)
-        self.assertFalse(settings.SCHEDULER_REQUIRED)
-        self.assertFalse(settings.WEBPACK_REQUIRED)
-
-        self.assertEqual(settings.APP_MODULE, 'aether.sdk.tests.fakeapp')
-        self.assertEqual(settings.ROOT_URLCONF, 'aether.sdk.tests.urls')
-
-        self.assertNotEqual(settings.VERSION, '#.#.#')
-        self.assertNotEqual(settings.REVISION, '---')
+urlpatterns = router.urls

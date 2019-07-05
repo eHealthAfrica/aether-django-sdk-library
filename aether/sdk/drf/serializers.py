@@ -83,3 +83,32 @@ class FilteredHyperlinkedRelatedField(HyperlinkedRelatedField):
             urllib.parse.urlencode({self.lookup_field: lookup_field_value})
         )
         return result
+
+
+# https://www.django-rest-framework.org/api-guide/serializers/#dynamically-modifying-fields
+class DynamicFieldsModelSerializer(serializers.ModelSerializer):
+    '''
+    A ModelSerializer that takes two additional arguments ``fields`` and ``omit``
+    that control which fields should be displayed.
+    '''
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the custom arguments up to the superclass
+        fields = kwargs.pop('fields', None)
+        omit = kwargs.pop('omit', None)
+
+        # Instantiate the superclass normally
+        super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
+
+        if fields:
+            # Drop any fields that are not specified in the ``fields`` argument.
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
+
+        if omit:
+            # Drop any fields that are specified in the ``omit`` argument.
+            not_allowed = set(omit)
+            for field_name in not_allowed:
+                self.fields.pop(field_name, None)

@@ -24,13 +24,13 @@ from django.urls import reverse
 
 from rest_framework import status
 
-from aether.sdk.multitenancy.tests.fakeapp.models import (
+from aether.sdk.tests.fakeapp.models import (
     TestModel,
     TestChildModel,
     TestGrandChildModel,
     TestNoMtModel,
 )
-from aether.sdk.multitenancy.tests.fakeapp.serializers import (
+from aether.sdk.tests.fakeapp.serializers import (
     TestModelSerializer,
     TestChildModelSerializer,
 )

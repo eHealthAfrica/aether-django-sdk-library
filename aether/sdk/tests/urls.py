@@ -28,5 +28,5 @@ from aether.sdk.conf.urls import generate_urlpatterns
 
 urlpatterns = generate_urlpatterns(
     token=settings.TEST_TOKEN_ACTIVE,
-    app=[url(r'^test', include('aether.sdk.multitenancy.tests.fakeapp.urls'))],
+    app=[url(r'^test', include('aether.sdk.tests.fakeapp.urls'))],
 )
