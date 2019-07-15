@@ -568,8 +568,8 @@ if not TESTING and DEBUG:
         DEBUG_TOOLBAR_URL = os.environ.get('DEBUG_TOOLBAR_URL', f'{GATEWAY_PUBLIC_PATH}/__debug__')
 
     DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_COLLAPSED': True,
         'SHOW_TOOLBAR_CALLBACK': lambda _: True,
-        'SHOW_TEMPLATE_CONTEXT': True,
     }
 
     DEBUG_TOOLBAR_PANELS = [
