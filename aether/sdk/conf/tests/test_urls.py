@@ -45,6 +45,8 @@ class UrlsTest(UrlsTestCase):
         self.assertEqual(reverse('rest_framework:logout'), '/accounts/logout')
         self.assertEqual(reverse('token'), '/token')
         self.assertEqual(reverse('public-token'), '/-/sdk-app/token')
+        self.assertEqual(reverse('realm-token', kwargs={'realm': 'any-realm'}),
+                         '/any-realm/sdk-app/token')
         self.assertEqual(reverse('logout'), '/logout')
 
     def test__urls__auth__views(self):
@@ -58,6 +60,7 @@ class UrlsTest(UrlsTestCase):
         self.assertEqual(resolve('/logout').func.view_class,
                          LogoutView.as_view().view_class)
         self.assertEqual(resolve('/token').func, auth_token)
+        self.assertEqual(resolve('/any-realm/sdk-app/token').func, auth_token)
         self.assertEqual(resolve('/-/sdk-app/token').func, auth_token)
 
 

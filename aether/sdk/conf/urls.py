@@ -114,6 +114,9 @@ def _get_token_urls(token):
         ]
         if settings.GATEWAY_ENABLED:
             token_urls += [
+                path(route=f'<slug:realm>/{settings.GATEWAY_SERVICE_ID}/{settings.TOKEN_URL}',
+                     view=auth_token,
+                     name='realm-token'),
                 path(route=f'{settings.GATEWAY_PUBLIC_PATH}/{settings.TOKEN_URL}',
                      view=auth_token,
                      name='public-token'),
