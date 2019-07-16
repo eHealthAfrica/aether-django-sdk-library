@@ -153,6 +153,14 @@ def check_gateway_token(request):
             # token and make the AJAX calls fail.
             if not hasattr(request, 'user') or request.user.pk != user.pk:
                 login(request, user)
+
+                # WORKAROUND!!!
+                # Using curl behind the gateway always returns CSRF errors due
+                # to the missing CSRF Token in the request headers.
+                # We are adding it manually to skip this issue but
+                # only if it needs to login
+                if not request.META.get(settings.CSRF_HEADER_NAME):
+                    request.META[settings.CSRF_HEADER_NAME] = request.META.get('CSRF_COOKIE')
             request.user = user
 
         except Exception:
