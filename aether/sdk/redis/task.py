@@ -72,7 +72,7 @@ class TaskHelper(object):
             port=get_settings(settings.REDIS_PORT),
             password=get_settings(settings.REDIS_PASSWORD),
             db=self.redis_db,
-            encoding="utf-8",
+            encoding='utf-8',
             decode_responses=True
         )
         self.pubsub = None
