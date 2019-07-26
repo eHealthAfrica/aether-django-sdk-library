@@ -41,6 +41,7 @@ DEFAULT_TENANT = os.environ.get('DEFAULT_REALM', 'no-tenant')
 LOG = logging.getLogger(__name__)
 LOG.setLevel(settings.LOGGING_LEVEL)
 
+
 def get_settings(setting):
     if isinstance(setting, tuple):
         return setting[0]
@@ -167,17 +168,17 @@ class TaskHelper(object):
 
     def subscribe(self, callback: Callable, pattern: str, keep_alive: bool):
         if not self._subscribe_thread or not self._subscribe_thread._running:
-          self.keep_alive = keep_alive
-          self._init_subscriber(callback, pattern)
+            self.keep_alive = keep_alive
+            self._init_subscriber(callback, pattern)
         else:
-          self._subscribe(callback, pattern)
+            self._subscribe(callback, pattern)
 
     def keep_alive_monitor(self):
-      while self.keep_alive:
-        LOG.debug('Checking to keep listener alive')
-        if not self._subscribe_thread._running:
-          self._subscribe_thread.run()
-        time.sleep(5)
+        while self.keep_alive:
+            LOG.debug('Checking to keep listener alive')
+            if not self._subscribe_thread._running:
+                self._subscribe_thread.run()
+                time.sleep(5)
 
     def _init_subscriber(self, callback: Callable, pattern: str):
         LOG.debug('Initializing Redis subscriber')
@@ -185,8 +186,8 @@ class TaskHelper(object):
         self._subscribe(callback, pattern)
         self._subscribe_thread = self.pubsub.run_in_thread(sleep_time=0.1)
         if self.keep_alive:
-          keep_alive_thread = threading.Thread(target=self.keep_alive_monitor)
-          keep_alive_thread.start()
+            keep_alive_thread = threading.Thread(target=self.keep_alive_monitor)
+            keep_alive_thread.start()
         LOG.debug('Subscriber Running')
 
     def _subscribe(self, callback: Callable, pattern: str):
@@ -245,17 +246,16 @@ class TaskHelper(object):
                 LOG.error('Could not explicitly stop subscribe thread: no connection')
 
     def publish(
-      self,
-      task: Dict[str, Any],
-      type: str,
-      tenant: str
+        self,
+        task: Dict[str, Any],
+        type: str,
+        tenant: str
     ):
-      key = '_{type}:{tenant}:{_id}'.format(
-            type=type,
-            _id=task['id'],
-            tenant=tenant
-        )
-      channel = f'__keyspace@{self.redis_db}__:{key}'
-      x = self.redis.publish(channel, json.dumps(task, cls=UUIDEncoder))
-      LOG.debug(f'Published to {channel}')
-      return x
+        key = '_{type}:{tenant}:{_id}'.format(
+                type=type,
+                _id=task['id'],
+                tenant=tenant
+            )
+        channel = f'__keyspace@{self.redis_db}__:{key}'
+        LOG.debug(f'Published to {channel}')
+        return self.redis.publish(channel, json.dumps(task, cls=UUIDEncoder))
