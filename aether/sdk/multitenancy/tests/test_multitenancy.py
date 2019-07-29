@@ -16,7 +16,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from http.cookies import SimpleCookie
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import TestCase, RequestFactory, override_settings
@@ -46,17 +45,18 @@ class MultitenancyTests(TestCase):
 
     def setUp(self):
         super(MultitenancyTests, self).setUp()
-        self.request = RequestFactory().get('/')
-        self.request.COOKIES[settings.REALM_COOKIE] = TEST_REALM
 
         username = 'user'
         email = 'user@example.com'
         password = 'secretsecret'
-
         user = get_user_model().objects.create_user(username, email, password)
+
+        self.request = RequestFactory().get('/')
+        self.request.COOKIES[settings.REALM_COOKIE] = TEST_REALM
         self.request.user = user
-        self.client.cookies = SimpleCookie({settings.REALM_COOKIE: TEST_REALM})
+
         self.assertTrue(self.client.login(username=username, password=password))
+        self.client.cookies[settings.REALM_COOKIE] = TEST_REALM
 
     def test_get_multitenancy_model(self):
         self.assertEqual(settings.MULTITENANCY_MODEL, 'fakeapp.TestModel')
