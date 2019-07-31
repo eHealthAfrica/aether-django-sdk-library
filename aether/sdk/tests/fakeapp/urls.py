@@ -16,12 +16,15 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from django.urls import path
+
 from rest_framework.routers import DefaultRouter
 
 from aether.sdk.tests.fakeapp.views import (
     TestModelViewSet,
     TestChildModelViewSet,
     TestUserViewSet,
+    http_200,
 )
 
 
@@ -30,4 +33,6 @@ router.register('testmodel', TestModelViewSet)
 router.register('testchildmodel', TestChildModelViewSet)
 router.register('user', TestUserViewSet)
 
-urlpatterns = router.urls
+urlpatterns = router.urls + [
+    path(route='http-200', view=http_200, name='http-200'),
+]

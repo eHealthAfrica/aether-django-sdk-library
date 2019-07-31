@@ -156,6 +156,17 @@ def remove_user_from_realm(request, user):
     user.groups.remove(get_auth_group(request))
 
 
+def check_user_in_realm(request, user):
+    '''
+    Checks if the current realm authorization group is one of the user groups.
+    '''
+
+    if not settings.MULTITENANCY:
+        return True
+
+    return get_auth_group(request) in user.groups.all()
+
+
 def filter_users_by_realm(request, data):
     '''
     Includes the realm group filter in the given users data object (Queryset or Manager)

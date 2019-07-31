@@ -18,10 +18,17 @@
 
 from django.contrib.auth import get_user_model
 
-from rest_framework.decorators import action
+from rest_framework.decorators import (
+    action,
+    api_view,
+    authentication_classes,
+    permission_classes,
+)
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
+from aether.sdk.auth.authentication import GatewayBasicAuthentication
 from aether.sdk.multitenancy.views import MtViewSetMixin, MtUserViewSetMixin
 
 from aether.sdk.tests.fakeapp.models import (
@@ -64,3 +71,10 @@ class TestChildModelViewSet(MtViewSetMixin, ModelViewSet):
 class TestUserViewSet(MtUserViewSetMixin, ModelViewSet):
     queryset = get_user_model().objects.order_by('username')
     serializer_class = TestUserSerializer
+
+
+@api_view(['GET'])
+@authentication_classes([GatewayBasicAuthentication])
+@permission_classes([IsAuthenticated])
+def http_200(request, *args, **kwargs):
+    return Response()
