@@ -23,6 +23,7 @@ from aether.sdk.drf.serializers import (
     FilteredHyperlinkedRelatedField,
     HyperlinkedIdentityField,
     HyperlinkedRelatedField,
+    UsernameField,
 )
 from aether.sdk.multitenancy.serializers import (
     MtModelSerializer,
@@ -78,6 +79,8 @@ class TestChildModelSerializer(DynamicFieldsModelSerializer):
 
 
 class TestUserSerializer(DynamicFieldsModelSerializer):
+
+    username = UsernameField()
 
     class Meta:
         model = UserModel

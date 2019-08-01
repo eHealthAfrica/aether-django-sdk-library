@@ -16,12 +16,22 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from django.test import TestCase
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.test import RequestFactory, TestCase, override_settings
 
 from aether.sdk.tests.fakeapp.serializers import TestUserSerializer
 
+TEST_REALM = 'realm-test'
+
 
 class SerializersTests(TestCase):
+
+    def setUp(self):
+        super(SerializersTests, self).setUp()
+
+        self.request = RequestFactory().get('/')
+        self.request.COOKIES[settings.REALM_COOKIE] = TEST_REALM
 
     def test__dynamic_fields(self):
         user_data = {
@@ -30,7 +40,10 @@ class SerializersTests(TestCase):
         }
 
         # no filtering
-        user = TestUserSerializer(data=user_data)
+        user = TestUserSerializer(
+            data=user_data,
+            context={'request': self.request},
+        )
         self.assertTrue(user.is_valid(), user.errors)
         self.assertEqual(user.data, user_data)
 
@@ -38,6 +51,7 @@ class SerializersTests(TestCase):
         user = TestUserSerializer(
             data=user_data,
             fields=('username', ),
+            context={'request': self.request},
         )
         self.assertTrue(user.is_valid(), user.errors)
         self.assertEqual(user.data, {'username': 'user'})
@@ -46,6 +60,7 @@ class SerializersTests(TestCase):
         user = TestUserSerializer(
             data=user_data,
             fields=('id', 'username', ),
+            context={'request': self.request},
         )
         self.assertTrue(user.is_valid(), user.errors)
         self.assertEqual(user.data, {'username': 'user'})
@@ -54,6 +69,7 @@ class SerializersTests(TestCase):
         user = TestUserSerializer(
             data=user_data,
             omit=('id', 'username', ),
+            context={'request': self.request},
         )
         self.assertTrue(user.is_valid(), user.errors)
         self.assertEqual(user.data, {'email': 'user@example.com'})
@@ -63,6 +79,43 @@ class SerializersTests(TestCase):
             data=user_data,
             fields=('username', ),
             omit=('username', ),
+            context={'request': self.request},
         )
         self.assertTrue(user.is_valid(), user.errors)
         self.assertEqual(user.data, {})
+
+    @override_settings(MULTITENANCY=True)
+    def test_username_field__multitenancy(self):
+        user_data = {
+            'username': 'user',
+            'email': 'user@example.com',
+        }
+
+        user = TestUserSerializer(
+            data=user_data,
+            context={'request': self.request},
+        )
+        self.assertTrue(user.is_valid(), user.errors)
+        user.save()
+
+        user_obj = get_user_model().objects.get(pk=user.data['id'])
+        self.assertEqual(user_obj.username, f'{TEST_REALM}__user')
+        self.assertEqual(user.data['username'], 'user')
+
+    @override_settings(MULTITENANCY=False)
+    def test_username_field__no_multitenancy(self):
+        user_data = {
+            'username': 'user',
+            'email': 'user@example.com',
+        }
+
+        user = TestUserSerializer(
+            data=user_data,
+            context={'request': self.request},
+        )
+        self.assertTrue(user.is_valid(), user.errors)
+        user.save()
+
+        user_obj = get_user_model().objects.get(pk=user.data['id'])
+        self.assertEqual(user_obj.username, 'user')
+        self.assertEqual(user.data['username'], 'user')

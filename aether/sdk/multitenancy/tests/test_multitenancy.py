@@ -16,6 +16,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import base64
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import TestCase, RequestFactory, override_settings
@@ -102,9 +104,11 @@ class MultitenancyTests(TestCase):
         self.assertTrue(obj1.is_valid(), obj1.errors)
 
         # check the user queryset
+        self.assertFalse(utils.check_user_in_realm(self.request, self.request.user))
         self.assertEqual(obj1.fields['user'].get_queryset().count(), 0)
         # we need to add the user to current realm
         utils.add_user_to_realm(self.request, self.request.user)
+        self.assertTrue(utils.check_user_in_realm(self.request, self.request.user))
         self.assertEqual(obj1.fields['user'].get_queryset().count(), 1)
 
         self.assertTrue(MtInstance.objects.count() == 0)
@@ -376,6 +380,54 @@ class MultitenancyTests(TestCase):
         self.assertIn(child1_realm_url, child1_realm_data['url'])
         self.assertEqual(obj1_realm_data['url'], child1_realm_data['parent_url'])
 
+    def test_gateway_basic_authentication(self):
+        self.client.logout()
+        self.client.cookies[settings.REALM_COOKIE] = TEST_REALM
+
+        username = 'peter-pan'
+        email = 'peter-pan@example.com'
+        password = 'secretsecret'
+        user = get_user_model().objects.create_user(f'{TEST_REALM}__{username}', email, password)
+
+        auth_str = f'{username}:{password}'
+        basic = base64.b64encode(bytearray(auth_str, 'utf-8')).decode('ascii')
+        basic_headers = {'HTTP_AUTHORIZATION': f'Basic {basic}'}
+
+        auth_str = f'{TEST_REALM}__{username}:{password}'
+        basic = base64.b64encode(bytearray(auth_str, 'utf-8')).decode('ascii')
+        basic_realm_headers = {'HTTP_AUTHORIZATION': f'Basic {basic}'}
+
+        auth_str = f'{TEST_REALM_2}__{username}:{password}'
+        basic = base64.b64encode(bytearray(auth_str, 'utf-8')).decode('ascii')
+        basic_realm_2_headers = {'HTTP_AUTHORIZATION': f'Basic {basic}'}
+
+        url = reverse('http-200')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(
+            response.json(),
+            {'detail': 'Authentication credentials were not provided.'})
+
+        response = self.client.get(url, **basic_headers)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.json(), {'detail': 'Invalid user in this realm.'})
+
+        response = self.client.get(url, **basic_realm_headers)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.json(), {'detail': 'Invalid user in this realm.'})
+
+        response = self.client.get(url, **basic_realm_2_headers)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.json(), {'detail': 'Invalid username/password.'})
+
+        utils.add_user_to_realm(self.request, user)
+
+        response = self.client.get(url, **basic_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.get(url, **basic_realm_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     @override_settings(MULTITENANCY=False)
     def test_no_multitenancy(self, *args):
         self.assertIsNone(utils.get_multitenancy_model())
@@ -402,7 +454,41 @@ class MultitenancyTests(TestCase):
 
         self.assertIsNone(utils.get_auth_group(self.request))
         self.assertEqual(self.request.user.groups.count(), 0)
+        self.assertTrue(utils.check_user_in_realm(self.request, self.request.user))
+
         utils.add_user_to_realm(self.request, self.request.user)
         self.assertEqual(self.request.user.groups.count(), 0)
+        self.assertTrue(utils.check_user_in_realm(self.request, self.request.user))
+
         utils.remove_user_from_realm(self.request, self.request.user)
         self.assertEqual(self.request.user.groups.count(), 0)
+        self.assertTrue(utils.check_user_in_realm(self.request, self.request.user))
+
+        self.client.logout()
+
+        username = 'peter-pan'
+        email = 'peter-pan@example.com'
+        password = 'secretsecret'
+        get_user_model().objects.create_user(f'{TEST_REALM}__{username}', email, password)
+
+        auth_str = f'{username}:{password}'
+        basic = base64.b64encode(bytearray(auth_str, 'utf-8')).decode('ascii')
+        basic_headers = {'HTTP_AUTHORIZATION': f'Basic {basic}'}
+
+        auth_str = f'{TEST_REALM}__{username}:{password}'
+        basic = base64.b64encode(bytearray(auth_str, 'utf-8')).decode('ascii')
+        basic_realm_headers = {'HTTP_AUTHORIZATION': f'Basic {basic}'}
+
+        url = reverse('http-200')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(
+            response.json(),
+            {'detail': 'Authentication credentials were not provided.'})
+
+        response = self.client.get(url, **basic_headers)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.json(), {'detail': 'Invalid username/password.'})
+
+        response = self.client.get(url, **basic_realm_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

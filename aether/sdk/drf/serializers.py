@@ -21,6 +21,7 @@ import urllib
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
+from aether.sdk.auth.utils import parse_username, unparse_username
 from aether.sdk.multitenancy.utils import get_path_realm
 
 
@@ -112,3 +113,18 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
             not_allowed = set(omit)
             for field_name in not_allowed:
                 self.fields.pop(field_name, None)
+
+
+class UsernameField(serializers.Field):
+    '''
+    Custom serializer for username fields.
+
+    The internal value is the username with the "realm" (parsed).
+    The displayed value is the username without the "realm" (unparsed).
+    '''
+
+    def to_representation(self, value):
+        return unparse_username(self.context['request'], value)
+
+    def to_internal_value(self, data):
+        return parse_username(self.context['request'], data)
