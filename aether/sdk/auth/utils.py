@@ -30,8 +30,11 @@ def get_or_create_user(request, username):
     try:
         user = user_objects.get(username=_username)
     except UserModel.DoesNotExist:
+        realm = get_current_realm(request)
         user = user_objects.create_user(
             username=_username,
+            first_name=username,
+            last_name=realm or '',
             password=user_objects.make_random_password(length=100),
         )
     add_user_to_realm(request, user)

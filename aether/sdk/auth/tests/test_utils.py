@@ -40,6 +40,8 @@ class UtilsTests(TestCase):
     def test_multitenancy(self, *args):
         user = get_or_create_user(self.request, username='user')
         self.assertEqual(user.username, f'{TEST_REALM}__user')
+        self.assertEqual(user.first_name, 'user')
+        self.assertEqual(user.last_name, TEST_REALM)
 
         self.assertEqual(parse_username(self.request, f'{TEST_REALM}__user'),
                          f'{TEST_REALM}__user')
@@ -53,6 +55,8 @@ class UtilsTests(TestCase):
     def test_no_multitenancy(self, *args):
         user = get_or_create_user(self.request, username='user')
         self.assertEqual(user.username, 'user')
+        self.assertEqual(user.first_name, 'user')
+        self.assertEqual(user.last_name, '')
 
         self.assertEqual(parse_username(self.request, f'{TEST_REALM}__user'),
                          f'{TEST_REALM}__user')
