@@ -397,6 +397,10 @@ class MultitenancyTests(TestCase):
         basic = base64.b64encode(bytearray(auth_str, 'utf-8')).decode('ascii')
         basic_realm_headers = {'HTTP_AUTHORIZATION': f'Basic {basic}'}
 
+        auth_str = f'{TEST_REALM_2}__{username}:{password}'
+        basic = base64.b64encode(bytearray(auth_str, 'utf-8')).decode('ascii')
+        basic_realm_2_headers = {'HTTP_AUTHORIZATION': f'Basic {basic}'}
+
         url = reverse('http-200')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -411,6 +415,10 @@ class MultitenancyTests(TestCase):
         response = self.client.get(url, **basic_realm_headers)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response.json(), {'detail': 'Invalid user in this realm.'})
+
+        response = self.client.get(url, **basic_realm_2_headers)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.json(), {'detail': 'Invalid username/password.'})
 
         utils.add_user_to_realm(self.request, user)
 

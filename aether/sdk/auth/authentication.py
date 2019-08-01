@@ -21,7 +21,8 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
-from aether.sdk.multitenancy.utils import get_current_realm, check_user_in_realm
+from aether.sdk.auth.utils import parse_username
+from aether.sdk.multitenancy.utils import check_user_in_realm
 
 
 class GatewayBasicAuthentication(BasicAuthentication):
@@ -30,11 +31,7 @@ class GatewayBasicAuthentication(BasicAuthentication):
     '''
 
     def authenticate_credentials(self, userid, password, request=None):
-        realm = get_current_realm(request)
-
-        # the internal username prepends the realm name
-        if realm and not userid.startswith(f'{realm}__'):
-            userid = f'{realm}__{userid}'
+        userid = parse_username(request, userid)
 
         user = super(GatewayBasicAuthentication, self) \
             .authenticate_credentials(userid, password, request)[0]

@@ -16,7 +16,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from aether.sdk.multitenancy.utils import get_current_realm, add_user_to_realm
@@ -26,12 +25,8 @@ user_objects = UserModel.objects
 
 
 def get_or_create_user(request, username):
-
-    realm = get_current_realm(request)
-
     # gets the existing user or creates a new one
-    # the internal username prepends the realm name
-    _username = f'{realm}__{username}' if settings.MULTITENANCY else username
+    _username = parse_username(request, username)
     try:
         user = user_objects.get(username=_username)
     except UserModel.DoesNotExist:
@@ -42,3 +37,21 @@ def get_or_create_user(request, username):
     add_user_to_realm(request, user)
 
     return user
+
+
+def parse_username(request, username):
+    # the internal username prepends the realm name
+    realm = get_current_realm(request)
+
+    if realm and not username.startswith(f'{realm}__'):
+        username = f'{realm}__{username}'
+    return username
+
+
+def unparse_username(request, username):
+    # the internal username prepends the realm name
+    realm = get_current_realm(request)
+
+    if realm and username.startswith(f'{realm}__'):
+        username = username[len(f'{realm}__'):]
+    return username
