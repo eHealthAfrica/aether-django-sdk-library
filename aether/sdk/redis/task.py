@@ -41,6 +41,8 @@ DEFAULT_TENANT = os.environ.get('DEFAULT_REALM', 'no-tenant')
 LOG = logging.getLogger(__name__)
 LOG.setLevel(settings.LOGGING_LEVEL)
 
+KEEP_ALIVE_INTERVAL = 10
+
 
 def get_settings(setting):
     if isinstance(setting, tuple):
@@ -132,9 +134,12 @@ class TaskHelper(object):
         tenant: str
     ) -> Dict:
         task_id = f'_{type}:{tenant}:{_id}'
-        task = self.redis.get(task_id)
+        return self.get_by_key(task_id)
+
+    def get_by_key(self, key: str):
+        task = self.redis.get(key)
         if not task:
-            raise ValueError('No task with id {task_id}'.format(task_id=task_id))
+            raise ValueError('No task with id {key}'.format(key=key))
         return json.loads(task)
 
     def list(
@@ -173,21 +178,34 @@ class TaskHelper(object):
         else:
             self._subscribe(callback, pattern)
 
-    def keep_alive_monitor(self):
+        if self.keep_alive:
+            keep_alive_thread = threading.Thread(
+                target=self.keep_alive_monitor,
+                args=(callback, pattern)
+            )
+            keep_alive_thread.start()
+
+    def keep_alive_monitor(self, callback, pattern):
+        current_status = False
+        pervious_status = True
         while self.keep_alive:
-            LOG.debug('Checking to keep listener alive')
-            if not self._subscribe_thread._running:
-                self._subscribe_thread.run()
-                time.sleep(5)
+            try:
+                self.pubsub.ping()
+                current_status = True
+            except Exception:
+                current_status = False
+                LOG.debug('Redis server is down.')
+            if not pervious_status and current_status:
+                LOG.debug('Restarting...')
+                self._init_subscriber(callback, pattern)
+            pervious_status = current_status
+            time.sleep(KEEP_ALIVE_INTERVAL)
 
     def _init_subscriber(self, callback: Callable, pattern: str):
         LOG.debug('Initializing Redis subscriber')
         self.pubsub = self.redis.pubsub()
         self._subscribe(callback, pattern)
         self._subscribe_thread = self.pubsub.run_in_thread(sleep_time=0.1)
-        if self.keep_alive:
-            keep_alive_thread = threading.Thread(target=self.keep_alive_monitor)
-            keep_alive_thread.start()
         LOG.debug('Subscriber Running')
 
     def _subscribe(self, callback: Callable, pattern: str):
@@ -259,3 +277,6 @@ class TaskHelper(object):
         channel = f'__keyspace@{self.redis_db}__:{key}'
         LOG.debug(f'Published to {channel}')
         return self.redis.publish(channel, json.dumps(task, cls=UUIDEncoder))
+
+    def get_keys(self, pattern: str):
+        return self.redis.execute_command('keys', pattern)
