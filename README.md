@@ -12,6 +12,7 @@ This library contains the most common features used by the different Aether djan
   - [Quick start](#quick-start)
   - [Environment variables](#environment-variables)
   - [Management commands](#management-commands)
+  - [Redis tools](https://github.com/eHealthAfrica/aether-django-sdk-library/tree/master/aether/sdk/redis)
 
 
 ## Requirements

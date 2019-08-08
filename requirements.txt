@@ -14,9 +14,11 @@ django-prometheus
 django-silk
 django-uwsgi
 djangorestframework
+fakeredis
 psycopg2-binary
 pygments
 python-json-logger
+redis==3.2.0
 requests
 
 
@@ -25,3 +27,4 @@ coverage
 flake8
 flake8-quotes
 tblib
+pytest

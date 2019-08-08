@@ -25,14 +25,12 @@ import os
 import logging
 import time
 import threading
-from operator import itemgetter
 from django.conf import settings
 import redis
 from typing import (
     Any,
     Callable,
     Dict,
-    Iterable,
     NamedTuple,
     Union
 )
@@ -41,7 +39,7 @@ DEFAULT_TENANT = os.environ.get('DEFAULT_REALM', 'no-tenant')
 LOG = logging.getLogger(__name__)
 LOG.setLevel(settings.LOGGING_LEVEL)
 
-KEEP_ALIVE_INTERVAL = 10
+KEEP_ALIVE_INTERVAL = 2
 
 
 def get_settings(setting):
@@ -54,7 +52,7 @@ class UUIDEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, UUID):
             return str(obj)
-        return json.JSONEncoder.default(self, obj)
+        return json.JSONEncoder.default(self, obj)  # pragma: no cover
 
 
 class Task(NamedTuple):
@@ -66,7 +64,7 @@ class Task(NamedTuple):
 
 class TaskHelper(object):
 
-    def __init__(self, settings):
+    def __init__(self, settings, redis_instance=None):
         self.settings = settings
         self.redis_db = get_settings(settings.REDIS_DB)
         self.redis = redis.Redis(
@@ -77,6 +75,8 @@ class TaskHelper(object):
             encoding='utf-8',
             decode_responses=True
         )
+        if redis_instance:
+            self.redis = redis_instance
         self.pubsub = None
         self._subscribe_thread = None
         self.keep_alive = False
@@ -142,38 +142,11 @@ class TaskHelper(object):
             raise ValueError('No task with id {key}'.format(key=key))
         return json.loads(task)
 
-    def list(
-        self,
-        type: str = None,
-        tenant: str = DEFAULT_TENANT
-    ) -> Iterable[str]:
-        # ids of matching assets as a generator
-        if type and not tenant:  # internal option used by jobs manager
-            key_identifier = '_{type}:{tenant}:*'.format(
-                type=type,
-                tenant='*'
-            )
-            for i in self.redis.scan_iter(key_identifier):
-                yield ':'.join(str(i).split(':')[-2:])  # _id
-        elif type:  # normal method accessible by API
-            key_identifier = '_{type}:{tenant}:*'.format(
-                type=type,
-                tenant=tenant
-            )
-            for i in self.redis.scan_iter(key_identifier):
-                yield str(i).split(':')[-1]  # _id
-        else:  # unused edge case
-            key_identifier = f'*:{tenant}:*'
-            for i in self.redis.scan_iter(key_identifier):
-                yield ':'.join(
-                    itemgetter(-3, -1)
-                    (str(i).split(':'))
-                )  # _type:_id
     # subscription tasks
 
     def subscribe(self, callback: Callable, pattern: str, keep_alive: bool):
+        self.keep_alive = keep_alive
         if not self._subscribe_thread or not self._subscribe_thread._running:
-            self.keep_alive = keep_alive
             self._init_subscriber(callback, pattern)
         else:
             self._subscribe(callback, pattern)
@@ -192,10 +165,10 @@ class TaskHelper(object):
             try:
                 self.pubsub.ping()
                 current_status = True
-            except Exception:
+            except Exception:   # pragma: no cover
                 current_status = False
                 LOG.debug('Redis server is down.')
-            if not pervious_status and current_status:
+            if not pervious_status and current_status:  # pragma: no cover
                 LOG.debug('Restarting...')
                 self._init_subscriber(callback, pattern)
             pervious_status = current_status
@@ -228,40 +201,22 @@ class TaskHelper(object):
             channel = msg['channel']
             # get _id, tenant from channel: __keyspace@0__:_test:_tenant:00001
             # where id = 00001
+            channel = channel if isinstance(channel, str) else channel.decode()
             keyspace, _type, tenant, _id = channel.split(':')
-            redis_id = ':'.join([_type, tenant, _id])
-            redis_op = msg['data']
-            LOG.debug(f'Channel: {channel} received {redis_op};'
+            redis_data = msg['data']
+            LOG.debug(f'Channel: {channel} received {redis_data};'
                       + f' registered on: {registered_channel}')
             res = None
-            if redis_op in ('set',):
-                _redis_msg = self.redis.get(redis_id)
+            if redis_data not in ('set', 'del'):    # pragma: no cover
                 res = Task(
                     id=_id,
                     tenant=tenant,
-                    type=redis_op,
-                    data=json.loads(_redis_msg)
+                    type=_type,
+                    data=json.loads(redis_data)
                 )
-                LOG.debug(f'ID: {_id} data: {_redis_msg}')
+                LOG.debug(f'ID: {_id} data: {redis_data}')
             fn(res)  # On callback, hit registered function with proper data
         return wrapper
-
-    def _unsubscribe_all(self) -> None:
-        LOG.debug('Unsubscribing from all pub-sub topics')
-        self.pubsub.punsubscribe()
-
-    def stop(self, *args, **kwargs) -> None:
-        self._unsubscribe_all()
-        if self._subscribe_thread and self._subscribe_thread._running:
-            LOG.debug('Stopping Subscriber thread.')
-            self._subscribe_thread._running = False
-            try:
-                self._subscribe_thread.stop()
-            except (
-                redis.exceptions.ConnectionError,
-                AttributeError
-            ):
-                LOG.error('Could not explicitly stop subscribe thread: no connection')
 
     def publish(
         self,

@@ -36,3 +36,8 @@ APP_EXTRA_META = (
     'A free, open source development platform'
     ' for data curation, exchange, and publication'
 )
+
+REDIS_DB = os.environ.get('REDIS_DB', 0)
+REDIS_HOST = os.environ.get('REDIS_HOST', '')
+REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', '')
+REDIS_PORT = os.environ.get('REDIS_PORT', 6379)
