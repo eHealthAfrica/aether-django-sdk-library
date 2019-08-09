@@ -18,9 +18,10 @@
 
 import fakeredis
 import uuid
+import time
 
 
-from unittest import TestCase
+from unittest import TestCase, mock
 
 from aether.sdk.redis.task import TaskHelper, get_settings, UUIDEncoder
 from django.conf import settings
@@ -85,3 +86,30 @@ class TaskTests(TestCase):
             self.task.exists(self.test_doc['id'], 'mappings', 'aether')
             is False
         )
+
+    @mock.patch('aether.sdk.redis.tests.test_task.TaskTests.callable_func')
+    def test_subscribe(self, c):
+        self.task.subscribe(c, '_test*', True)
+        assert(
+            self.task.publish(self.test_doc, 'test', 'aether') == 1
+        )
+        time.sleep(0.2)
+        c.assert_called_once()
+
+    def test_subscribe_again(self):
+        self.task.subscribe(self.callable_func, '_test*', True)
+        assert(
+            self.task.publish(self.test_doc, 'test', 'aether') == 1
+        )
+
+        # subscribe again
+        assert(
+            self.task.subscribe(self.callable_func, '_test*', False) is None
+        )
+
+        assert(
+            self.task._unsubscribe_all() is None
+        )
+
+        self.task.stop()
+        self.redis_instance = None

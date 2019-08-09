@@ -235,3 +235,20 @@ class TaskHelper(object):
 
     def get_keys(self, pattern: str):
         return self.redis.execute_command('keys', pattern)
+
+    def _unsubscribe_all(self) -> None:
+        LOG.debug('Unsubscribing from all pub-sub topics')
+        self.pubsub.punsubscribe()
+
+    def stop(self, *args, **kwargs) -> None:
+        self._unsubscribe_all()
+        if self._subscribe_thread and self._subscribe_thread._running:  # pragma: no cover
+            LOG.debug('Stopping Subscriber thread.')
+            self._subscribe_thread._running = False
+            try:
+                self._subscribe_thread.stop()
+            except (
+                redis.exceptions.ConnectionError,
+                AttributeError
+            ):  # pragma: no cover
+                LOG.error('Could not explicitly stop subscribe thread: no connection')
