@@ -19,7 +19,6 @@ pygments
 python-json-logger
 requests
 
-
 # test libraries
 coverage
 flake8
