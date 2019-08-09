@@ -85,14 +85,3 @@ class TaskTests(TestCase):
             self.task.exists(self.test_doc['id'], 'mappings', 'aether')
             is False
         )
-
-    def test_subscribe(self):
-        self.task.subscribe(self.callable_func, '_test*', True)
-        assert(
-            self.task.publish(self.test_doc, 'test', 'aether') == 1
-        )
-
-        # subscribe again
-        assert(
-            self.task.subscribe(self.callable_func, '_test*', False) is None
-        )
