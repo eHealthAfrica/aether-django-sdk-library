@@ -29,7 +29,7 @@ from django.conf import settings
 WAIT_FOR_REDIS = 0.5
 
 
-class taskTest(TestCase):
+class TaskTests(TestCase):
     test_doc = {
         'id': '000-000-000-00',
         'name': 'test_name'

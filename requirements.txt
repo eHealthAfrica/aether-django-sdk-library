@@ -27,4 +27,3 @@ coverage
 flake8
 flake8-quotes
 tblib
-pytest
