@@ -3,7 +3,7 @@ language: python
 python:
   - '3.7'
 
-install: travis_wait mvn install
+install: true
 
 # use matrix to split jobs and only re-execute the failing one
 matrix:
