@@ -1,5 +1,3 @@
-{% extends "rest_framework/api.html" %}
-
 {% comment 'LICENSE' %}
 Copyright (C) 2019 by eHealth Africa : http://www.eHealthAfrica.org
 
@@ -21,19 +19,18 @@ under the License.
 {% endcomment %}
 
 {% load i18n %}
+{% load eha_tags %}
 
-{% block title %}{{ app_name }} - {% trans 'API' %}{% endblock title %}
-
-{% block meta %}
-  {% include 'eha/meta.html' %}
-  {% include 'eha/favicon.html' %}
-  {% include 'eha/styles.html' %}
-{% endblock meta %}
-
-{% block branding %}
-  {% include 'eha/branding.html' with classname='navbar-brand' link=app_link version=True %}
-{% endblock branding %}
-
-{% block userlinks %}
-  {% include 'eha/navbar_user.html' %}
-{% endblock %}
+{% if request.user.is_authenticated %}
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+      {{ request.user|get_fullname:request }}
+      <b class="caret"></b>
+    </a>
+    <ul class="dropdown-menu">
+      <li><a href="{% url 'rest_framework:logout' %}">{% trans 'Sign Out' %}</a></li>
+    </ul>
+  </li>
+{% else %}
+  <li><a href="{% url 'rest_framework:login' %}">{% trans 'Sign In' %}</a></li>
+{% endif %}
