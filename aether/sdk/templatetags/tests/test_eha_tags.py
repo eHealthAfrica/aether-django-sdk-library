@@ -16,8 +16,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 
 from aether.sdk.templatetags.eha_tags import get_fullname, prettified
 
@@ -46,6 +47,32 @@ class TagsTests(TestCase):
         user.first_name = 'first'
         user.last_name = 'last'
         self.assertEqual(get_fullname(user), 'first last')
+
+    def test_get_fullname__realm(self):
+        request = RequestFactory().get('/')
+        request.COOKIES[settings.REALM_COOKIE] = 'test'
+
+        user = get_user_model().objects.create()
+
+        self.assertEqual(get_fullname(user, request), '')
+        self.assertEqual(get_fullname(user, request), str(user))
+        self.assertEqual(get_fullname(user), user.username)
+
+        user.username = 'user-name'
+        self.assertEqual(get_fullname(user, request), str(user))
+        self.assertEqual(get_fullname(user, request), user.username)
+
+        user.username = 'test__name'
+        self.assertNotEqual(get_fullname(user, request), user.username)
+        self.assertEqual(get_fullname(user, request), 'name')
+
+        request.COOKIES[settings.REALM_COOKIE] = None
+        self.assertEqual(get_fullname(user, request), str(user))
+        self.assertEqual(get_fullname(user, request), user.username)
+
+        request.COOKIES[settings.REALM_COOKIE] = 'another'
+        self.assertEqual(get_fullname(user, request), str(user))
+        self.assertEqual(get_fullname(user, request), user.username)
 
     def test_prettified(self):
         data = {}
