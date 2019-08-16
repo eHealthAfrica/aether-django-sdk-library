@@ -18,7 +18,10 @@
 
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework.authentication import BasicAuthentication as BasicAuth
+from rest_framework.authentication import (
+    BasicAuthentication as BasicAuth,
+    TokenAuthentication as TokenAuth,
+)
 from rest_framework.exceptions import AuthenticationFailed
 
 from aether.sdk.auth.utils import parse_username
@@ -45,3 +48,20 @@ class BasicAuthentication(BasicAuth):
     def authenticate_header(self, request):
         realm = get_current_realm(request) or self.www_authenticate_realm
         return f'Basic realm="{realm}"'
+
+
+class TokenAuthentication(TokenAuth):
+    '''
+    Extends DRF Token Authentication checking that the user belongs to the realm.
+    '''
+
+    def authenticate(self, request):
+        response = super(TokenAuthentication, self).authenticate(request)
+        if response is None:
+            return response
+
+        # check that the user belongs to the current realm
+        if not check_user_in_realm(request, response[0]):
+            raise AuthenticationFailed(_('Invalid user in this realm.'))
+
+        return response

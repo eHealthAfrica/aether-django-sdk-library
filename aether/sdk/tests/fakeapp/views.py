@@ -28,7 +28,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from aether.sdk.auth.authentication import BasicAuthentication
+from aether.sdk.auth.authentication import BasicAuthentication, TokenAuthentication
 from aether.sdk.multitenancy.views import MtViewSetMixin, MtUserViewSetMixin
 
 from aether.sdk.tests.fakeapp.models import (
@@ -74,7 +74,7 @@ class TestUserViewSet(MtUserViewSetMixin, ModelViewSet):
 
 
 @api_view(['GET'])
-@authentication_classes([BasicAuthentication])
+@authentication_classes([BasicAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def http_200(request, *args, **kwargs):
     return Response()

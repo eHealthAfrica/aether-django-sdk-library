@@ -24,6 +24,7 @@ from django.test import TestCase, RequestFactory, override_settings
 from django.urls import reverse
 
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 
 from aether.sdk.tests.fakeapp.models import (
     TestModel,
@@ -380,7 +381,7 @@ class MultitenancyTests(TestCase):
         self.assertIn(child1_realm_url, child1_realm_data['url'])
         self.assertEqual(obj1_realm_data['url'], child1_realm_data['parent_url'])
 
-    def test_gateway_basic_authentication(self):
+    def test_basic_authentication(self):
         self.client.logout()
         self.client.cookies[settings.REALM_COOKIE] = TEST_REALM
 
@@ -428,6 +429,40 @@ class MultitenancyTests(TestCase):
         response = self.client.get(url, **basic_realm_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_token_authentication(self):
+        self.client.logout()
+        self.client.cookies[settings.REALM_COOKIE] = TEST_REALM
+
+        username = 'peter-pan'
+        email = 'peter-pan@example.com'
+        password = 'secretsecret'
+        user = get_user_model().objects.create_user(f'{TEST_REALM}__{username}', email, password)
+        token_key = 'token-123456'
+        Token.objects.create(user=user, key=token_key)
+
+        token_headers = {'HTTP_AUTHORIZATION': f'Token {token_key}'}
+        token_headers_wrong = {'HTTP_AUTHORIZATION': f'Token 123'}
+
+        url = reverse('http-200')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(
+            response.json(),
+            {'detail': 'Authentication credentials were not provided.'})
+
+        response = self.client.get(url, **token_headers)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.json(), {'detail': 'Invalid user in this realm.'})
+
+        response = self.client.get(url, **token_headers_wrong)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.json(), {'detail': 'Invalid token.'})
+
+        utils.add_user_to_realm(self.request, user)
+
+        response = self.client.get(url, **token_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     @override_settings(MULTITENANCY=False)
     def test_no_multitenancy(self, *args):
         self.assertIsNone(utils.get_multitenancy_model())
@@ -469,7 +504,12 @@ class MultitenancyTests(TestCase):
         username = 'peter-pan'
         email = 'peter-pan@example.com'
         password = 'secretsecret'
-        get_user_model().objects.create_user(f'{TEST_REALM}__{username}', email, password)
+        user = get_user_model().objects.create_user(f'{TEST_REALM}__{username}', email, password)
+
+        token_key = 'token-123456'
+        Token.objects.create(user=user, key=token_key)
+
+        token_headers = {'HTTP_AUTHORIZATION': f'Token {token_key}'}
 
         auth_str = f'{username}:{password}'
         basic = base64.b64encode(bytearray(auth_str, 'utf-8')).decode('ascii')
@@ -491,4 +531,7 @@ class MultitenancyTests(TestCase):
         self.assertEqual(response.json(), {'detail': 'Invalid username/password.'})
 
         response = self.client.get(url, **basic_realm_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.get(url, **token_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
