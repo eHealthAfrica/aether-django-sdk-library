@@ -18,14 +18,14 @@
 
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework.authentication import BasicAuthentication
+from rest_framework.authentication import BasicAuthentication as BasicAuth
 from rest_framework.exceptions import AuthenticationFailed
 
 from aether.sdk.auth.utils import parse_username
-from aether.sdk.multitenancy.utils import check_user_in_realm
+from aether.sdk.multitenancy.utils import check_user_in_realm, get_current_realm
 
 
-class GatewayBasicAuthentication(BasicAuthentication):
+class BasicAuthentication(BasicAuth):
     '''
     Extends DRF Basic Authentication prepending the realm to the given username.
     '''
@@ -33,11 +33,15 @@ class GatewayBasicAuthentication(BasicAuthentication):
     def authenticate_credentials(self, userid, password, request=None):
         userid = parse_username(request, userid)
 
-        user = super(GatewayBasicAuthentication, self) \
-            .authenticate_credentials(userid, password, request)[0]
+        user, __ = super(BasicAuthentication, self) \
+            .authenticate_credentials(userid, password, request)
 
         # check that the user belongs to the current realm
         if not check_user_in_realm(request, user):
             raise AuthenticationFailed(_('Invalid user in this realm.'))
 
         return (user, None)
+
+    def authenticate_header(self, request):
+        realm = get_current_realm(request) or self.www_authenticate_realm
+        return f'Basic realm="{realm}"'
