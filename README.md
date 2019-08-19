@@ -594,11 +594,22 @@ with the external application when possible.
 
 ```bash
 # arguments:
-#      -u | --username   required
+#      -u | --username   optional (defaults to "admin")
 #      -p | --password   required
 #      -e | --email      optional
 #      -t | --token      optional
 ./manage.py setup_admin -u=admin -p=password -t=auth_token
+```
+
+#### To create "standard" users via command line.
+
+```bash
+# arguments:
+#      -u | --username   required
+#      -p | --password   required
+#      -e | --realm      optional (required if MULTITENANCY enabled)
+#      -t | --token      optional
+./manage.py create_user -u=user -p=password -t=auth_token
 ```
 
 *[Return to TOC](#table-of-contents)*
