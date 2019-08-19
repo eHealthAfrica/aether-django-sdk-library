@@ -22,7 +22,7 @@ import os
 from django.contrib.auth import get_user_model
 from django.core.management.base import CommandError
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from rest_framework.authtoken.models import Token
 
@@ -73,6 +73,7 @@ class TestSetupAdminCommand(TestCase):
         self.assertFalse(user.is_superuser)
 
         call_command('setup_admin', '-p=secretsecret', stdout=self.out)
+        user.refresh_from_db()
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
 
@@ -131,3 +132,124 @@ class TestCheckUrlCommand(TestCase):
             stdout=self.out,
             stderr=self.out,
         )
+
+
+class TestCreateUserCommand(TestCase):
+
+    def setUp(self):
+        # Redirect to /dev/null in order to not clutter the test log.
+        self.out = open(os.devnull, 'w')
+
+    def test__required_arguments(self):
+        self.assertRaises(
+            CommandError,
+            call_command,
+            'create_user',
+            stdout=self.out,
+            stderr=self.out,
+        )
+
+        self.assertRaises(
+            CommandError,
+            call_command,
+            'create_user',
+            '--username=user_test',
+            '--realm=test',
+            stdout=self.out,
+            stderr=self.out,
+        )
+
+        self.assertRaises(
+            CommandError,
+            call_command,
+            'create_user',
+            '-u=user_test',
+            '-p=secretsecret',
+            stdout=self.out,
+            stderr=self.out,
+        )
+
+        self.assertRaises(
+            CommandError,
+            call_command,
+            'create_user',
+            '--password=secretsecret',
+            '--realm=test',
+            stdout=self.out,
+            stderr=self.out,
+        )
+
+    @override_settings(MULTITENANCY=False)
+    def test__creates_new_user(self):
+        self.assertFalse(UserModel.filter(username='user_test').exists())
+        call_command('create_user',
+                     '-u=user_test',
+                     '-p=secretsecret',
+                     stdout=self.out,
+                     stderr=self.out)
+        self.assertTrue(UserModel.filter(username='user_test').exists())
+
+    def test__creates_new_user_in_realm(self):
+        self.assertFalse(UserModel.filter(username='user_test').exists())
+        call_command('create_user',
+                     '-u=user_test',
+                     '-p=secretsecret',
+                     '-r=test',
+                     stdout=self.out,
+                     stderr=self.out)
+        self.assertFalse(UserModel.filter(username='user_test').exists())
+        self.assertTrue(UserModel.filter(username='test__user_test').exists())
+
+    @override_settings(MULTITENANCY=False)
+    def test__updates_existing_user(self):
+        user = UserModel.create_user(username='user_test', password='secretsecret')
+        self.assertFalse(user.is_staff)
+        self.assertFalse(user.is_superuser)
+
+        call_command('create_user',
+                     '-u=user_test',
+                     '-p=secretsecret',
+                     stdout=self.out,
+                     stderr=self.out)
+        user.refresh_from_db()
+        self.assertFalse(user.is_staff)
+        self.assertFalse(user.is_superuser)
+
+    def test__updates_existing_user_in_realm(self):
+        user = UserModel.create_user(username='test__user_test', password='secretsecret')
+        self.assertFalse(user.groups.filter(name='test').exists())
+
+        call_command('create_user',
+                     '-u=test__user_test',
+                     '-p=secretsecret',
+                     '-r=test',
+                     stdout=self.out,
+                     stderr=self.out)
+        user.refresh_from_db()
+        self.assertTrue(user.groups.filter(name='test').exists())
+
+    @override_settings(MULTITENANCY=False)
+    def test__creates_token(self):
+        self.assertFalse(UserModel.filter(username='user_test').exists())
+        self.assertEqual(Token.objects.all().count(), 0)
+        call_command('create_user',
+                     '-u=user_test',
+                     '-p=secretsecret',
+                     '-t=12345',
+                     stdout=self.out,
+                     stderr=self.out)
+        self.assertTrue(UserModel.filter(username='user_test').exists())
+        self.assertEqual(Token.objects.all().count(), 1)
+
+    def test__creates_token_in_realm(self):
+        self.assertFalse(UserModel.filter(username='test__user_test').exists())
+        self.assertEqual(Token.objects.all().count(), 0)
+        call_command('create_user',
+                     '-u=user_test',
+                     '-p=secretsecret',
+                     '-r=test',
+                     '-t=12345',
+                     stdout=self.out,
+                     stderr=self.out)
+        self.assertTrue(UserModel.filter(username='test__user_test').exists())
+        self.assertEqual(Token.objects.all().count(), 1)
