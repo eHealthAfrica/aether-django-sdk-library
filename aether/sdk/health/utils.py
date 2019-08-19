@@ -55,7 +55,7 @@ def check_external_app(app, request=None):
 
     try:
         url = get_external_app_url(app, request) + '/' + settings.TOKEN_URL
-        token = get_external_app_token(app)
+        headers = get_external_app_auth_header(app)
     except KeyError:
         logger.warning(MSG_EXTERNAL_APP_ERR.format(app=app))
         return False
@@ -68,7 +68,7 @@ def check_external_app(app, request=None):
 
         try:
             # check that the token is valid
-            g = exec_request(method='get', url=url, headers={'Authorization': f'Token {token}'})
+            g = exec_request(method='get', url=url, headers=headers)
             g.raise_for_status()  # expected response 200 OK
             logger.info(MSG_EXTERNAL_APP_TOKEN_OK.format(app=app, url=url))
 
@@ -104,3 +104,9 @@ def get_external_app_url(app, request=None):
 
 def get_external_app_token(app):
     return get_external_app_settings(app)['token']
+
+
+def get_external_app_auth_header(app):
+    return {
+        'Authorization': f'Token {get_external_app_token(app)}',
+    }
