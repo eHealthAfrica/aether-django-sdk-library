@@ -78,10 +78,9 @@ class FilteredMixin(object):
             try:
                 filtered_list = filter_class(self.request.GET, queryset=qs)
                 for record in filtered_list.qs:
-                    for field in request.data:
-                        setattr(record, field, request.data[field])
-                    # use individual save to trigger pre and post save events
-                    record.save()
+                    serializer = self.get_serializer(record, data=request.data, partial=True)
+                    serializer.is_valid(raise_exception=True)
+                    self.perform_update(serializer)
                 return Response({'updated': filtered_list.qs.count()}, status=status.HTTP_200_OK)
             except Exception as e:
                 return Response(
