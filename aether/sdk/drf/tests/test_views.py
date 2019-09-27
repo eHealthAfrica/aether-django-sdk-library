@@ -75,7 +75,7 @@ class ViewsTest(UrlsTestCase):
         filtered_count = models.TestChildModel.objects.filter(parent=parent).count()
         self.assertEqual(org_count, 30)
         self.assertEqual(filtered_count, 10)
-        url = f'{reverse("testchildmodel-filtered-update")}?parent={parent.name}'
+        url = f'{reverse("testchildmodel-filtered-partial-update")}?parent={parent.name}'
         update_fields = {
             'name': 'new-name',
         }
@@ -85,6 +85,10 @@ class ViewsTest(UrlsTestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        [
+            self.assertEqual(i.name, 'new-name')
+            for i in models.TestChildModel.objects.filter(parent=parent)
+        ]
 
         update_fields = {
             'parent': 20,
@@ -96,6 +100,7 @@ class ViewsTest(UrlsTestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('Cannot assign "20"', response.json())
 
         response = self.client.patch(
             url,

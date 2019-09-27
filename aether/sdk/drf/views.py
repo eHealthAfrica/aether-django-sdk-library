@@ -24,6 +24,15 @@ from django.utils.translation import ugettext as _
 
 
 class FilteredMixin(object):
+    '''
+    This adds a bulk delete action based on the supplied filters to a viewset
+    accessible via:
+
+    `/{modelname}/filtered-delete/?{query_string}`
+
+    All delete operations are rolledback if any error is encountered
+
+    '''
     @transaction.atomic
     @action(detail=False, methods=['delete'], url_path='filtered-delete')
     def filtered_delete(self, request, *args, **kwargs):
@@ -39,9 +48,30 @@ class FilteredMixin(object):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    '''
+    This adds a bulk update action based on the supplied filters to a viewset
+    accessible via:
+
+    `/{modelname}/filtered-partial-update/?{query_string}`
+
+    the fields to be updated are passed in the body of the request as follows:
+
+    `
+    {
+        'modelField1': 'new value',
+        'modelField2': 'new value 1'
+    }
+    `
+
+    all records that meet the filter criteria with have the specified fileds
+    updated to the corresponding values.
+
+    All update operations are rolledback if any error is encountered
+
+    '''
     @transaction.atomic
-    @action(detail=False, methods=['patch'], url_path='filtered-update')
-    def filtered_update(self, request, *args, **kwargs):
+    @action(detail=False, methods=['patch'], url_path='filtered-partial-update')
+    def filtered_partial_update(self, request, *args, **kwargs):
         if request.data:
             qs = super(FilteredMixin, self).get_queryset()
             filter_class = self.filter_class
