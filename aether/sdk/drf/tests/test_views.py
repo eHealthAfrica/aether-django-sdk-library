@@ -53,10 +53,6 @@ class ViewsTest(UrlsTestCase):
                     parent=parent,
                 )
 
-    def tearDown(self):
-        super(ViewsTest, self).tearDown()
-        models.TestModel.objects.all().delete()
-
     def test_delete_by_filters(self):
         org_count = models.TestChildModel.objects.count()
         parent = models.TestModel.objects.first()
