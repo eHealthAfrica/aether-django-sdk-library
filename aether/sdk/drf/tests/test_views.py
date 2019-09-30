@@ -101,10 +101,6 @@ class ViewsTest(UrlsTestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        [
-            self.assertEqual(i.parent.id, parent.id)
-            for i in models.TestChildModel.objects.filter(parent=parent)
-        ]
         self.assertIn('Invalid pk "20"', response.json())
 
         response = self.client.patch(
