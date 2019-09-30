@@ -34,8 +34,7 @@ class FilteredMixin(object):
 
         `/{modelname}/filtered-delete/?{query_string}`
 
-        All delete operations are rolledback if any error is encountered
-
+        All delete operations are rolled back if any error is encountered
         '''
         try:
             filtered_list = self.filter_queryset(self.queryset)
