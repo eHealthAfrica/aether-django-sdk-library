@@ -37,7 +37,6 @@ class FilteredMixin(object):
         All delete operations are rolledback if any error is encountered
 
         '''
-        # filter_class = self.filter_class
         try:
             filtered_list = self.filter_queryset(self.queryset)
             filtered_list.delete()
