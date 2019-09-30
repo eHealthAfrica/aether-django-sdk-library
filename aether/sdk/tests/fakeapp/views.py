@@ -30,6 +30,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from aether.sdk.auth.authentication import BasicAuthentication, TokenAuthentication
 from aether.sdk.multitenancy.views import MtViewSetMixin, MtUserViewSetMixin
+from aether.sdk.drf.views import FilteredMixin
 
 from aether.sdk.tests.fakeapp.models import (
     TestModel,
@@ -53,10 +54,11 @@ class TestModelViewSet(MtViewSetMixin, ModelViewSet):
         return Response(data=self.serializer_class(obj, context={'request': request}).data)
 
 
-class TestChildModelViewSet(MtViewSetMixin, ModelViewSet):
+class TestChildModelViewSet(MtViewSetMixin, FilteredMixin, ModelViewSet):
     queryset = TestChildModel.objects.order_by('name')
     serializer_class = TestChildModelSerializer
     mt_field = 'parent'
+    search_fields = ['parent__name']
 
     @action(detail=True, methods=['get'], url_path='custom-403')
     def custom_403(self, request, pk=None, *args, **kwargs):
