@@ -60,7 +60,7 @@ class ViewsTest(UrlsTestCase):
         self.assertEqual(org_count, 30)
         self.assertEqual(filtered_count, 10)
 
-        url = f'{reverse("testchildmodel-filtered-delete")}?parent={parent.name}'
+        url = f'{reverse("testchildmodel-filtered-delete")}?search={parent.name}'
         self.client.delete(url)
         self.assertEqual(
             models.TestChildModel.objects.count(),
@@ -75,7 +75,7 @@ class ViewsTest(UrlsTestCase):
         filtered_count = models.TestChildModel.objects.filter(parent=parent).count()
         self.assertEqual(org_count, 30)
         self.assertEqual(filtered_count, 10)
-        url = f'{reverse("testchildmodel-filtered-partial-update")}?parent={parent.name}'
+        url = f'{reverse("testchildmodel-filtered-partial-update")}?search={parent.name}'
         update_fields = {
             'name': 'new-name',
         }

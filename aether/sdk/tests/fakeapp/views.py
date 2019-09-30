@@ -36,7 +36,6 @@ from aether.sdk.tests.fakeapp.models import (
     TestModel,
     TestChildModel,
 )
-from aether.sdk.tests.fakeapp.filters import TestChildModelFilter
 from aether.sdk.tests.fakeapp.serializers import (
     TestModelSerializer,
     TestChildModelSerializer,
@@ -58,8 +57,8 @@ class TestModelViewSet(MtViewSetMixin, ModelViewSet):
 class TestChildModelViewSet(MtViewSetMixin, FilteredMixin, ModelViewSet):
     queryset = TestChildModel.objects.order_by('name')
     serializer_class = TestChildModelSerializer
-    filter_class = TestChildModelFilter
     mt_field = 'parent'
+    search_fields = ['parent__name']
 
     @action(detail=True, methods=['get'], url_path='custom-403')
     def custom_403(self, request, pk=None, *args, **kwargs):

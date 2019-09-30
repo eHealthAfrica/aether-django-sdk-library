@@ -9,7 +9,6 @@ django
 django-cas-ng
 django-cors-headers
 django-debug-toolbar
-django-filter
 django-minio-storage
 django-prometheus
 django-silk

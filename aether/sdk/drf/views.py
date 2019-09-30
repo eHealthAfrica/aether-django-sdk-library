@@ -37,11 +37,10 @@ class FilteredMixin(object):
         All delete operations are rolledback if any error is encountered
 
         '''
-        qs = super(FilteredMixin, self).get_queryset()
-        filter_class = self.filter_class
+        # filter_class = self.filter_class
         try:
-            filtered_list = filter_class(self.request.GET, queryset=qs)
-            filtered_list.qs.delete()
+            filtered_list = self.filter_queryset(self.queryset)
+            filtered_list.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:  # pragma: no cover
             return Response(
@@ -74,15 +73,13 @@ class FilteredMixin(object):
 
         '''
         if request.data:
-            qs = super(FilteredMixin, self).get_queryset()
-            filter_class = self.filter_class
             try:
-                filtered_list = filter_class(self.request.GET, queryset=qs)
-                for record in filtered_list.qs:
+                filtered_list = self.filter_queryset(self.queryset)
+                for record in filtered_list:
                     serializer = self.get_serializer(record, data=request.data, partial=True)
                     serializer.is_valid(raise_exception=True)
                     self.perform_update(serializer)
-                return Response({'updated': filtered_list.qs.count()}, status=status.HTTP_200_OK)
+                return Response({'updated': filtered_list.count()}, status=status.HTTP_200_OK)
             except Exception as e:
                 return Response(
                     str(e),
