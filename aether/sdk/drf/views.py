@@ -65,10 +65,10 @@ class FilteredMixin(object):
         }
         `
 
-        all records that meet the filter criteria with have the specified fileds
+        all records that meet the filter criteria will have the specified fields
         updated to the corresponding values.
 
-        All update operations are rolledback if any error is encountered
+        All update operations are rolled back if any error is encountered
 
         '''
         if request.data:
