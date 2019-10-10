@@ -63,7 +63,7 @@ setup(
         'psycopg2-binary',
         'pygments',
         'python-json-logger',
-        'requests',
+        'requests[security]',
         'uwsgi',
     ],
     extras_require={

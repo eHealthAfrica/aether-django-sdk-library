@@ -170,7 +170,6 @@ class UrlsKeycloakServerTest(UrlsTestCase):
                          KeycloakLogoutView.as_view().view_class)
 
 
-# using `docker-compose.yml` environment
 @override_settings(
     CAS_SERVER_URL=None,
     KEYCLOAK_BEHIND_SCENES=False,
