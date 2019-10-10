@@ -44,6 +44,8 @@ def check_db_connection():
         return False
     except Exception:
         return False
+    finally:
+        connection.close()
 
     return True
 
