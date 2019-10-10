@@ -19,7 +19,7 @@
 import logging
 
 from django.conf import settings
-from django.db import connection
+from django.db import connection, close_old_connections
 from django.db.utils import OperationalError
 from django.utils.translation import gettext_lazy as _
 
@@ -38,6 +38,10 @@ MSG_EXTERNAL_APP_TOKEN_OK = _('"{app}" app token is valid for app server ({url})
 
 
 def check_db_connection():
+    # this should happen automatically, but it does not hurt to force it
+    # https://github.com/django/django/blob/2.2.6/django/db/__init__.py#L55-L61
+    close_old_connections()
+
     try:
         connection.cursor()
     except OperationalError:
@@ -46,6 +50,7 @@ def check_db_connection():
         return False
     finally:
         connection.close()
+        close_old_connections()
 
     return True
 
