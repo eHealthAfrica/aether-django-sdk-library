@@ -326,6 +326,7 @@ More information in https://docs.djangoproject.com/en/2.2/ref/settings/#database
   - `PGUSER`: Postgres user (**mandatory**).
   - `PGPASSWORD`: Postgres user password (**mandatory**).
   - `DB_CONN_MAX_AGE`: The lifetime of a database connection, in seconds.
+     Defaults to `0` (non persistent connections).
 
 ##### Endpoints
 
