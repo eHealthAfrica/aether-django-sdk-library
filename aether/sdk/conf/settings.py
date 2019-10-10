@@ -163,7 +163,7 @@ DATABASES = {
 
 # the default value is 0 (non persistent connections)
 # to avoid idle connections only include the entry when required
-DB_CONN_MAX_AGE = int(os.environ.get('DB_CONN_MAX_AGE', 0))
+DB_CONN_MAX_AGE = int(os.environ.get('DB_CONN_MAX_AGE', 600))  # 5 minutes
 if DB_CONN_MAX_AGE > 0:
     DATABASES['default']['CONN_MAX_AGE'] = DB_CONN_MAX_AGE
 
