@@ -23,7 +23,11 @@ from aether.sdk.multitenancy.models import MtInstance
 
 class MtInstanceAdmin(admin.ModelAdmin):
 
-    list_display = ('instance', 'realm',)
+    list_display = ('realm', 'instance',)
+
+    list_filter = ('realm',)
+    search_fields = ('instance',)
+    ordering = list_display
 
     show_full_result_count = True
     empty_value_display = '---'
