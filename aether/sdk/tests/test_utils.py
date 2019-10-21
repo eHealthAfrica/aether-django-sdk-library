@@ -76,16 +76,16 @@ class UtilsTests(TestCase):
     def test__request__3_times__raises(self):
         with mock.patch('aether.sdk.utils.requests.request',
                         side_effect=[
-                            Exception('1'),
-                            Exception('2'),
-                            Exception('3'),
+                            Exception('a'),
+                            Exception('b'),
+                            Exception('c'),
                             'ok',
                         ]) as mock_req:
             with self.assertRaises(Exception) as e:
                 response = utils.request(url='raises exception')
                 self.assertIsNone(response)
                 self.assertIsNotNone(e)
-                self.assertEqual(str(e), '3')
+                self.assertEqual(str(e), 'c')
 
             self.assertEqual(mock_req.call_count, 3)
 
