@@ -48,6 +48,18 @@ STATIC_ROOT = os.environ.get('STATIC_ROOT', '/var/www/static/')
 
 PRETTIFIED_CUTOFF = int(os.environ.get('PRETTIFIED_CUTOFF', 10000))
 
+# Executes each request call at least X times
+# trying to avoid unexpected connection errors.
+try:
+    REQUEST_ERROR_RETRIES = int(os.environ.get('REQUEST_ERROR_RETRIES', 3))
+except ValueError:
+    REQUEST_ERROR_RETRIES = 3
+
+if REQUEST_ERROR_RETRIES < 3:     # too small
+    REQUEST_ERROR_RETRIES = 3
+elif REQUEST_ERROR_RETRIES > 10:  # too big
+    REQUEST_ERROR_RETRIES = 10
+
 
 # Django Basic Configuration
 # ------------------------------------------------------------------------------
@@ -637,6 +649,6 @@ MIDDLEWARE = [
 # This scriptlet allows you to include custom settings in your local environment
 
 try:
-    from local_settings import *  # noqa
+    from .local_settings import *  # noqa
 except ImportError:
     logger.debug('No local settings!')

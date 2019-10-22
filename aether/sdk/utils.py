@@ -99,26 +99,24 @@ def find_in_request_headers(request, key, default_value=None):
 
 def request(*args, **kwargs):
     '''
-    Executes the request call at least three times to avoid
-    unexpected connection errors (not request expected ones).
+    Executes the request call at least X times (``REQUEST_ERROR_RETRIES``)
+    trying to avoid unexpected connection errors (not request expected ones).
 
     Like:
 
         # ConnectionResetError: [Errno 104] Connection reset by peer
         # http.client.RemoteDisconnected: Remote end closed connection without response
     '''
-    count = 0
-    exception = None
 
-    while count < 3:
+    count = 0
+    while True:
+        count += 1
         try:
             return requests.request(*args, **kwargs)
         except Exception as e:
-            exception = e
-        count += 1
-        sleep(1)
-
-    raise exception
+            if count >= settings.REQUEST_ERROR_RETRIES:
+                raise e
+        sleep(count)  # sleep longer in each iteration
 
 
 def get_all_docs(url, **kwargs):
