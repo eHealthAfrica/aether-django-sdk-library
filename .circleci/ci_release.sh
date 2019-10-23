@@ -22,14 +22,14 @@ set -Eeuo pipefail
 
 
 echo "-------------------- distribution version --------------------"
-export VERSION=$TRAVIS_TAG
+export VERSION=$CIRCLE_TAG
 echo "-------------------- $VERSION --------------------"
 
 echo "-------------------- build distribution --------------------"
 ./scripts/build.sh
 
 echo "-------------------- install twine --------------------"
-pip3 install -q --upgrade twine
+pip3 install --user -q --upgrade twine
 
 echo "-------------------- upload to PyPi repository --------------------"
 twine upload --skip-existing dist/*
