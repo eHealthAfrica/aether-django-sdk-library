@@ -180,6 +180,30 @@ if DB_CONN_MAX_AGE > 0:
     DATABASES['default']['CONN_MAX_AGE'] = DB_CONN_MAX_AGE
 
 
+# Scheduler Configuration
+# -------------------------------------------------------------------------------
+
+SCHEDULER_REQUIRED = bool(os.environ.get('SCHEDULER_REQUIRED'))
+if SCHEDULER_REQUIRED:
+    INSTALLED_APPS += ['django_rq', ]
+
+    REDIS_HOST = get_required('REDIS_HOST')
+    REDIS_PORT = get_required('REDIS_PORT')
+    REDIS_DB = os.environ.get('REDIS_DB', 0)
+    REDIS_PASSWORD = get_required('REDIS_PASSWORD')
+
+    RQ_SHOW_ADMIN_LINK = True
+    RQ_QUEUES = {
+        'default': {
+            'HOST': REDIS_HOST,
+            'PORT': REDIS_PORT,
+            'DB': REDIS_DB,
+            'PASSWORD': REDIS_PASSWORD,
+            'DEFAULT_TIMEOUT': 360,
+        },
+    }
+
+
 # App Configuration
 # ------------------------------------------------------------------------------
 
@@ -269,13 +293,32 @@ LOGGING = {
     },
 }
 
+if SCHEDULER_REQUIRED:
+    LOGGING['loggers']['rq.worker'] = {
+        'level': LOGGING_LEVEL,
+        'handlers': ['console', ],
+        'propagate': False,
+    }
+
+
 # https://docs.sentry.io/platforms/python/django/
 SENTRY_DSN = os.environ.get('SENTRY_DSN')
 if SENTRY_DSN:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
 
-    sentry_sdk.init(integrations=[DjangoIntegration(), ])
+    SENTRY_INTEGRATIONS = [DjangoIntegration(), ]
+
+    if SCHEDULER_REQUIRED:
+        from sentry_sdk.integrations.rq import RqIntegration
+        from sentry_sdk.integrations.redis import RedisIntegration
+
+        SENTRY_INTEGRATIONS += [
+            RqIntegration(),
+            RedisIntegration(),
+        ]
+
+    sentry_sdk.init(integrations=SENTRY_INTEGRATIONS)
 
 else:
     logger.info('No SENTRY enabled!')
@@ -549,30 +592,6 @@ if WEBPACK_REQUIRED:
     }
 
 
-# Scheduler Configuration
-# -------------------------------------------------------------------------------
-
-SCHEDULER_REQUIRED = bool(os.environ.get('SCHEDULER_REQUIRED'))
-if SCHEDULER_REQUIRED:
-    INSTALLED_APPS += ['django_rq', ]
-
-    REDIS_HOST = get_required('REDIS_HOST')
-    REDIS_PORT = get_required('REDIS_PORT')
-    REDIS_DB = os.environ.get('REDIS_DB', 0)
-    REDIS_PASSWORD = get_required('REDIS_PASSWORD')
-
-    RQ_SHOW_ADMIN_LINK = True
-    RQ_QUEUES = {
-        'default': {
-            'HOST': REDIS_HOST,
-            'PORT': REDIS_PORT,
-            'DB': REDIS_DB,
-            'PASSWORD': REDIS_PASSWORD,
-            'DEFAULT_TIMEOUT': 360,
-        },
-    }
-
-
 # Debug Configuration
 # ------------------------------------------------------------------------------
 
@@ -586,6 +605,7 @@ if not TESTING and DEBUG:
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_COLLAPSED': True,
         'SHOW_TOOLBAR_CALLBACK': lambda _: True,
+        'ENABLE_STACKTRACES': False,
     }
 
     DEBUG_TOOLBAR_PANELS = [
