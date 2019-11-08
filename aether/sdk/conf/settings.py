@@ -559,9 +559,13 @@ if STORAGE_REQUIRED:
         AWS_S3_REGION_NAME = get_required('AWS_S3_REGION_NAME')
         AWS_DEFAULT_ACL = get_required('AWS_DEFAULT_ACL')
 
+        STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
     elif DJANGO_STORAGE_BACKEND == 'gcs':
         INSTALLED_APPS += ['storages', ]
         DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+
+        STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 
         GS_BUCKET_NAME = get_required('BUCKET_NAME')
 
