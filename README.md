@@ -390,6 +390,7 @@ More information in https://django-storages.readthedocs.io/en/latest/index.html
 ##### Minio (`DJANGO_STORAGE_BACKEND=minio`)
 
 - `BUCKET_NAME`: Name of the bucket that will act as MEDIA folder (**mandatory**).
+- `STATIC_FILES_BUCKET_NAME`: Name of the bucket to collect static files (**mandatory** if `COLLECT_STATIC_FILES_ON_STORAGE` is set to `true`)
 - `MINIO_STORAGE_ACCESS_KEY`: Minio Access Key.
 - `MINIO_STORAGE_SECRET_KEY`: Minio Secret Access Key.
 - `MINIO_STORAGE_ENDPOINT`: Minio server URL endpoint (without scheme).

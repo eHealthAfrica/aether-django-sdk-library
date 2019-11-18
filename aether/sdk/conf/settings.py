@@ -553,8 +553,7 @@ if STORAGE_REQUIRED:
 
         if bool(os.environ.get('COLLECT_STATIC_FILES_ON_STORAGE')):
             STATICFILES_STORAGE = 'minio_storage.storage.MinioMediaStorage'
-            MINIO_STORAGE_STATIC_BUCKET_NAME = f'{get_required("BUCKET_NAME")}-static'
-            MINIO_STORAGE_AUTO_CREATE_STATIC_BUCKET = True
+            MINIO_STORAGE_STATIC_BUCKET_NAME = get_required("STATIC_FILES_BUCKET_NAME")
 
     elif DJANGO_STORAGE_BACKEND == 's3':
         INSTALLED_APPS += ['storages', ]
