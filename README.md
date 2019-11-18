@@ -382,12 +382,15 @@ See more in https://github.com/jazzband/django-silk
 - `DJANGO_STORAGE_BACKEND`: Used to specify a
   [Default file storage system](https://docs.djangoproject.com/en/2.2/ref/settings/#default-file-storage).
   Available options: `minio`, `s3`, `gcs`.
+- `COLLECT_STATIC_FILES_ON_STORAGE`: Used to indicate if static files should be collected on the specified cloud-based storage service (`s3` or `gcs`)
+  Is `false` if unset or set to empty string, anything else is considered `true`.
 
 More information in https://django-storages.readthedocs.io/en/latest/index.html
 
 ##### Minio (`DJANGO_STORAGE_BACKEND=minio`)
 
 - `BUCKET_NAME`: Name of the bucket that will act as MEDIA folder (**mandatory**).
+- `STATIC_FILES_BUCKET_NAME`: Name of the bucket to collect static files (**mandatory** if `COLLECT_STATIC_FILES_ON_STORAGE` is set to `true`)
 - `MINIO_STORAGE_ACCESS_KEY`: Minio Access Key.
 - `MINIO_STORAGE_SECRET_KEY`: Minio Secret Access Key.
 - `MINIO_STORAGE_ENDPOINT`: Minio server URL endpoint (without scheme).
