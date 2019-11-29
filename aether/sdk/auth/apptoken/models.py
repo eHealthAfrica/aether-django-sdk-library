@@ -115,4 +115,6 @@ class AppToken(models.Model):
         default_related_name = 'app_tokens'
         verbose_name = _('application token')
         verbose_name_plural = _('application tokens')
-        unique_together = ('user', 'app',)
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'app'], name='unique_app_token_and_user'),
+        ]

@@ -46,7 +46,9 @@ class UserRole(models.Model):
     class Meta:
         app_label = 'cas'
         ordering = ['name']
-        unique_together = ('user', 'group')
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'group'], name='unique_user_and_role'),
+        ]
 
         verbose_name = 'user role'
         verbose_name_plural = 'user roles'
