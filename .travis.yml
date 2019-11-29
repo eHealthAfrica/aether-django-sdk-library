@@ -5,6 +5,11 @@ python:
 
 install: true
 
+# build only the master branch
+branches:
+  only:
+  - master
+
 # use matrix to split jobs and only re-execute the failing one
 matrix:
   fast_finish: true
