@@ -417,28 +417,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Authentication Server Configuration
 # ------------------------------------------------------------------------------
-# First check Keycloak option
-# Second if not Keycloak then check CAS option
 
-CAS_SERVER_URL = os.environ.get('CAS_SERVER_URL')
 KEYCLOAK_SERVER_URL = os.environ.get('KEYCLOAK_SERVER_URL')
 GATEWAY_ENABLED = False
-
-
-if not KEYCLOAK_SERVER_URL and CAS_SERVER_URL:
-    INSTALLED_APPS += [
-        'django_cas_ng',
-        'aether.sdk.auth.cas',
-    ]
-    AUTHENTICATION_BACKENDS += [
-        'aether.sdk.auth.cas.backends.CASRoleBackend',
-    ]
-    CAS_VERSION = 3
-    CAS_LOGOUT_COMPLETELY = True
-    HOSTNAME = get_required('HOSTNAME')
-
-else:
-    logger.info('No CAS enabled!')
 
 
 if KEYCLOAK_SERVER_URL:

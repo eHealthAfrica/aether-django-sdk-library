@@ -39,7 +39,6 @@ setup(
         'django',
         'setup',
         'auth',
-        'cas',
         'token',
         'keycloak',
         'multitenancy',
@@ -67,9 +66,6 @@ setup(
         'uwsgi',
     ],
     extras_require={
-        'cas': [
-            'django-cas-ng>=3.6',
-        ],
         'scheduler': [
             'django-rq',
             'redis',
