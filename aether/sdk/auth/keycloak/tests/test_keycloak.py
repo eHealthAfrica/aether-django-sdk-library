@@ -36,7 +36,6 @@ user_objects = get_user_model().objects
 
 @override_settings(
     AUTH_URL='accounts',
-    CAS_SERVER_URL=None,
     KEYCLOAK_BEHIND_SCENES=True,
 )
 class KeycloakBehindTests(UrlsTestCase):
@@ -348,7 +347,6 @@ class KeycloakBehindTests(UrlsTestCase):
 
 @override_settings(
     AUTH_URL='accounts',
-    CAS_SERVER_URL=None,
     KEYCLOAK_BEHIND_SCENES=False,
 )
 class KeycloakTests(UrlsTestCase):
@@ -682,7 +680,6 @@ class KeycloakTests(UrlsTestCase):
             mock_req_9.assert_not_called()
 
 
-@override_settings(CAS_SERVER_URL=None)
 class KeycloakGatewayTests(UrlsTestCase):
 
     def test_logout(self):

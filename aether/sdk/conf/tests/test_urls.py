@@ -26,7 +26,6 @@ from aether.sdk.unittest import UrlsTestCase
 @override_settings(
     ADMIN_URL='admin',
     AUTH_URL='accounts',
-    CAS_SERVER_URL=None,
     KEYCLOAK_SERVER_URL=None,
 )
 class UrlsTest(UrlsTestCase):
@@ -106,32 +105,6 @@ class UrlsNoTokenTest(UrlsTestCase):
 
 @override_settings(
     AUTH_URL='accounts',
-    CAS_SERVER_URL='http://cas:6666',
-    INSTALLED_APPS=[
-        *settings.INSTALLED_APPS,
-        'django_cas_ng',
-        'aether.sdk.auth.cas',
-    ],
-)
-class UrlsCASServerTest(UrlsTestCase):
-
-    def test__urls(self):
-        from django_cas_ng import views
-
-        self.assertEqual(reverse('rest_framework:login'), '/accounts/login')
-        self.assertEqual(reverse('rest_framework:logout'), '/accounts/logout')
-
-        self.assertEqual(resolve('/accounts/login').func.view_class,
-                         views.LoginView.as_view().view_class)
-        self.assertEqual(resolve('/accounts/logout').func.view_class,
-                         views.LogoutView.as_view().view_class)
-        self.assertEqual(resolve('/logout').func.view_class,
-                         views.LogoutView.as_view().view_class)
-
-
-@override_settings(
-    AUTH_URL='accounts',
-    CAS_SERVER_URL=None,
     KEYCLOAK_BEHIND_SCENES=True,
     KEYCLOAK_SERVER_URL='http://keycloak:6666',
 )
@@ -152,7 +125,6 @@ class UrlsKeycloakServerBehindTest(UrlsTestCase):
 
 @override_settings(
     AUTH_URL='accounts',
-    CAS_SERVER_URL=None,
     KEYCLOAK_BEHIND_SCENES=False,
     KEYCLOAK_SERVER_URL='http://keycloak:6666',
 )
@@ -171,7 +143,6 @@ class UrlsKeycloakServerTest(UrlsTestCase):
 
 
 @override_settings(
-    CAS_SERVER_URL=None,
     KEYCLOAK_BEHIND_SCENES=False,
     KEYCLOAK_SERVER_URL='http://keycloak:6666',
 )

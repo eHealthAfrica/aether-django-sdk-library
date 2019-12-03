@@ -49,10 +49,6 @@ Python libraries:
 
 Extra dependencies (based on settings):
 
-- **cas**
-  - [django-cas-ng](https://github.com/mingchen/django-cas-ng)
-    Django CAS (Central Authentication Service) client. (**Above 3.6**)
-
 - **scheduler**
   - [django-rq](https://github.com/rq/django-rq)
     A simple app that provides django integration for RQ (Redis Queue).
@@ -99,7 +95,7 @@ Extra dependencies (based on settings):
 pip3 install aether.sdk
 
 # with extra dependencies
-pip3 install aether.sdk[cas,scheduler,server,storage,test,webpack]
+pip3 install aether.sdk[scheduler,server,storage,test,webpack]
 ```
 
 *[Return to TOC](#table-of-contents)*
@@ -193,7 +189,7 @@ Default URLs included:
 
   - the `/accounts` URLs (`AUTH_URL` setting), checks if the REST Framework ones,
     using the templates indicated in `LOGIN_TEMPLATE` and `LOGGED_OUT_TEMPLATE`
-    settings, or the Keycloak/CAS ones.
+    settings, or the Keycloak ones.
 
 Based on the arguments:
 
@@ -521,24 +517,13 @@ For those endpoints that don't depend on the realm and must also be available
 
 - `GATEWAY_PUBLIC_REALM`: `-` This represents the fake realm that is not protected
   by the gateway server. In this case the authentication is handled by the other
-  available options, i.e., basic, token, CAS...
+  available options, i.e., basic, token...
 
 The authorization and admin endpoints never depend on any realm so the final URLs
 use always the public realm.
 
 - http://my-gateway-server/-/my-module/accounts/
 - http://my-gateway-server/-/my-module/admin/
-
-*[Return to TOC](#table-of-contents)*
-
-##### CAS Server
-
-Set the `HOSTNAME` and `CAS_SERVER_URL` environment variables if you want to
-activate the CAS integration in the application.
-
-See more in [Django CAS client](https://github.com/mingchen/django-cas-ng).
-
-> Note: CAS option cannot be enabled at the same time as Keycloak.
 
 *[Return to TOC](#table-of-contents)*
 
