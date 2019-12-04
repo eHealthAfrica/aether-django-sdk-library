@@ -142,10 +142,14 @@ class UtilsTests(TestCase):
 
         with mock.patch('aether.sdk.utils.request', return_value=mock_response) as mock_get:
             response = utils.get_file_content('sample.txt', 'http://any-server/sample.txt', False)
-            mock_get.assert_called_once_with(url='http://any-server/sample.txt', method='get')
+            mock_get.assert_called_once_with(
+                url='http://any-server/sample.txt',
+                method='get',
+                stream=True,
+            )
 
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.content, b'abc')
+            self.assertEqual(b''.join(response.streaming_content), b'abc')
             self.assertEqual(response['Content-Type'], 'testing')
 
             self.assertNotIn('Content-Disposition', response)
@@ -159,10 +163,14 @@ class UtilsTests(TestCase):
 
         with mock.patch('aether.sdk.utils.request', return_value=mock_response) as mock_get:
             response = utils.get_file_content('sample.txt', 'http://any-server/sample.txt', True)
-            mock_get.assert_called_once_with(url='http://any-server/sample.txt', method='get')
+            mock_get.assert_called_once_with(
+                url='http://any-server/sample.txt',
+                method='get',
+                stream=True,
+            )
 
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.content, b'abc')
+            self.assertEqual(b''.join(response.streaming_content), b'abc')
             self.assertEqual(response['Content-Type'], 'testing')
 
             self.assertEqual(response['Content-Disposition'],

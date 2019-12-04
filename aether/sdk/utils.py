@@ -22,7 +22,7 @@ import requests
 from time import sleep
 
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import FileResponse
 from django.utils.safestring import mark_safe
 
 from pygments import highlight
@@ -141,17 +141,18 @@ def get_file_content(file_name, file_url, as_attachment=False):
     Gets file content usually from File Storage URL and returns it back.
     '''
 
-    response = request(method='get', url=file_url)
+    response = request(method='get', url=file_url, stream=True)
 
-    http_response = HttpResponse(
-        content=response,
+    http_response = FileResponse(
+        streaming_content=response,
+        as_attachment=as_attachment,
+        filename=file_name,
         status=response.status_code,
         content_type=response.headers.get('Content-Type'),
     )
+    http_response.set_headers(filelike=response)
 
-    http_response['Content-Type'] = response.headers.get('Content-Type')
     if as_attachment:
-        http_response['Content-Disposition'] = f'attachment; filename="{file_name}"'
         http_response['Access-Control-Expose-Headers'] = 'Content-Disposition'
 
     return http_response
