@@ -149,7 +149,7 @@ class UtilsTests(TestCase):
             )
 
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(b''.join(response.streaming_content), b'abc')
+            self.assertEqual(response.getvalue(), b'abc')
             self.assertEqual(response['Content-Type'], 'testing')
 
             self.assertNotIn('Content-Disposition', response)
@@ -170,7 +170,7 @@ class UtilsTests(TestCase):
             )
 
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(b''.join(response.streaming_content), b'abc')
+            self.assertEqual(response.getvalue(), b'abc')
             self.assertEqual(response['Content-Type'], 'testing')
 
             self.assertEqual(response['Content-Disposition'],
