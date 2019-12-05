@@ -141,7 +141,7 @@ class UtilsTests(TestCase):
         mock_response.headers = {'Content-Type': 'testing'}
 
         with mock.patch('aether.sdk.utils.request', return_value=mock_response) as mock_get:
-            response = utils.get_file_content('sample.txt', 'http://any-server/sample.txt', False)
+            response = utils.get_file_content(None, 'http://any-server/sample.txt', False)
             mock_get.assert_called_once_with(
                 url='http://any-server/sample.txt',
                 method='get',
@@ -162,7 +162,11 @@ class UtilsTests(TestCase):
         mock_response.headers = {'Content-Type': 'testing'}
 
         with mock.patch('aether.sdk.utils.request', return_value=mock_response) as mock_get:
-            response = utils.get_file_content('sample.txt', 'http://any-server/sample.txt', True)
+            response = utils.get_file_content(
+                '/a/b/sample.txt',
+                'http://any-server/sample.txt',
+                True,
+            )
             mock_get.assert_called_once_with(
                 url='http://any-server/sample.txt',
                 method='get',
