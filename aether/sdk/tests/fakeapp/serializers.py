@@ -24,6 +24,7 @@ from aether.sdk.drf.serializers import (
     HyperlinkedIdentityField,
     HyperlinkedRelatedField,
     UsernameField,
+    UserNameField,
 )
 from aether.sdk.multitenancy.serializers import (
     MtModelSerializer,
@@ -54,6 +55,7 @@ class TestModelSerializer(MtModelSerializer):
         default=None,
         queryset=UserModel.objects.all(),
     )
+    uname = UserNameField(source='user')
 
     class Meta:
         model = TestModel
@@ -85,3 +87,16 @@ class TestUserSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = UserModel
         fields = ('id', 'username', 'email',)
+
+
+class TestUserSerializer2(DynamicFieldsModelSerializer):
+
+    name = UserNameField(source='*')
+
+    class Meta:
+        model = UserModel
+        fields = (
+            'id', 'username',
+            # required to test UserNameField
+            'name', 'first_name', 'last_name',
+        )

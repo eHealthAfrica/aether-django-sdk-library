@@ -20,7 +20,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory, TestCase, override_settings
 
-from aether.sdk.tests.fakeapp.serializers import TestUserSerializer
+from aether.sdk.tests.fakeapp.serializers import TestUserSerializer, TestUserSerializer2
 
 TEST_REALM = 'realm-test'
 
@@ -119,3 +119,35 @@ class SerializersTests(TestCase):
         user_obj = get_user_model().objects.get(pk=user.data['id'])
         self.assertEqual(user_obj.username, 'user')
         self.assertEqual(user.data['username'], 'user')
+
+    @override_settings(MULTITENANCY=True)
+    def test_user_field__multitenancy(self):
+        user_data = {
+            'username': 'user',
+        }
+
+        user = TestUserSerializer2(
+            data=user_data,
+            context={'request': self.request},
+        )
+        self.assertTrue(user.is_valid(), user.errors)
+        user.save()
+
+        self.assertEqual(user.data['name'], 'user')
+
+    @override_settings(MULTITENANCY=False)
+    def test_user_field__no_multitenancy(self):
+        user_data = {
+            'username': 'user',
+            'first_name': 'John',
+            'last_name': 'Doe',
+        }
+
+        user = TestUserSerializer2(
+            data=user_data,
+            context={'request': self.request},
+        )
+        self.assertTrue(user.is_valid(), user.errors)
+        user.save()
+
+        self.assertEqual(user.data['name'], 'John Doe')

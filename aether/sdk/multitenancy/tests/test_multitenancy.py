@@ -53,6 +53,9 @@ class MultitenancyTests(TestCase):
         email = 'user@example.com'
         password = 'secretsecret'
         user = get_user_model().objects.create_user(username, email, password)
+        user.first_name = 'John'
+        user.last_name = 'Doe'
+        user.save(update_fields=['first_name', 'last_name'])
 
         self.request = RequestFactory().get('/')
         self.request.COOKIES[settings.REALM_COOKIE] = TEST_REALM
@@ -122,6 +125,17 @@ class MultitenancyTests(TestCase):
         self.assertIn('/testtestmodel/' + str(obj1.data['id']), obj1.data['url'])
         self.assertIn('/testtestchildmodel/?parent=' + str(obj1.data['id']),
                       obj1.data['children_url'])
+
+        # update and check user name
+        obj1_upd = TestModelSerializer(
+            TestModel.objects.get(pk=obj1.data['id']),
+            data={'user': self.request.user.pk},
+            context={'request': self.request},
+            partial=True,
+        )
+        self.assertTrue(obj1_upd.is_valid(), obj1_upd.errors)
+        obj1_upd.save()
+        self.assertEqual(obj1_upd.data['uname'], 'John Doe')
 
         # create another TestModel instance
         obj2 = TestModel.objects.create(name='two')
