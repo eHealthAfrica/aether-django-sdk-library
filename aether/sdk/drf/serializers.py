@@ -132,7 +132,7 @@ class UsernameField(serializers.Field):
 
 class UserNameField(serializers.ReadOnlyField, serializers.RelatedField):
     '''
-    Custom serializer to diplay user's full name.
+    Custom serializer to display user's full name.
     '''
 
     def to_representation(self, value):
