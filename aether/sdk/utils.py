@@ -146,7 +146,8 @@ def get_file_content(file_name, file_url, as_attachment=False):
     http_response = FileResponse(
         streaming_content=response,
         as_attachment=as_attachment,
-        filename=file_name,
+        # take the last part of the filename path
+        filename=file_name.split('/')[-1] if file_name else '',
         status=response.status_code,
         content_type=response.headers.get('Content-Type'),
     )
