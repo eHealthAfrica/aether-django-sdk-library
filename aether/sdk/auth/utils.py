@@ -58,3 +58,19 @@ def unparse_username(request, username):
     if realm and username.startswith(f'{realm}__'):
         username = username[len(f'{realm}__'):]
     return username
+
+
+def user_to_string(user, request=None):
+    '''
+    Returns a readable name of the user.
+
+    - ``first_name`` + ``last_name``
+    - ``username``
+    '''
+
+    if user.first_name and user.last_name:
+        return f'{user.first_name} {user.last_name}'
+
+    if request:
+        return unparse_username(request, user.username)
+    return user.username

@@ -21,7 +21,7 @@ import urllib
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from aether.sdk.auth.utils import parse_username, unparse_username
+from aether.sdk.auth.utils import parse_username, unparse_username, user_to_string
 from aether.sdk.multitenancy.utils import get_path_realm
 
 
@@ -128,3 +128,12 @@ class UsernameField(serializers.Field):
 
     def to_internal_value(self, data):
         return parse_username(self.context['request'], data)
+
+
+class UserNameField(serializers.ReadOnlyField, serializers.RelatedField):
+    '''
+    Custom serializer to display user's full name.
+    '''
+
+    def to_representation(self, value):
+        return user_to_string(value, self.context['request'])

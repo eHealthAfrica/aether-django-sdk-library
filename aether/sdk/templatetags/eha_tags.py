@@ -19,7 +19,7 @@
 from django import template
 from django.utils.html import escape
 
-from aether.sdk.auth.utils import unparse_username
+from aether.sdk.auth.utils import user_to_string
 from aether.sdk.utils import json_prettified
 
 register = template.Library()
@@ -31,18 +31,10 @@ def get_fullname(user, request=None):
     Returns a readable name of the user.
 
     - ``first_name`` + ``last_name``
-    - ``name``
     - ``username``
     '''
 
-    name = user.username
-    if request:
-        name = unparse_username(request, name)
-
-    if user.first_name and user.last_name:
-        name = '{} {}'. format(user.first_name, user.last_name)
-
-    return escape(name)
+    return escape(user_to_string(user, request))
 
 
 @register.filter(name='prettified')
