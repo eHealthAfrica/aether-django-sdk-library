@@ -76,6 +76,7 @@ setup(
             'sentry-sdk',
         ],
         'storage': [
+            'django-cleanup',
             'django-minio-storage',
             'django-storages[boto3,google]',
         ],

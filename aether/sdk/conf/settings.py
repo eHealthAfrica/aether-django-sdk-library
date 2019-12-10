@@ -655,6 +655,14 @@ MIDDLEWARE = [
 ]
 
 
+# Django Cleanup configuration
+# ------------------------------------------------------------------------------
+
+# https://github.com/un1t/django-cleanup#configuration
+if STORAGE_REQUIRED:
+    INSTALLED_APPS += ['django_cleanup', ]
+
+
 # Local Configuration
 # ------------------------------------------------------------------------------
 # This scriptlet allows you to include custom settings in your local environment

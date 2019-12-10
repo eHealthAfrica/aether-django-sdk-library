@@ -70,6 +70,9 @@ Extra dependencies (based on settings):
     A collection of custom storage backends for Django.
     Enabled for [boto3](https://github.com/boto/boto3) and
     [google-cloud-storage](https://github.com/googleapis/google-cloud-python).
+  - [django-cleanup](https://github.com/un1t/django-cleanup)
+    Automatically deletes old file for FileField and ImageField.
+    It also deletes files on models instance deletion.
 
 - **test**
   - [coverage](https://coverage.readthedocs.io/)
