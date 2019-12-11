@@ -30,7 +30,7 @@ class SettingsTest(TestCase):
 
         self.assertFalse(settings.STORAGE_REQUIRED)
         self.assertFalse(settings.SCHEDULER_REQUIRED)
-        self.assertFalse(settings.WEBPACK_REQUIRED)
+        self.assertTrue(settings.WEBPACK_REQUIRED)
 
         self.assertEqual(settings.APP_MODULE, 'aether.sdk.tests.fakeapp')
         self.assertEqual(settings.ROOT_URLCONF, 'aether.sdk.tests.urls')

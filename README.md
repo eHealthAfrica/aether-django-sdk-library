@@ -381,8 +381,9 @@ See more in https://github.com/jazzband/django-silk
 - `DJANGO_STORAGE_BACKEND`: Used to specify a
   [Default file storage system](https://docs.djangoproject.com/en/2.2/ref/settings/#default-file-storage).
   Available options: `minio`, `s3`, `gcs`.
-- `COLLECT_STATIC_FILES_ON_STORAGE`: Used to indicate if static files should be collected on the specified cloud-based storage service (`s3` or `gcs`)
+- `COLLECT_STATIC_FILES_ON_STORAGE`: Used to indicate if static files should be collected on the specified cloud-based storage service (`minio`, `s3` or `gcs`)
   Is `false` if unset or set to empty string, anything else is considered `true`.
+- `CDN_URL`: Used to indicate the public cdn base url to access webpack static files.
 
 More information in https://django-storages.readthedocs.io/en/latest/index.html
 

@@ -253,3 +253,15 @@ class TestCreateUserCommand(TestCase):
                      stderr=self.out)
         self.assertTrue(UserModel.filter(username='test__user_test').exists())
         self.assertEqual(Token.objects.all().count(), 1)
+
+
+class TestCdnPublishCommand(TestCase):
+
+    def setUp(self):
+        # Redirect to /dev/null in order to not clutter the test log.
+        self.out = open(os.devnull, 'w')
+
+    @mock.patch('aether.sdk.management.commands.cdn_publish.default_storage.save')
+    def test_cdn_publish(self, mock_cdn_save):
+        call_command('cdn_publish', stdout=self.out, stderr=self.out)
+        mock_cdn_save.assert_called()
