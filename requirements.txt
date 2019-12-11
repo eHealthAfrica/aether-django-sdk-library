@@ -12,6 +12,7 @@ django-debug-toolbar
 django-prometheus
 django-silk
 django-uwsgi
+django-webpack-loader
 djangorestframework>=3.8
 psycopg2-binary
 pygments
