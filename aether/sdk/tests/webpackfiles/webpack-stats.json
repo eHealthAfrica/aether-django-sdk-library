@@ -1,1 +1,10 @@
-{"status": "done", "chunks": {"common": [{"name": "common-20191210225738-CDN-static-files.js", "path": "/code/bundles/common-20191210225738-CDN-static-files.js", "pubicPath": "/ui-assets/static/common-20191210225738-CDN-static-files.js"}], "pipeline": [{"name": "pipeline-20191210225738-CDN-static-files.js", "path": "/code/bundles/pipeline-20191210225738-CDN-static-files.js", "pubicPath": "/ui-assets/static/pipeline-20191210225738-CDN-static-files.js"}], "styles": [{"name": "styles-20191210225738-CDN-static-files.css", "path": "/code/bundles/styles-20191210225738-CDN-static-files.css", "pubicPath": "/ui-assets/static/styles-20191210225738-CDN-static-files.css"}, {"name": "styles-20191210225738-CDN-static-files.js", "path": "/code/bundles/styles-20191210225738-CDN-static-files.js", "pubicPath": "/ui-assets/static/styles-20191210225738-CDN-static-files.js"}]}, "startTime": 1576058308786, "endTime": 1576058331660}
+{
+    "chunks": {
+        "test": [
+            {
+                "name": "test-CDN-static-files.js",
+                "path": "/aether/sdk/tests/webpackfiles/test-CDN-static-files.js"
+            }
+        ]
+    }
+}

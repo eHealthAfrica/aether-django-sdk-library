@@ -45,7 +45,7 @@ class Command(BaseCommand):
                     for key in stats['chunks']:
                         for item in stats['chunks'][key]:
                             name = item['name']
-                            item['pubicPath'] = f'{CDN_URL}/{name}'
+                            item['publicPath'] = f'{CDN_URL}/{name}'
                     file = File(open(file_path, 'w'))
                     file.write(json.dumps(stats))
                     file = File(open(file_path, 'rb'))

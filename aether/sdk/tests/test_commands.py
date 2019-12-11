@@ -18,11 +18,14 @@
 
 from unittest import mock
 import os
+import json
 
 from django.contrib.auth import get_user_model
 from django.core.management.base import CommandError
 from django.core.management import call_command
 from django.test import TestCase, override_settings
+from django.core.files import File
+from django.conf import settings
 
 from rest_framework.authtoken.models import Token
 
@@ -265,3 +268,7 @@ class TestCdnPublishCommand(TestCase):
     def test_cdn_publish(self, mock_cdn_save):
         call_command('cdn_publish', stdout=self.out, stderr=self.out)
         mock_cdn_save.assert_called()
+
+        f = File(open(settings.WEBPACK_STATS_FILE, 'r'))
+        f_content = json.loads(f.read())
+        self.assertIn('publicPath', f_content['chunks']['test'][0])
