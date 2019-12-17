@@ -364,7 +364,7 @@ if _external_apps:
 if EXTERNAL_APPS:
     INSTALLED_APPS += ['aether.sdk.auth.apptoken', ]
 
-    EXPOSE_HEADERS_WHITELIST = os.environ.get('EXPOSE_HEADERS_WHITELIST', '').split(',')
+    EXPOSE_HEADERS_WHITELIST = os.environ.get('EXPOSE_HEADERS_WHITELIST', '')
     if not EXPOSE_HEADERS_WHITELIST or EXPOSE_HEADERS_WHITELIST == '*':
         EXPOSE_HEADERS_WHITELIST = [
             'ACCEPT',
@@ -375,6 +375,8 @@ if EXTERNAL_APPS:
             'CONTENT_TYPE',
             'DATE',
         ]
+    else:
+        EXPOSE_HEADERS_WHITELIST = EXPOSE_HEADERS_WHITELIST.split(',')
 
 else:
     logger.info('No linked external apps!')

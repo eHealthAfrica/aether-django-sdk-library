@@ -160,7 +160,7 @@ class TokenProxyView(View):
         headers = {
             normalize_meta_http_name(header): str(value)
             for header, value in request.META.items()
-            if _valid_header(header)
+            if _valid_header(header) and str(value)
         }
         headers = add_current_realm_in_headers(request, headers)
 
