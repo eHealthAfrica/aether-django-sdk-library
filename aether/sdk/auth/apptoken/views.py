@@ -135,7 +135,7 @@ class TokenProxyView(View):
             # This problem might not be exposed running on localhost
 
             return (
-                name in ['CONTENT_TYPE'] or
+                name in settings.EXPOSE_HEADERS_WHITELIST or
                 (name.startswith('CSRF_') and name not in ['CSRF_COOKIE_USED']) or
                 (name.startswith('HTTP_') and name not in ['HTTP_HOST'])
             )
@@ -160,7 +160,7 @@ class TokenProxyView(View):
         headers = {
             normalize_meta_http_name(header): str(value)
             for header, value in request.META.items()
-            if _valid_header(header)
+            if _valid_header(header) and str(value)
         }
         headers = add_current_realm_in_headers(request, headers)
 
@@ -183,8 +183,16 @@ class TokenProxyView(View):
         # copy the exposed headers from the original response ones
         # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
         # https://fetch.spec.whatwg.org/#http-access-control-expose-headers
-        expose_headers = response.headers.get('Access-Control-Expose-Headers', '').split(', ')
+        expose_headers = [
+            normalize_meta_http_name(header)
+            for header in settings.EXPOSE_HEADERS_WHITELIST
+        ] + response.headers.get('Access-Control-Expose-Headers', '').split(', ')
         for key in expose_headers:
             if key in response.headers:
                 http_response[key] = response.headers[key]
+        # wildcard
+        if '*' in expose_headers:  # include all headers but "Authorization"
+            for key in response.headers:
+                if key != 'Authorization':
+                    http_response[key] = response.headers[key]
         return http_response

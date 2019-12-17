@@ -43,6 +43,17 @@ RESPONSE_MOCK_WITH_HEADERS = mock.Mock(
         'z': 'Z',
     },
 )
+RESPONSE_MOCK_WITH_WILDCARD = mock.Mock(
+    status_code=200,
+    headers={
+        'Authorization': 'something',
+        'Access-Control-Expose-Headers': '*',
+        'Content-Type': 'application/json',
+        'a': 'A',
+        'b': 'B',
+        'z': 'Z',
+    },
+)
 APP_TOKEN_MOCK = mock.Mock(token='ABCDEFGH')
 
 
@@ -143,7 +154,7 @@ class ViewsTest(UrlsTestCase):
             method='DELETE',
             url='http://app-2-test/to-delete',
             data=None,
-            headers={'Cookie': '', 'Authorization': 'Token ABCDEFGH'}
+            headers={'Authorization': 'Token ABCDEFGH'}
         )
 
     @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
@@ -167,7 +178,32 @@ class ViewsTest(UrlsTestCase):
             method='GET',
             url='http://app-2-test/to-get',
             data=None,
-            headers={'Cookie': '', 'Authorization': 'Token ABCDEFGH'}
+            headers={'Authorization': 'Token ABCDEFGH'}
+        )
+
+    @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
+                return_value=APP_TOKEN_MOCK)
+    @mock.patch('requests.request', return_value=RESPONSE_MOCK_WITH_WILDCARD)
+    def test_proxy_view_get__wildcard(self, mock_request, mock_get_token):
+        request = RequestFactory().get('/go_to_proxy')
+        request.user = self.user
+        response = self.view(request, path='/to-get')
+        # Only exposed headers are included in the proxied response
+        self.assertIn('a', response)
+        self.assertEqual(response['a'], 'A')
+        self.assertIn('b', response)
+        self.assertEqual(response['b'], 'B')
+        self.assertIn('z', response)
+        self.assertEqual(response['z'], 'Z')
+        self.assertNotIn('Authorization', response, 'not included by wildcard')
+
+        self.assertEqual(response.status_code, 200)
+        mock_get_token.assert_called_once()
+        mock_request.assert_called_once_with(
+            method='GET',
+            url='http://app-2-test/to-get',
+            data=None,
+            headers={'Authorization': 'Token ABCDEFGH'}
         )
 
     @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
@@ -184,7 +220,7 @@ class ViewsTest(UrlsTestCase):
             method='HEAD',
             url='http://app-2-test/proxy',
             data=None,
-            headers={'Cookie': '', 'Authorization': 'Token ABCDEFGH'}
+            headers={'Authorization': 'Token ABCDEFGH'}
         )
 
     @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
@@ -201,7 +237,7 @@ class ViewsTest(UrlsTestCase):
             method='OPTIONS',
             url='http://app-2-test/to-options',
             data=None,
-            headers={'Cookie': '', 'Authorization': 'Token ABCDEFGH'}
+            headers={'Authorization': 'Token ABCDEFGH'}
         )
 
     @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
@@ -218,7 +254,7 @@ class ViewsTest(UrlsTestCase):
             method='PATCH',
             url='http://app-2-test/to-patch',
             data=None,
-            headers={'Cookie': '', 'Authorization': 'Token ABCDEFGH'}
+            headers={'Authorization': 'Token ABCDEFGH'}
         )
 
     @mock.patch('aether.sdk.auth.apptoken.models.AppToken.get_or_create_token',
@@ -238,8 +274,8 @@ class ViewsTest(UrlsTestCase):
             url='http://app-2-test/posting',
             data=b'{"a": 1}',
             headers={
-                'Cookie': '',
                 'Authorization': 'Token ABCDEFGH',
+                'Content-Length': '8',
                 'Content-Type': 'application/json',
             }
         )
@@ -259,8 +295,8 @@ class ViewsTest(UrlsTestCase):
             url='http://app-2-test/putting',
             data=b'something',
             headers={
-                'Cookie': '',
                 'Authorization': 'Token ABCDEFGH',
+                'Content-Length': '9',
                 'Content-Type': 'application/octet-stream',
             }
         )
@@ -282,8 +318,8 @@ class ViewsTest(UrlsTestCase):
             url='http://app-2-test/fake_put',
             data=b'something',
             headers={
-                'Cookie': '',
                 'Authorization': 'Token ABCDEFGH',
+                'Content-Length': '9',
                 'Content-Type': 'application/octet-stream',
                 'X-Method': 'POST',
             }
@@ -306,8 +342,8 @@ class ViewsTest(UrlsTestCase):
             url='http://app-2-test/fake_put',
             data=b'something',
             headers={
-                'Cookie': '',
                 'Authorization': 'Token ABCDEFGH',
+                'Content-Length': '9',
                 'Content-Type': 'application/octet-stream',
                 'X-Method': 'GET',
             }
@@ -340,7 +376,6 @@ class MultitenancyViewsTest(UrlsTestCase):
             url='http://app-2-test/proxy',
             data=None,
             headers={
-                'Cookie': '',
                 'Authorization': 'Token ABCDEFGH',
                 settings.REALM_COOKIE: settings.DEFAULT_REALM,
             }
@@ -376,7 +411,6 @@ class GatewayViewsTest(UrlsTestCase):
             url=f'http://app-3/{REALM}/3/proxy',
             data=None,
             headers={
-                'Cookie': '',
                 settings.GATEWAY_HEADER_TOKEN: FAKE_TOKEN,
                 settings.REALM_COOKIE: REALM,
             }
@@ -397,7 +431,6 @@ class GatewayViewsTest(UrlsTestCase):
             url='http://app-3/-/3/outside',
             data=None,
             headers={
-                'Cookie': '',
                 'Authorization': 'Token ABCDEFGH',
                 settings.REALM_COOKIE: settings.DEFAULT_REALM,
             }
