@@ -135,7 +135,7 @@ class TokenProxyView(View):
             # This problem might not be exposed running on localhost
 
             return (
-                name in ['CONTENT_TYPE'] or
+                name in settings.EXPOSE_HEADERS_WHITELIST or
                 (name.startswith('CSRF_') and name not in ['CSRF_COOKIE_USED']) or
                 (name.startswith('HTTP_') and name not in ['HTTP_HOST'])
             )
@@ -187,4 +187,9 @@ class TokenProxyView(View):
         for key in expose_headers:
             if key in response.headers:
                 http_response[key] = response.headers[key]
+        # wildcard
+        if '*' in expose_headers:  # include all headers but "Authorization"
+            for key in response.headers:
+                if key != 'Authorization':
+                    http_response[key] = response.headers[key]
         return http_response
