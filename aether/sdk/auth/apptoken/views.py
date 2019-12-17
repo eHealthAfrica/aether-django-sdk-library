@@ -183,7 +183,10 @@ class TokenProxyView(View):
         # copy the exposed headers from the original response ones
         # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
         # https://fetch.spec.whatwg.org/#http-access-control-expose-headers
-        expose_headers = response.headers.get('Access-Control-Expose-Headers', '').split(', ')
+        expose_headers = [
+            normalize_meta_http_name(header)
+            for header in settings.EXPOSE_HEADERS_WHITELIST
+        ] + response.headers.get('Access-Control-Expose-Headers', '').split(', ')
         for key in expose_headers:
             if key in response.headers:
                 http_response[key] = response.headers[key]
