@@ -24,7 +24,6 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import CommandError
 from django.core.management import call_command
 from django.test import TestCase, override_settings
-from django.core.files import File
 from django.conf import settings
 
 from rest_framework.authtoken.models import Token
@@ -266,9 +265,40 @@ class TestCdnPublishCommand(TestCase):
 
     @mock.patch('aether.sdk.management.commands.cdn_publish.default_storage.save')
     def test_cdn_publish(self, mock_cdn_save):
-        call_command('cdn_publish', stdout=self.out, stderr=self.out)
-        mock_cdn_save.assert_called()
+        webpack_stats = {
+            'chunks': {
+                'test': [
+                    {
+                        'name': 'test-CDN-static-files.js',
+                        'path': '/aether/sdk/tests/webpackfiles/test-CDN-static-files.js',
+                    }
+                ]
+            }
+        }
 
-        f = File(open(settings.WEBPACK_STATS_FILE, 'r'))
-        f_content = json.loads(f.read())
-        self.assertIn('publicPath', f_content['chunks']['test'][0])
+        with open(settings.WEBPACK_STATS_FILE, 'w') as fp:
+            json.dump(webpack_stats, fp)
+
+        call_command('cdn_publish',
+                     '--cdn-url=http://cdn-server/path/to',
+                     '-w=aether/sdk/tests/webpackfiles',
+                     '--storage-path=__assets__/sdk/',
+                     stdout=self.out,
+                     stderr=self.out)
+
+        mock_cdn_save.assert_has_calls([
+            mock.call('__assets__/sdk/dir1/file-1.txt', mock.ANY),
+            mock.call('__assets__/sdk/dir2/file-2.txt', mock.ANY),
+            mock.call('__assets__/sdk/test-CDN-static-files.js', mock.ANY),
+            mock.call('__assets__/sdk/webpack-stats.json', mock.ANY),
+        ])
+
+        with open(settings.WEBPACK_STATS_FILE, 'r') as fp:
+            webpack_stats_after = json.load(fp)
+            self.assertNotEqual(webpack_stats, webpack_stats_after)
+            test_stats = webpack_stats_after['chunks']['test'][0]
+            self.assertIn('publicPath', test_stats)
+            self.assertEqual(
+                test_stats['publicPath'],
+                'http://cdn-server/path/to/test-CDN-static-files.js'
+            )

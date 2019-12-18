@@ -605,4 +605,17 @@ with the external application when possible.
 ./manage.py create_user -u=user -p=password -t=auth_token
 ```
 
+#### To publish webpack assets to CDN via command line.
+
+```bash
+# arguments:
+#      -u | --cdn-url       required
+#      -w | --webpack-dir   required
+#      -s | --storage-path  optional
+./manage.py cdn_publish \
+    -u=http://cdn-server/path/to/assets \
+    -w=path/to/assets/bundles \
+    -s=static/content/by/webpack/
+```
+
 *[Return to TOC](#table-of-contents)*

@@ -18,13 +18,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import os
 import json
+import os
+
+from django.conf import settings
+from django.core.files.storage import default_storage
 from django.core.management.base import BaseCommand
 from django.utils.translation import gettext as _
-from django.core.files.storage import default_storage
-from django.core.files import File
-from django.conf import settings
 
 
 class Command(BaseCommand):
@@ -33,23 +33,63 @@ class Command(BaseCommand):
         'Uploads webpack static files to the default django storage'
     )
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--cdn-url',
+            '-u',
+            type=str,
+            help=_('Indicate the CDN url'),
+            dest='cdn',
+            action='store',
+            required=True,
+        )
+        parser.add_argument(
+            '--webpack-dir',
+            '-w',
+            type=str,
+            help=_('Indicate the path to webpack bundles dir'),
+            dest='webpack',
+            action='store',
+            required=True,
+        )
+        parser.add_argument(
+            '--storage-path',
+            '-s',
+            type=str,
+            help=_('Indicate the storage path'),
+            dest='storage',
+            action='store',
+            required=False,
+            default='',
+        )
+
     def handle(self, *args, **options):
-        webpack_dir = os.environ.get('WEBPACK_STATS_DIR', '/code/aether/ui/assets/bundles')
-        CDN_URL = os.environ.get('CDN_URL', '/ui-assets/static')
-        for file_name in os.listdir(webpack_dir):
-            file_path = os.path.join(webpack_dir, file_name)
+
+        cdn_url = options['cdn']
+        webpack_dir = options['webpack']
+        storage_path = options['storage']
+
+        # include "publicPath" key with CDN url within webpack stats file
+        with open(settings.WEBPACK_STATS_FILE, 'rb') as fp:
+            stats = json.load(fp)
+
+        for key in stats['chunks']:
+            for item in stats['chunks'][key]:
+                name = item['name']
+                item['publicPath'] = f'{cdn_url}/{name}'
+
+        with open(settings.WEBPACK_STATS_FILE, 'w') as fp:
+            json.dump(stats, fp)
+
+        # publish files
+        self.__publish(webpack_dir, storage_path)
+
+    def __publish(self, local_dir, storage_path):
+        for file_name in sorted(os.listdir(local_dir)):
+            file_path = os.path.join(local_dir, file_name)
+            if os.path.isdir(file_path):
+                # include nested directories
+                self.__publish(file_path, f'{storage_path}{file_name}/')
             if os.path.isfile(file_path):
-                file = File(open(file_path, 'rb'))
-                if file_path == settings.WEBPACK_STATS_FILE:
-                    stats = json.loads(file.read())
-                    for key in stats['chunks']:
-                        for item in stats['chunks'][key]:
-                            name = item['name']
-                            item['publicPath'] = f'{CDN_URL}/{name}'
-                    file = File(open(file_path, 'w'))
-                    file.write(json.dumps(stats))
-                    file = File(open(file_path, 'rb'))
-                default_storage.save(file_name, file)
-                file.close()
-            else:   # pragma: no cover
-                pass
+                with open(file_path, 'rb') as fp:
+                    default_storage.save(f'{storage_path}{file_name}', fp)
