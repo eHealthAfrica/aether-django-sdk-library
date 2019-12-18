@@ -82,8 +82,14 @@ class Command(BaseCommand):
             json.dump(stats, fp)
 
         # publish files
-        for file_name in sorted(os.listdir(webpack_dir)):
-            file_path = os.path.join(webpack_dir, file_name)
+        self.__publish(webpack_dir, storage_path)
+
+    def __publish(self, local_dir, storage_path):
+        for file_name in sorted(os.listdir(local_dir)):
+            file_path = os.path.join(local_dir, file_name)
+            if os.path.isdir(file_path):
+                # include nested directories
+                self.__publish(file_path, f'{storage_path}{file_name}/')
             if os.path.isfile(file_path):
                 with open(file_path, 'rb') as fp:
                     default_storage.save(f'{storage_path}{file_name}', fp)

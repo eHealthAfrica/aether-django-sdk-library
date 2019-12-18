@@ -287,6 +287,8 @@ class TestCdnPublishCommand(TestCase):
                      stderr=self.out)
 
         mock_cdn_save.assert_has_calls([
+            mock.call('__assets__/sdk/dir1/file-1.txt', mock.ANY),
+            mock.call('__assets__/sdk/dir2/file-2.txt', mock.ANY),
             mock.call('__assets__/sdk/test-CDN-static-files.js', mock.ANY),
             mock.call('__assets__/sdk/webpack-stats.json', mock.ANY),
         ])
