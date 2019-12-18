@@ -69,10 +69,16 @@ class Command(BaseCommand):
         webpack_dir = options['webpack']
         storage_path = options['storage']
 
+        if cdn_url.endswith('/'):  # pragma: no cover
+            cdn_url = cdn_url[:-1]
+        if storage_path.startswith('/'):  # pragma: no cover
+            storage_path = storage_path[1:]
+
         # include "publicPath" key with CDN url within webpack stats file
         with open(settings.WEBPACK_STATS_FILE, 'rb') as fp:
             stats = json.load(fp)
 
+        stats['publicPath'] = cdn_url
         for key in stats['chunks']:
             for item in stats['chunks'][key]:
                 name = item['name']
