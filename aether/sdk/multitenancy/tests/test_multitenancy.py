@@ -20,12 +20,13 @@ import base64
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.test import TestCase, RequestFactory, override_settings
+from django.test import RequestFactory, override_settings
 from django.urls import reverse
 
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 
+from aether.sdk.tests import AetherTestCase
 from aether.sdk.tests.fakeapp.models import (
     TestModel,
     TestChildModel,
@@ -44,7 +45,7 @@ TEST_REALM = 'realm-test'
 TEST_REALM_2 = 'realm-test-2'
 
 
-class MultitenancyTests(TestCase):
+class MultitenancyTests(AetherTestCase):
 
     def setUp(self):
         super(MultitenancyTests, self).setUp()

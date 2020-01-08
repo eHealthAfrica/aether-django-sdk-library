@@ -17,18 +17,22 @@
 # under the License.
 
 import random
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory
-from aether.sdk.unittest import UrlsTestCase
 from django.urls import reverse
+
 from rest_framework import status
+
+from aether.sdk.tests import AetherTestCase
 from aether.sdk.tests.fakeapp import models
+from aether.sdk.unittest import UrlsTestCase
 
 TEST_REALM = 'realm-test'
 
 
-class ViewsTest(UrlsTestCase):
+class ViewsTest(AetherTestCase, UrlsTestCase):
 
     def setUp(self):
         super(ViewsTest, self).setUp()

@@ -18,12 +18,14 @@
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.test import TestCase, RequestFactory
+from django.test import RequestFactory
 
+
+from aether.sdk.tests import AetherTestCase
 from aether.sdk.templatetags.eha_tags import get_fullname, prettified
 
 
-class TagsTests(TestCase):
+class TagsTests(AetherTestCase):
 
     def test_get_fullname(self):
         user = get_user_model().objects.create()

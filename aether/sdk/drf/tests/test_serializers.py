@@ -18,14 +18,15 @@
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.test import RequestFactory, TestCase, override_settings
+from django.test import RequestFactory, override_settings
 
+from aether.sdk.tests import AetherTestCase
 from aether.sdk.tests.fakeapp.serializers import TestUserSerializer, TestUserSerializer2
 
 TEST_REALM = 'realm-test'
 
 
-class SerializersTests(TestCase):
+class SerializersTests(AetherTestCase):
 
     def setUp(self):
         super(SerializersTests, self).setUp()

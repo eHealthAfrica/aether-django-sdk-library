@@ -17,10 +17,11 @@
 # under the License.
 
 from django.conf import settings
-from django.test import TestCase
+
+from aether.sdk.tests import AetherTestCase
 
 
-class SettingsTest(TestCase):
+class SettingsTest(AetherTestCase):
 
     def test_default_variables(self):
 

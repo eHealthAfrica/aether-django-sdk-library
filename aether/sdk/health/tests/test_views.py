@@ -20,12 +20,13 @@ from unittest import mock
 
 from django.db.utils import OperationalError
 from django.urls import reverse
-from django.test import TestCase
 
 from rest_framework import status
 
+from aether.sdk.tests import AetherTestCase
 
-class ViewsTest(TestCase):
+
+class ViewsTest(AetherTestCase):
 
     def test__health(self, *args):
         response = self.client.get(reverse('health'))

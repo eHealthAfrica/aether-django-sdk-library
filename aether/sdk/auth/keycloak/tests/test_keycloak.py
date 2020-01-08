@@ -26,6 +26,7 @@ from django.contrib.auth import get_user_model
 from django.test import RequestFactory, override_settings
 from django.urls import reverse, resolve
 
+from aether.sdk.tests import AetherTestCase
 from aether.sdk.unittest import MockResponse, UrlsTestCase
 from aether.sdk.utils import get_meta_http_name
 from aether.sdk.auth.keycloak.utils import _KC_TOKEN_SESSION as TOKEN_KEY
@@ -38,7 +39,7 @@ user_objects = get_user_model().objects
     AUTH_URL='accounts',
     KEYCLOAK_BEHIND_SCENES=True,
 )
-class KeycloakBehindTests(UrlsTestCase):
+class KeycloakBehindTests(AetherTestCase, UrlsTestCase):
 
     def test__urls__accounts__login(self):
         from django.contrib.auth import views

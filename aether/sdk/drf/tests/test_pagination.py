@@ -17,9 +17,10 @@
 # under the License.
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase, RequestFactory
+from django.test import RequestFactory
 from rest_framework import generics, serializers, status
 
+from aether.sdk.tests import AetherTestCase
 from aether.sdk.drf.pagination import CustomPagination
 
 factory = RequestFactory()
@@ -31,9 +32,10 @@ class PassThroughSerializer(serializers.BaseSerializer):
         return item
 
 
-class PaginationTests(TestCase):
+class PaginationTests(AetherTestCase):
 
     def setUp(self):
+        super(PaginationTests, self).setUp()
 
         username = 'user'
         email = 'user@example.com'

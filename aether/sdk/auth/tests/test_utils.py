@@ -17,8 +17,9 @@
 # under the License.
 
 from django.conf import settings
-from django.test import RequestFactory, TestCase, override_settings
+from django.test import RequestFactory, override_settings
 
+from aether.sdk.tests import AetherTestCase
 from aether.sdk.auth.utils import (
     get_or_create_user,
     parse_username,
@@ -28,7 +29,7 @@ from aether.sdk.auth.utils import (
 TEST_REALM = 'realm-test'
 
 
-class UtilsTests(TestCase):
+class UtilsTests(AetherTestCase):
 
     def setUp(self):
         super(UtilsTests, self).setUp()

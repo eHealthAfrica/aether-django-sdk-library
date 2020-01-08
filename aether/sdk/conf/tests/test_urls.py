@@ -20,6 +20,7 @@ from django.conf import settings
 from django.test import override_settings
 from django.urls import reverse, resolve, exceptions
 
+from aether.sdk.tests import AetherTestCase
 from aether.sdk.unittest import UrlsTestCase
 
 
@@ -28,7 +29,7 @@ from aether.sdk.unittest import UrlsTestCase
     AUTH_URL='accounts',
     KEYCLOAK_SERVER_URL=None,
 )
-class UrlsTest(UrlsTestCase):
+class UrlsTest(AetherTestCase, UrlsTestCase):
 
     def test__urls__checks(self):
         self.assertEqual(reverse('health'), '/health')

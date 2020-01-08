@@ -20,13 +20,15 @@ from requests import Response
 from unittest import mock
 
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, RequestFactory
+from django.test import RequestFactory
 
 from aether.sdk import utils
+
+from aether.sdk.tests import AetherTestCase
 from aether.sdk.unittest import MockResponse
 
 
-class UtilsTests(TestCase):
+class UtilsTests(AetherTestCase):
 
     def test__json_prettified_simple(self):
         data = {}

@@ -23,10 +23,12 @@ import json
 from django.contrib.auth import get_user_model
 from django.core.management.base import CommandError
 from django.core.management import call_command
-from django.test import TestCase, override_settings
+from django.test import override_settings
 from django.conf import settings
 
 from rest_framework.authtoken.models import Token
+
+from aether.sdk.tests import AetherTestCase
 
 
 UserModel = get_user_model().objects
@@ -42,11 +44,16 @@ class MockRequestHeadError:
         raise Exception
 
 
-class TestSetupAdminCommand(TestCase):
+class CommandTestCase(AetherTestCase):
 
     def setUp(self):
+        super(CommandTestCase, self).setUp()
+
         # Redirect to /dev/null in order to not clutter the test log.
         self.out = open(os.devnull, 'w')
+
+
+class TestSetupAdminCommand(CommandTestCase):
 
     def test__password_argument_is_required(self):
         self.assertRaises(
@@ -87,11 +94,7 @@ class TestSetupAdminCommand(TestCase):
         self.assertEqual(Token.objects.all().count(), 1)
 
 
-class TestCheckUrlCommand(TestCase):
-
-    def setUp(self):
-        # Redirect to /dev/null in order to not clutter the test log.
-        self.out = open(os.devnull, 'w')
+class TestCheckUrlCommand(CommandTestCase):
 
     def test__url_argument_is_required(self):
         self.assertRaises(
@@ -136,11 +139,7 @@ class TestCheckUrlCommand(TestCase):
         )
 
 
-class TestCreateUserCommand(TestCase):
-
-    def setUp(self):
-        # Redirect to /dev/null in order to not clutter the test log.
-        self.out = open(os.devnull, 'w')
+class TestCreateUserCommand(CommandTestCase):
 
     def test__required_arguments(self):
         self.assertRaises(
@@ -257,11 +256,7 @@ class TestCreateUserCommand(TestCase):
         self.assertEqual(Token.objects.all().count(), 1)
 
 
-class TestCdnPublishCommand(TestCase):
-
-    def setUp(self):
-        # Redirect to /dev/null in order to not clutter the test log.
-        self.out = open(os.devnull, 'w')
+class TestCdnPublishCommand(CommandTestCase):
 
     @mock.patch('aether.sdk.management.commands.cdn_publish.default_storage.save')
     def test_cdn_publish(self, mock_cdn_save):

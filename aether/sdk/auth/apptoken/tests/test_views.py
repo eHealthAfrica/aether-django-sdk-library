@@ -25,6 +25,7 @@ from django.test import RequestFactory, override_settings
 from django.urls import reverse
 
 from aether.sdk.auth.apptoken.views import TokenProxyView
+from aether.sdk.tests import AetherTestCase
 from aether.sdk.unittest import UrlsTestCase
 from aether.sdk.utils import get_meta_http_name
 
@@ -58,9 +59,10 @@ APP_TOKEN_MOCK = mock.Mock(token='ABCDEFGH')
 
 
 @override_settings(GATEWAY_ENABLED=False, MULTITENANCY=False)
-class ViewsTest(UrlsTestCase):
+class ViewsTest(AetherTestCase, UrlsTestCase):
 
     def setUp(self):
+        super(ViewsTest, self).setUp()
         username = 'test'
         email = 'test@example.com'
         password = 'testtest'
@@ -354,6 +356,8 @@ class ViewsTest(UrlsTestCase):
 class MultitenancyViewsTest(UrlsTestCase):
 
     def setUp(self):
+        super(MultitenancyViewsTest, self).setUp()
+
         username = 'test'
         email = 'test@example.com'
         password = 'testtest'
@@ -385,6 +389,8 @@ class MultitenancyViewsTest(UrlsTestCase):
 class GatewayViewsTest(UrlsTestCase):
 
     def setUp(self):
+        super(GatewayViewsTest, self).setUp()
+
         username = 'test'
         email = 'test@example.com'
         password = 'testtest'
