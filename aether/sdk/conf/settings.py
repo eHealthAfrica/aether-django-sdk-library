@@ -634,7 +634,7 @@ if not TESTING and DEBUG:
 # ------------------------------------------------------------------------------
 
 PROFILING_ENABLED = bool(os.environ.get('PROFILING_ENABLED'))
-if PROFILING_ENABLED:
+if not TESTING and PROFILING_ENABLED:
     INSTALLED_APPS += ['silk', ]
     MIDDLEWARE = ['silk.middleware.SilkyMiddleware', *MIDDLEWARE, ]
 
@@ -660,13 +660,14 @@ if PROFILING_ENABLED:
 # Prometheus Configuration
 # ------------------------------------------------------------------------------
 
-MIDDLEWARE = [
-    # Make sure this stays as the first middleware
-    'django_prometheus.middleware.PrometheusBeforeMiddleware',
-    *MIDDLEWARE,
-    # Make sure this stays as the last middleware
-    'django_prometheus.middleware.PrometheusAfterMiddleware',
-]
+if not TESTING:
+    MIDDLEWARE = [
+        # Make sure this stays as the first middleware
+        'django_prometheus.middleware.PrometheusBeforeMiddleware',
+        *MIDDLEWARE,
+        # Make sure this stays as the last middleware
+        'django_prometheus.middleware.PrometheusAfterMiddleware',
+    ]
 
 
 # Django Cleanup configuration
