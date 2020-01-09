@@ -25,8 +25,6 @@ from django.core.cache import cache
 from django.http import JsonResponse
 from django.utils.timezone import now
 
-from cacheops import invalidate_all, invalidate_model, invalidate_obj
-
 logger = logging.getLogger(__name__)
 logger.setLevel(settings.LOGGING_LEVEL)
 
@@ -58,23 +56,26 @@ def clear_cache(objects=None, models=None, purge=False):
         # ignore errors
         logger.error(str(e))
 
-    if objects:
-        for obj in objects:
-            invalidate_obj(obj)
+    if settings.DJANGO_USE_CACHE:
+        from cacheops import invalidate_all, invalidate_model, invalidate_obj
 
-    if models:
-        for model in models:
-            get_content_type(model=model)  # add it to the models list
-            invalidate_model(model)
+        if objects:
+            for obj in objects:
+                invalidate_obj(obj)
 
-    if purge:
-        try:
-            invalidate_all()
-        except Exception as e:
-            # Fixes: unknown command `FLUSHDB`
-            #   In helm charts FLUSHDB and FLUSHALL commands are disabled
-            logger.error(str(e))
-            clear_cache(models=list(CONTENT_TYPE_CACHE.keys()))
+        if models:
+            for model in models:
+                get_content_type(model=model)  # add it to the models list
+                invalidate_model(model)
+
+        if purge:
+            try:
+                invalidate_all()
+            except Exception as e:
+                # Fixes: unknown command `FLUSHDB`
+                #   In helm charts FLUSHDB and FLUSHALL commands are disabled
+                logger.error(str(e))
+                clear_cache(models=list(CONTENT_TYPE_CACHE.keys()))
 
 
 @staff_member_required
