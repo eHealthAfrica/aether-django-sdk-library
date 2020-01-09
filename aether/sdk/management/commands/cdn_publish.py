@@ -69,9 +69,9 @@ class Command(BaseCommand):
         webpack_dir = options['webpack']
         storage_path = options['storage']
 
-        if cdn_url.endswith('/'):  # pragma: no cover
+        if cdn_url.endswith('/'):
             cdn_url = cdn_url[:-1]
-        if storage_path.startswith('/'):  # pragma: no cover
+        if storage_path.startswith('/'):
             storage_path = storage_path[1:]
 
         # include "publicPath" key with CDN url within webpack stats file
