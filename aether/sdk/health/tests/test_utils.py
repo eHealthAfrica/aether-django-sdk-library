@@ -19,14 +19,15 @@
 from unittest import mock
 
 from django.conf import settings
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory
 from django.urls import reverse
 
 from aether.sdk.health.utils import check_external_app, get_external_app_url
+from aether.sdk.tests import AetherTestCase
 from aether.sdk.unittest import MockResponse
 
 
-class UtilsTests(TestCase):
+class UtilsTests(AetherTestCase):
 
     @mock.patch('aether.sdk.health.utils.exec_request',
                 side_effect=[

@@ -19,10 +19,11 @@
 from django.test import override_settings, RequestFactory
 
 from aether.sdk.context_processors import eha_context
+from aether.sdk.tests import AetherTestCase
 from aether.sdk.unittest import UrlsTestCase
 
 
-class ContextProcessorsTests(UrlsTestCase):
+class ContextProcessorsTests(AetherTestCase, UrlsTestCase):
 
     def test_eha_context(self):
         request = RequestFactory().get('/my-realm/sdk-app/health')
@@ -48,7 +49,7 @@ class ContextProcessorsTests(UrlsTestCase):
 
 
 @override_settings(GATEWAY_ENABLED=False)
-class ContextProcessorsNoGatewayTests(UrlsTestCase):
+class ContextProcessorsNoGatewayTests(AetherTestCase, UrlsTestCase):
 
     def test_eha_context(self):
         request = RequestFactory().get('/something/sdk-app/')

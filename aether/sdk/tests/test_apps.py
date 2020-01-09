@@ -17,10 +17,11 @@
 # under the License.
 
 from django.apps import apps
-from django.test import TestCase
+
+from aether.sdk.tests import AetherTestCase
 
 
-class AppsTests(TestCase):
+class AppsTests(AetherTestCase):
 
     def test_app_config(self):
         # this is only valid in tests, the correct name is `aether.sdk`

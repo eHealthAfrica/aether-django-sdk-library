@@ -34,6 +34,8 @@ class UrlsTestCase(TransactionTestCase):
     '''
 
     def setUp(self):
+        super(UrlsTestCase, self).setUp()
+
         reload(sys.modules[settings.ROOT_URLCONF])
         import_module(settings.ROOT_URLCONF)
         clear_url_caches()
@@ -42,6 +44,8 @@ class UrlsTestCase(TransactionTestCase):
         call_command('migrate', '-v', '0')
 
     def tearDown(self):
+        super(UrlsTestCase, self).tearDown()
+
         clear_url_caches()
 
 

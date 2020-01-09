@@ -25,15 +25,18 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 
+from aether.sdk.tests import AetherTestCase
 from aether.sdk.unittest import UrlsTestCase
 
 user_objects = get_user_model().objects
 
 
 @override_settings(GATEWAY_ENABLED=False, MULTITENANCY=False)
-class ViewsTest(UrlsTestCase):
+class ViewsTest(AetherTestCase, UrlsTestCase):
 
     def setUp(self):
+        super(ViewsTest, self).setUp()
+
         self.token_url = reverse('token')
         self.assertEqual(self.token_url, '/token')
 

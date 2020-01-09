@@ -40,7 +40,7 @@ class FilteredMixin(object):
             filtered_list = self.filter_queryset(self.queryset)
             filtered_list.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        except Exception as e:  # pragma: no cover
+        except Exception as e:
             return Response(
                 str(e),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR

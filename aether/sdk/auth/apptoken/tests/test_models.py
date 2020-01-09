@@ -20,8 +20,8 @@ from unittest import mock
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.test import TestCase
 
+from aether.sdk.tests import AetherTestCase
 from aether.sdk.unittest import MockResponse
 
 from aether.sdk.auth.apptoken.models import AppToken
@@ -30,9 +30,11 @@ from aether.sdk.auth.apptoken.models import AppToken
 get_or_create_token = AppToken.get_or_create_token
 
 
-class ModelsTests(TestCase):
+class ModelsTests(AetherTestCase):
 
     def setUp(self):
+        super(ModelsTests, self).setUp()
+
         username = 'test'
         email = 'test@example.com'
         password = 'testtest'
