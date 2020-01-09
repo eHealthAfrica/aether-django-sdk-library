@@ -180,30 +180,6 @@ if DB_CONN_MAX_AGE > 0:
     DATABASES['default']['CONN_MAX_AGE'] = DB_CONN_MAX_AGE
 
 
-# Scheduler Configuration
-# -------------------------------------------------------------------------------
-
-SCHEDULER_REQUIRED = bool(os.environ.get('SCHEDULER_REQUIRED'))
-if SCHEDULER_REQUIRED:
-    INSTALLED_APPS += ['django_rq', ]
-
-    REDIS_HOST = get_required('REDIS_HOST')
-    REDIS_PORT = get_required('REDIS_PORT')
-    REDIS_DB = os.environ.get('REDIS_DB', 0)
-    REDIS_PASSWORD = get_required('REDIS_PASSWORD')
-
-    RQ_SHOW_ADMIN_LINK = True
-    RQ_QUEUES = {
-        'default': {
-            'HOST': REDIS_HOST,
-            'PORT': REDIS_PORT,
-            'DB': REDIS_DB,
-            'PASSWORD': REDIS_PASSWORD,
-            'DEFAULT_TIMEOUT': 360,
-        },
-    }
-
-
 # App Configuration
 # ------------------------------------------------------------------------------
 
@@ -235,6 +211,94 @@ DRF_ADMIN_RENDERER_TEMPLATE = os.environ.get('DRF_ADMIN_RENDERER_TEMPLATE', 'eha
 # Include app module in installed apps list
 if APP_MODULE:
     INSTALLED_APPS += [APP_MODULE, ]
+
+
+# REDIS Configuration
+# ------------------------------------------------------------------------------
+
+SCHEDULER_REQUIRED = bool(os.environ.get('SCHEDULER_REQUIRED'))
+# Cache is handled by REDIS
+DJANGO_USE_CACHE = bool(os.environ.get('DJANGO_USE_CACHE'))
+
+REDIS_REQUIRED = (
+    bool(os.environ.get('REDIS_REQUIRED')) or
+    SCHEDULER_REQUIRED or
+    DJANGO_USE_CACHE
+)
+if REDIS_REQUIRED:
+    REDIS_HOST = get_required('REDIS_HOST')
+    REDIS_PORT = get_required('REDIS_PORT')
+    REDIS_DB = int(os.environ.get('REDIS_DB', 0))
+    REDIS_PASSWORD = get_required('REDIS_PASSWORD')
+
+
+# Scheduler Configuration
+# ------------------------------------------------------------------------------
+
+if SCHEDULER_REQUIRED:
+    INSTALLED_APPS += ['django_rq', ]
+
+    RQ_SHOW_ADMIN_LINK = True
+    RQ_QUEUES = {
+        'default': {
+            'HOST': REDIS_HOST,
+            'PORT': REDIS_PORT,
+            'DB': REDIS_DB,
+            'PASSWORD': REDIS_PASSWORD,
+            'DEFAULT_TIMEOUT': 300,  # 5 minutes
+        },
+    }
+
+
+# Cache Configuration
+# ------------------------------------------------------------------------------
+# https://github.com/Suor/django-cacheops
+# A slick ORM cache with automatic granular event-driven invalidation.
+
+if DJANGO_USE_CACHE:
+    # trying to avoid collisions with REDIS database
+    REDIS_DB_CACHEOPS = int(os.environ.get('REDIS_DB_CACHEOPS', REDIS_DB + 1))
+
+    DJANGO_CACHE_TIMEOUT = int(os.environ.get('DJANGO_CACHE_TIMEOUT', 60 * 5))  # 5 minutes
+
+    INSTALLED_APPS += ['cacheops', ]
+
+    CACHEOPS_LRU = bool(os.environ.get('CACHEOPS_LRU'))
+    CACHEOPS_DEGRADE_ON_FAILURE = bool(os.environ.get('CACHEOPS_DEGRADE_ON_FAILURE'))
+    CACHEOPS_REDIS = {
+        'host': REDIS_HOST,
+        'port': REDIS_PORT,
+        'password': REDIS_PASSWORD,
+        'db': REDIS_DB_CACHEOPS,
+        'socket_timeout': 3,  # connection timeout in seconds, optional
+    }
+    CACHEOPS_DEFAULTS = {
+        # 'all' is an alias for {'get', 'fetch', 'count', 'aggregate', 'exists'}
+        'ops': 'all',
+        'timeout': DJANGO_CACHE_TIMEOUT,
+        'cache_on_save': True,
+    }
+
+    CACHEOPS = {
+        # users and roles
+        'auth.*': {},
+        'authtoken.*': {},
+        # content types
+        'contenttypes.*': {
+            'local_get': True,
+            'timeout': 60 * 60 * 24,  # one day
+        },
+        # internal models
+        'apptoken.*': {},
+        'multitenancy.*': {},
+    }
+
+    if APP_MODULE:
+        # take the last part of the path `aether.my.module` => `module`
+        _module_name = APP_MODULE.split('.')[-1]
+        CACHEOPS[f'{_module_name}.*'] = {}
+
+    CACHEOPS_ENABLED = not TESTING  # disable on tests
 
 
 # Logging Configuration
@@ -293,6 +357,13 @@ LOGGING = {
     },
 }
 
+if REDIS_REQUIRED:
+    LOGGING['loggers']['redis'] = {
+        'level': LOGGING_LEVEL,
+        'handlers': ['console', ],
+        'propagate': False,
+    }
+
 if SCHEDULER_REQUIRED:
     LOGGING['loggers']['rq.worker'] = {
         'level': LOGGING_LEVEL,
@@ -309,14 +380,13 @@ if SENTRY_DSN:
 
     SENTRY_INTEGRATIONS = [DjangoIntegration(), ]
 
+    if REDIS_REQUIRED:
+        from sentry_sdk.integrations.redis import RedisIntegration
+        SENTRY_INTEGRATIONS += [RedisIntegration(), ]
+
     if SCHEDULER_REQUIRED:
         from sentry_sdk.integrations.rq import RqIntegration
-        from sentry_sdk.integrations.redis import RedisIntegration
-
-        SENTRY_INTEGRATIONS += [
-            RqIntegration(),
-            RedisIntegration(),
-        ]
+        SENTRY_INTEGRATIONS += [RqIntegration(), ]
 
     sentry_sdk.init(integrations=SENTRY_INTEGRATIONS)
 
@@ -434,7 +504,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 KEYCLOAK_SERVER_URL = os.environ.get('KEYCLOAK_SERVER_URL')
 GATEWAY_ENABLED = False
-
 
 if KEYCLOAK_SERVER_URL:
     KEYCLOAK_CLIENT_ID = os.environ.get('KEYCLOAK_CLIENT_ID', 'eha')
@@ -595,62 +664,6 @@ if WEBPACK_REQUIRED:
             'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
         },
     }
-
-
-# Cache Configuration
-# ------------------------------------------------------------------------------
-# https://github.com/Suor/django-cacheops
-# A slick ORM cache with automatic granular event-driven invalidation.
-
-DJANGO_USE_CACHE = (os.environ.get('DJANGO_USE_CACHE', 'false').lower() == 'true')
-if DJANGO_USE_CACHE:
-    # Cache is handled by REDIS
-    REDIS_HOST = get_required('REDIS_HOST')
-    REDIS_PORT = get_required('REDIS_PORT')
-    REDIS_DB = os.environ.get('REDIS_DB', 0)
-    REDIS_PASSWORD = get_required('REDIS_PASSWORD')
-
-    DJANGO_CACHE_TIMEOUT = int(os.environ.get('DJANGO_CACHE_TIMEOUT', 60 * 5))  # 5 minutes
-
-    INSTALLED_APPS += ['cacheops', ]
-
-    CACHEOPS_LRU = bool(os.environ.get('CACHEOPS_LRU'))
-    CACHEOPS_DEGRADE_ON_FAILURE = bool(os.environ.get('CACHEOPS_DEGRADE_ON_FAILURE'))
-    CACHEOPS_REDIS = {
-        'host': REDIS_HOST,
-        'port': REDIS_PORT,
-        'password': REDIS_PASSWORD,
-        # trying to avoid collisions with SCHEDULER database
-        'db': os.environ.get('REDIS_DB_CACHEOPS', REDIS_DB + 1),
-        'socket_timeout': 3,  # connection timeout in seconds, optional
-    }
-    CACHEOPS_DEFAULTS = {
-        # 'all' is an alias for {'get', 'fetch', 'count', 'aggregate', 'exists'}
-        'ops': 'all',
-        'timeout': DJANGO_CACHE_TIMEOUT,
-        'cache_on_save': True,
-    }
-
-    CACHEOPS = {
-        # users and roles
-        'auth.*': {},
-        'authtoken.*': {},
-        # content types
-        'contenttypes.*': {
-            'local_get': True,
-            'timeout': 60 * 60 * 24,  # one day
-        },
-        # internal models
-        'apptoken.*': {},
-        'multitenancy.*': {},
-    }
-
-    if APP_MODULE:
-        # take the last part of the path `aether.my.module` => `module`
-        _module_name = APP_MODULE.split('.')[-1]
-        CACHEOPS[f'{_module_name}.*'] = {}
-
-    CACHEOPS_ENABLED = not TESTING  # disable on tests
 
 
 # Debug Configuration
