@@ -66,6 +66,9 @@ setup(
         'uwsgi',
     ],
     extras_require={
+        'cache': [
+            'django-cacheops',
+        ],
         'scheduler': [
             'django-rq',
             'redis',

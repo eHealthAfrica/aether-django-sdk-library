@@ -16,14 +16,46 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from django.conf import settings
 from django.db import transaction
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework import status
 from django.utils.translation import gettext as _
 
+from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.permissions import SAFE_METHODS
+from rest_framework.response import Response
 
-class FilteredMixin(object):
+from aether.sdk.cache import clear_cache
+
+
+class CacheViewSetMixin(object):
+    '''
+    Invalidates cache after any successful edit action.
+    '''
+
+    # the list of models to remove from cache every time an instance is updated
+    cache_models = []
+    # purges cache every time an instance is updated?
+    cache_purge = False
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        resp = super(CacheViewSetMixin, self).finalize_response(request, response, *args, **kwargs)
+        if not settings.DJANGO_USE_CACHE:
+            return resp
+
+        # prevent browser cache
+        resp['Cache-Control'] = 'no-cache, no-store, must-revalidate'    # HTTP 1.1.
+        resp['Pragma'] = 'no-cache'                                      # HTTP 1.0.
+        resp['Expires'] = '0'                                            # Proxies.
+
+        if resp.status_code < 400 and request.method not in SAFE_METHODS:
+            # invalidate cache after any successful edit action
+            clear_cache(models=self.cache_models, purge=self.cache_purge)
+
+        return resp
+
+
+class FilteredMixin(CacheViewSetMixin):
 
     @transaction.atomic
     @action(detail=False, methods=['delete'], url_path='filtered-delete')

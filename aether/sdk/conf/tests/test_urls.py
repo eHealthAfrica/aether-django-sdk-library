@@ -219,3 +219,17 @@ class NoDebugUrlsUrlTest(UrlsTestCase):
 
     def test__urls(self):
         self.assertRaises(exceptions.Resolver404, resolve, '/__debug__/render_panel/')
+
+
+@override_settings(ADMIN_URL='admin', DJANGO_USE_CACHE=True)
+class UrlsCacheTest(UrlsTestCase):
+
+    def test__urls(self):
+        self.assertEqual(reverse('purge-cache'), '/admin/~purge-cache')
+
+
+@override_settings(DJANGO_USE_CACHE=False)
+class UrlsNoCacheTest(UrlsTestCase):
+
+    def test__urls(self):
+        self.assertRaises(exceptions.NoReverseMatch, reverse, 'purge-cache')

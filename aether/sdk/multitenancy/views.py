@@ -23,6 +23,7 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
+from aether.sdk.drf.views import CacheViewSetMixin
 from aether.sdk.multitenancy.utils import (
     filter_by_realm,
     filter_users_by_realm,
@@ -30,7 +31,7 @@ from aether.sdk.multitenancy.utils import (
 )
 
 
-class MtViewSetMixin(object):
+class MtViewSetMixin(CacheViewSetMixin):
     '''
     Defines ``get_queryset`` method to filter by realm.
 
@@ -101,7 +102,7 @@ class MtViewSetMixin(object):
         return Response(status=204)
 
 
-class MtUserViewSetMixin(object):
+class MtUserViewSetMixin(CacheViewSetMixin):
     '''
     Defines ``get_queryset`` method to filter by realm authorization group.
     '''

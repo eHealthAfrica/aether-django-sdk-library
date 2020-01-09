@@ -189,6 +189,13 @@ def _get_admin_urls():
         path(route='', view=admin.site.urls),
     ]
 
+    if settings.DJANGO_USE_CACHE:
+        from aether.sdk.cache import purge_view
+
+        admin_urls += [
+            path(route='~purge-cache', view=purge_view, name='purge-cache'),
+        ]
+
     if settings.PROFILING_ENABLED:
         admin_urls += [
             path(route='~silk/', view=include('silk.urls', namespace='silk')),
