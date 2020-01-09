@@ -49,6 +49,10 @@ Python libraries:
 
 Extra dependencies (based on settings):
 
+- **cache**
+  - [django-cacheops](https://github.com/Suor/django-cacheops)
+    A slick ORM cache with automatic granular event-driven invalidation.
+
 - **scheduler**
   - [django-rq](https://github.com/rq/django-rq)
     A simple app that provides django integration for RQ (Redis Queue).
@@ -189,6 +193,8 @@ Default URLs included:
   - the `/admin` section URLs (`ADMIN_URL` setting).
   - the `/admin/~prometheus/metrics` URL. Displays the raw monitoring data.
   - the `/admin/~uwsgi/` URL. If uWSGI is running displays the server uWSGI settings.
+  - the `/admin/~purge-cache` URL. Purges django cache.
+    Available if django cache is enabled.
 
   - the `/accounts` URLs (`AUTH_URL` setting), checks if the REST Framework ones,
     using the templates indicated in `LOGIN_TEMPLATE` and `LOGGED_OUT_TEMPLATE`
@@ -426,6 +432,20 @@ See more in https://django-minio-storage.readthedocs.io/en/latest/usage
 - `REDIS_PORT`: The redis port (**mandatory**).
 - `REDIS_DB`: The redis database. Defaults to `0`.
 - `REDIS_PASSWORD`: The redis password (**mandatory**).
+
+*[Return to TOC](#table-of-contents)*
+
+#### Cache
+
+- `DJANGO_USE_CACHE`: Used to indicate if the cache is enabled.
+  Is `false` if unset or set to empty string, anything else is considered `true`.
+- `DJANGO_CACHE_TIMEOUT`: Cache timeout in seconds. Defaults to `300` (5 minutes).
+- `REDIS_HOST`: The redis host name (**mandatory**).
+- `REDIS_PORT`: The redis port (**mandatory**).
+- `REDIS_PASSWORD`: The redis password (**mandatory**).
+- `REDIS_DB_CACHEOPS`: The django ORM database. Defaults to `1`.
+
+See more in [django-cacheops](https://github.com/Suor/django-cacheops)
 
 *[Return to TOC](#table-of-contents)*
 

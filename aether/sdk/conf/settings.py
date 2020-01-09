@@ -597,6 +597,62 @@ if WEBPACK_REQUIRED:
     }
 
 
+# Cache Configuration
+# ------------------------------------------------------------------------------
+# https://github.com/Suor/django-cacheops
+# A slick ORM cache with automatic granular event-driven invalidation.
+
+DJANGO_USE_CACHE = (os.environ.get('DJANGO_USE_CACHE', 'false').lower() == 'true')
+if DJANGO_USE_CACHE:
+    # Cache is handled by REDIS
+    REDIS_HOST = get_required('REDIS_HOST')
+    REDIS_PORT = get_required('REDIS_PORT')
+    REDIS_DB = os.environ.get('REDIS_DB', 0)
+    REDIS_PASSWORD = get_required('REDIS_PASSWORD')
+
+    DJANGO_CACHE_TIMEOUT = int(os.environ.get('DJANGO_CACHE_TIMEOUT', 60 * 5))  # 5 minutes
+
+    INSTALLED_APPS += ['cacheops', ]
+
+    CACHEOPS_LRU = bool(os.environ.get('CACHEOPS_LRU'))
+    CACHEOPS_DEGRADE_ON_FAILURE = bool(os.environ.get('CACHEOPS_DEGRADE_ON_FAILURE'))
+    CACHEOPS_REDIS = {
+        'host': REDIS_HOST,
+        'port': REDIS_PORT,
+        'password': REDIS_PASSWORD,
+        # trying to avoid collisions with SCHEDULER database
+        'db': os.environ.get('REDIS_DB_CACHEOPS', REDIS_DB + 1),
+        'socket_timeout': 3,  # connection timeout in seconds, optional
+    }
+    CACHEOPS_DEFAULTS = {
+        # 'all' is an alias for {'get', 'fetch', 'count', 'aggregate', 'exists'}
+        'ops': 'all',
+        'timeout': DJANGO_CACHE_TIMEOUT,
+        'cache_on_save': True,
+    }
+
+    CACHEOPS = {
+        # users and roles
+        'auth.*': {},
+        'authtoken.*': {},
+        # content types
+        'contenttypes.*': {
+            'local_get': True,
+            'timeout': 60 * 60 * 24,  # one day
+        },
+        # internal models
+        'apptoken.*': {},
+        'multitenancy.*': {},
+    }
+
+    if APP_MODULE:
+        # take the last part of the path `aether.my.module` => `module`
+        _module_name = APP_MODULE.split('.')[-1]
+        CACHEOPS[f'{_module_name}.*'] = {}
+
+    CACHEOPS_ENABLED = not TESTING  # disable on tests
+
+
 # Debug Configuration
 # ------------------------------------------------------------------------------
 
