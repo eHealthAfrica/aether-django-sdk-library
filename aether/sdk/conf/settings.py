@@ -229,7 +229,7 @@ if REDIS_REQUIRED:
     REDIS_HOST = get_required('REDIS_HOST')
     REDIS_PORT = get_required('REDIS_PORT')
     REDIS_DB = int(os.environ.get('REDIS_DB', 0))
-    REDIS_PASSWORD = get_required('REDIS_PASSWORD')
+    REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', None)
 
 
 # Scheduler Configuration
