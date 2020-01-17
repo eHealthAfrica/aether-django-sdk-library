@@ -231,7 +231,7 @@ def _get_or_create_user(request, userinfo):
         ('last_name', 'family_name'),
         ('email', 'email')
     ]
-    for k_user, k_userinfo: in demographic_pairs:
+    for k_user, k_userinfo in demographic_pairs:
             v_user = getattr(user, k_user)
             v_userinfo = userinfo.get(k_userinfo, '')
             if v_user != v_userinfo:
