@@ -232,11 +232,11 @@ def _get_or_create_user(request, userinfo):
         ('email', 'email')
     ]
     for k_user, k_userinfo in demographic_pairs:
-            v_user = getattr(user, k_user)
-            v_userinfo = userinfo.get(k_userinfo, '')
-            if v_user != v_userinfo:
-                setattr(user, k_user, v_userinfo)
-                update_user = True
+        v_user = getattr(user, k_user)
+        v_userinfo = userinfo.get(k_userinfo, '')
+        if v_user != v_userinfo:
+            setattr(user, k_user, v_userinfo)
+            update_user = True
     if update_user:
         user.save()
 
