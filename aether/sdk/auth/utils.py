@@ -38,7 +38,8 @@ def get_or_create_user(request, username):
             last_name=realm or '',
             password=user_objects.make_random_password(length=100),
         )
-    add_user_to_realm(request, user)
+        # only add user if it doesn't exist.
+        add_user_to_realm(request, user)
 
     return user
 
