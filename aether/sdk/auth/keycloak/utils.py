@@ -225,10 +225,19 @@ def _get_user_info(realm, token):
 
 def _get_or_create_user(request, userinfo):
     user = get_or_create_user(request, userinfo.get('preferred_username'))
-
-    user.first_name = userinfo.get('given_name') or ''
-    user.last_name = userinfo.get('family_name') or ''
-    user.email = userinfo.get('email') or ''
-    user.save()
+    update_user = False
+    demographic_pairs = [
+        ('first_name', 'given_name'),
+        ('last_name', 'family_name'),
+        ('email', 'email')
+    ]
+    for k_user, k_userinfo: in demographic_pairs:
+            v_user = getattr(user, k_user)
+            v_userinfo = userinfo.get(k_userinfo, '')
+            if v_user != v_userinfo:
+                setattr(user, k_user, v_userinfo)
+                update_user = True
+    if update_user:
+        user.save()
 
     return user
