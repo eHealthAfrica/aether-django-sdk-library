@@ -284,7 +284,7 @@ if DJANGO_USE_CACHE:
     }
     CACHEOPS_DEFAULTS = {
         # 'all' is an alias for {'get', 'fetch', 'count', 'aggregate', 'exists'}
-        'ops': 'all',
+        'ops': ('fetch', 'get', 'exists'),
         'timeout': DJANGO_CACHE_TIMEOUT,
         'cache_on_save': True,
     }
@@ -295,9 +295,9 @@ if DJANGO_USE_CACHE:
             'ops': ('fetch', 'get', 'exists'),
             'timeout': 60,  # one minute
         },
-        'auth.permission': {'ops': ('fetch', 'get', 'exists')},
-        'auth.group': {'ops': ('fetch', 'get', 'exists')},
-        'authtoken.token': {'ops': ('fetch', 'get', 'exists')},
+        'auth.permission': {},
+        'auth.group': {},
+        'authtoken.token': {},
         # content types
         'contenttypes.contenttype': {
             'local_get': True,
@@ -305,7 +305,7 @@ if DJANGO_USE_CACHE:
         },
         # internal models
         'apptoken.*': {},
-        'multitenancy.mtinstance': {'ops': ('fetch', 'get', 'exists')}
+        'multitenancy.mtinstance': {}
     }
 
     # Cache Redis Sessions using django-redis-sessions
