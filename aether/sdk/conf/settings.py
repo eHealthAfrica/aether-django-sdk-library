@@ -274,7 +274,8 @@ if DJANGO_USE_CACHE:
 
     DJANGO_CACHE_TIMEOUT = int(os.environ.get('DJANGO_CACHE_TIMEOUT', 60 * 5))  # 5 minutes
 
-    INSTALLED_APPS += ['cacheops', 'django_pickling']
+    # INSTALLED_APPS += ['cacheops', 'django_pickling']
+    INSTALLED_APPS += ['cacheops']
 
     CACHEOPS_LRU = bool(os.environ.get('CACHEOPS_LRU'))
     CACHEOPS_DEGRADE_ON_FAILURE = bool(os.environ.get('CACHEOPS_DEGRADE_ON_FAILURE'))
@@ -294,7 +295,10 @@ if DJANGO_USE_CACHE:
 
     CACHEOPS = {
         # users and roles
-        'auth.user': {'ops': ('fetch', 'get', 'exists')},
+        'auth.user': {
+            'ops': ('fetch', 'get', 'exists'),
+            'timeout': 60,  # one minute
+        },
         'auth.permission': {'ops': ('fetch', 'get', 'exists')},
         'auth.group': {'ops': ('fetch', 'get', 'exists')},
         'authtoken.token': {'ops': ('fetch', 'get', 'exists')},
