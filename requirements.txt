@@ -10,7 +10,9 @@ django-cacheops
 django-cas-ng>=3.6
 django-cors-headers
 django-debug-toolbar
+django-pickling
 django-prometheus
+django-redis-sessions
 django-silk
 django-uwsgi
 django-webpack-loader

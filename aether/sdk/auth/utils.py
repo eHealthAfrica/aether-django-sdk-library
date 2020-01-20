@@ -21,11 +21,11 @@ from django.contrib.auth import get_user_model
 from aether.sdk.multitenancy.utils import get_current_realm, add_user_to_realm
 
 
+UserModel = get_user_model()
+user_objects = UserModel.objects
+
+
 def get_or_create_user(request, username):
-    # Getting the queryset inside the function allows it to be cached.
-    # This was being loaded too early when left on global scope.
-    UserModel = get_user_model()
-    user_objects = UserModel.objects
     # gets the existing user or creates a new one
     _username = parse_username(request, username)
     try:
