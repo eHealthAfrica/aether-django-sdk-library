@@ -307,7 +307,7 @@ if DJANGO_USE_CACHE:
     CACHEOPS_ENABLED = not TESTING  # disable on tests
 
     # Cache Redis Sessions using django-redis-sessions
-    if bool(os.environ.get('REDIS_SESSION_CACHE', True)):
+    if (not TESTING) and bool(os.environ.get('REDIS_SESSION_CACHE', True)):
         SESSION_REDIS = {
             'host': REDIS_HOST,
             'port': REDIS_PORT,
