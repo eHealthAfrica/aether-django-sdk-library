@@ -256,6 +256,7 @@ if SCHEDULER_REQUIRED:
 # A slick ORM cache with automatic granular event-driven invalidation.
 
 if DJANGO_USE_CACHE:
+
     # trying to avoid collisions with REDIS database
     REDIS_DB_CACHEOPS = int(os.environ.get('REDIS_DB_CACHEOPS', REDIS_DB + 1))
 
@@ -274,23 +275,28 @@ if DJANGO_USE_CACHE:
     }
     CACHEOPS_DEFAULTS = {
         # 'all' is an alias for {'get', 'fetch', 'count', 'aggregate', 'exists'}
-        'ops': 'all',
+        'ops': ('fetch', 'get', 'exists'),
         'timeout': DJANGO_CACHE_TIMEOUT,
         'cache_on_save': True,
     }
 
     CACHEOPS = {
         # users and roles
-        'auth.*': {},
-        'authtoken.*': {},
+        'auth.user': {
+            'ops': ('fetch', 'get', 'exists'),
+            'timeout': 60,  # one minute
+        },
+        'auth.permission': {},
+        'auth.group': {},
+        'authtoken.token': {},
         # content types
-        'contenttypes.*': {
+        'contenttypes.contenttype': {
             'local_get': True,
             'timeout': 60 * 60 * 24,  # one day
         },
         # internal models
         'apptoken.*': {},
-        'multitenancy.*': {},
+        'multitenancy.mtinstance': {}
     }
 
     if APP_MODULE:
@@ -300,6 +306,18 @@ if DJANGO_USE_CACHE:
 
     CACHEOPS_ENABLED = not TESTING  # disable on tests
 
+    # Cache Redis Sessions using django-redis-sessions
+    if (not TESTING) and bool(os.environ.get('REDIS_SESSION_CACHE', True)):
+        SESSION_REDIS = {
+            'host': REDIS_HOST,
+            'port': REDIS_PORT,
+            'db': REDIS_DB_CACHEOPS,
+            'password': REDIS_PASSWORD,
+            'prefix': 'session',
+            'socket_timeout': 3,
+            'retry_on_timeout': True
+        }
+        SESSION_ENGINE = 'redis_sessions.session'
 
 # Logging Configuration
 # ------------------------------------------------------------------------------
@@ -711,10 +729,10 @@ if not TESTING and PROFILING_ENABLED:
     SILKY_AUTHORISATION = True   # User must have permissions (is_staff)
 
     SILKY_PYTHON_PROFILER = bool(os.environ.get('SILKY_PYTHON_PROFILER'))
-    SILKY_PYTHON_PROFILER_BINARY = bool(os.environ.get('SILKY_PYTHON_PROFILER_BINARY'))
+    SILKY_PYTHON_PROFILER_BINARY = bool(os.environ.get('SILKY_PYTHON_PROFILER_BINARY', True))
     SILKY_PYTHON_PROFILER_RESULT_PATH = os.environ.get('SILKY_PYTHON_PROFILER_RESULT_PATH', '/tmp/')
 
-    SILKY_META = bool(os.environ.get('SILKY_META'))
+    SILKY_META = bool(os.environ.get('SILKY_META', True))
 
     SILKY_MAX_REQUEST_BODY_SIZE = int(os.environ.get('SILKY_MAX_REQUEST_BODY_SIZE', -1))
     SILKY_MAX_RESPONSE_BODY_SIZE = int(os.environ.get('SILKY_MAX_RESPONSE_BODY_SIZE', -1))

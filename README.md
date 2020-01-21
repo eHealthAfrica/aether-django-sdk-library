@@ -52,6 +52,8 @@ Extra dependencies (based on settings):
 - **cache**
   - [django-cacheops](https://github.com/Suor/django-cacheops)
     A slick ORM cache with automatic granular event-driven invalidation.
+  - [django-redis-sessions](https://github.com/martinrusev/django-redis-sessions)
+    Session backend for Django that stores sessions in a Redis database
 
 - **scheduler**
   - [django-rq](https://github.com/rq/django-rq)
