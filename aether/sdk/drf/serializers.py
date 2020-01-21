@@ -89,7 +89,7 @@ class FilteredHyperlinkedRelatedField(HyperlinkedRelatedField):
 # https://www.django-rest-framework.org/api-guide/serializers/#dynamically-modifying-fields
 class DynamicFieldsSerializerMixin(object):
     '''
-    Add addtional functionality to Serializers adding two arguments ``fields`` and ``omit``
+    Add additional functionality to Serializers adding two arguments ``fields`` and ``omit``
     that control which fields should be displayed.
     '''
     def __init__(self, *args, **kwargs):
