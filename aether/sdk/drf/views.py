@@ -18,6 +18,7 @@
 
 from django.conf import settings
 from django.db import transaction
+from django.utils.translation import gettext as _
 
 from rest_framework import status
 from rest_framework.decorators import action
@@ -116,6 +117,6 @@ class FilteredMixin(CacheViewSetMixin):
                 )
         else:
             return Response(
-                ('No values to update'),
+                _('No values to update'),
                 status=status.HTTP_400_BAD_REQUEST
             )
