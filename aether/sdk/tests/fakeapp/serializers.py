@@ -17,8 +17,10 @@
 # under the License.
 
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
 
 from aether.sdk.drf.serializers import (
+    DynamicFieldsSerializer,
     DynamicFieldsModelSerializer,
     FilteredHyperlinkedRelatedField,
     HyperlinkedIdentityField,
@@ -100,3 +102,14 @@ class TestUserSerializer2(DynamicFieldsModelSerializer):
             # required to test UserNameField
             'name', 'first_name', 'last_name',
         )
+
+
+class TestUserSerializer3(DynamicFieldsSerializer):
+
+    id = serializers.IntegerField()
+    username = serializers.CharField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+
+    def create(self, validated_data):
+        return UserModel(**validated_data)
