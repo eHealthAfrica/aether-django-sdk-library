@@ -87,19 +87,18 @@ class FilteredHyperlinkedRelatedField(HyperlinkedRelatedField):
 
 
 # https://www.django-rest-framework.org/api-guide/serializers/#dynamically-modifying-fields
-class DynamicFieldsModelSerializer(serializers.ModelSerializer):
+class DynamicFieldsSerializerMixin(object):
     '''
-    A ModelSerializer that takes two additional arguments ``fields`` and ``omit``
+    Add additional functionality to Serializers adding two arguments ``fields`` and ``omit``
     that control which fields should be displayed.
     '''
-
     def __init__(self, *args, **kwargs):
         # Don't pass the custom arguments up to the superclass
         fields = kwargs.pop('fields', None)
         omit = kwargs.pop('omit', None)
 
         # Instantiate the superclass normally
-        super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
+        super(DynamicFieldsSerializerMixin, self).__init__(*args, **kwargs)
 
         if fields:
             # Drop any fields that are not specified in the ``fields`` argument.
@@ -113,6 +112,14 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
             not_allowed = set(omit)
             for field_name in not_allowed:
                 self.fields.pop(field_name, None)
+
+
+class DynamicFieldsSerializer(DynamicFieldsSerializerMixin, serializers.Serializer):
+    pass
+
+
+class DynamicFieldsModelSerializer(DynamicFieldsSerializerMixin, serializers.ModelSerializer):
+    pass
 
 
 class UsernameField(serializers.Field):

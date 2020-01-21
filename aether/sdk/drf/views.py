@@ -117,6 +117,6 @@ class FilteredMixin(CacheViewSetMixin):
                 )
         else:
             return Response(
-                    _('No values to update'),
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+                _('No values to update'),
+                status=status.HTTP_400_BAD_REQUEST
+            )

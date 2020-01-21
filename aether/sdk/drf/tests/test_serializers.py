@@ -21,7 +21,9 @@ from django.contrib.auth import get_user_model
 from django.test import RequestFactory, override_settings
 
 from aether.sdk.tests import AetherTestCase
-from aether.sdk.tests.fakeapp.serializers import TestUserSerializer, TestUserSerializer2
+from aether.sdk.tests.fakeapp.serializers import (
+    TestUserSerializer, TestUserSerializer2, TestUserSerializer3
+)
 
 TEST_REALM = 'realm-test'
 
@@ -152,3 +154,23 @@ class SerializersTests(AetherTestCase):
         user.save()
 
         self.assertEqual(user.data['name'], 'John Doe')
+
+    @override_settings(MULTITENANCY=False)
+    def test_base_serializer__no_multitenancy(self):
+        user_data = {
+            'id': 408,
+            'username': 'user',
+            'first_name': 'John',
+            'last_name': 'Doe',
+        }
+
+        user = TestUserSerializer3(
+            data=user_data,
+            context={'request': self.request},
+            omit=['last_name']
+        )
+        self.assertTrue(user.is_valid(), user.errors)
+        user.save()
+
+        self.assertEqual(user.data['id'], user_data['id'])
+        self.assertFalse('last_name' in user.data.keys())
