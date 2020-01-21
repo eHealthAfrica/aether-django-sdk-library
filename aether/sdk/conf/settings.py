@@ -307,16 +307,17 @@ if DJANGO_USE_CACHE:
     CACHEOPS_ENABLED = not TESTING  # disable on tests
 
     # Cache Redis Sessions using django-redis-sessions
-    SESSION_REDIS = {
-        'host': REDIS_HOST,
-        'port': REDIS_PORT,
-        'db': REDIS_DB_CACHEOPS,
-        'password': REDIS_PASSWORD,
-        'prefix': 'session',
-        'socket_timeout': 3,
-        'retry_on_timeout': True
-    }
-    SESSION_ENGINE = 'redis_sessions.session'
+    if bool(os.environ.get('REDIS_SESSION_CACHE', True)):
+        SESSION_REDIS = {
+            'host': REDIS_HOST,
+            'port': REDIS_PORT,
+            'db': REDIS_DB_CACHEOPS,
+            'password': REDIS_PASSWORD,
+            'prefix': 'session',
+            'socket_timeout': 3,
+            'retry_on_timeout': True
+        }
+        SESSION_ENGINE = 'redis_sessions.session'
 
 # Logging Configuration
 # ------------------------------------------------------------------------------
