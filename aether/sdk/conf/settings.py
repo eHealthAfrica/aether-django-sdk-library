@@ -27,22 +27,13 @@ def get_required(name):
         raise RuntimeError(f'Missing {key} environment variable!')
 
 
-def env_bool(name, default=False):
-    try:
-        value = os.environ[name]
-        if str(value).lower() in ['t', 'true', 1]:  # truthy values
-            return True
-    except KeyError:
-        return default
-
-
 # Common Configuration
 # ------------------------------------------------------------------------------
 
 # Environment variables are false if unset or set to empty string, anything
 # else is considered true.
-DEBUG = env_bool('DEBUG', False)
-TESTING = env_bool('TESTING')
+DEBUG = bool(os.environ.get('DEBUG'))
+TESTING = bool(os.environ.get('TESTING'))
 SECRET_KEY = get_required('DJANGO_SECRET_KEY')
 
 LANGUAGE_CODE = os.environ.get('LANGUAGE_CODE', 'en-us')
@@ -225,12 +216,12 @@ if APP_MODULE:
 # REDIS Configuration
 # ------------------------------------------------------------------------------
 
-SCHEDULER_REQUIRED = env_bool('SCHEDULER_REQUIRED', False)
+SCHEDULER_REQUIRED = bool(os.environ.get('SCHEDULER_REQUIRED'))
 # Cache is handled by REDIS
-DJANGO_USE_CACHE = env_bool('DJANGO_USE_CACHE', False)
+DJANGO_USE_CACHE = bool(os.environ.get('DJANGO_USE_CACHE'))
 
 REDIS_REQUIRED = (
-    env_bool('REDIS_REQUIRED') or
+    bool(os.environ.get('REDIS_REQUIRED')) or
     SCHEDULER_REQUIRED or
     DJANGO_USE_CACHE
 )
@@ -266,6 +257,18 @@ if SCHEDULER_REQUIRED:
 
 if DJANGO_USE_CACHE:
 
+    # Cache Redis Sessions using django-redis-sessions
+    SESSION_REDIS = {
+        'host': REDIS_HOST,
+        'port': REDIS_PORT,
+        'db': REDIS_DB + 1,
+        'password': REDIS_PASSWORD,
+        'prefix': 'session',
+        'socket_timeout': 3,
+        'retry_on_timeout': True
+    }
+    SESSION_ENGINE = 'redis_sessions.session'
+
     # trying to avoid collisions with REDIS database
     REDIS_DB_CACHEOPS = int(os.environ.get('REDIS_DB_CACHEOPS', REDIS_DB + 1))
 
@@ -273,8 +276,8 @@ if DJANGO_USE_CACHE:
 
     INSTALLED_APPS += ['cacheops', ]
 
-    CACHEOPS_LRU = env_bool('CACHEOPS_LRU')
-    CACHEOPS_DEGRADE_ON_FAILURE = env_bool('CACHEOPS_DEGRADE_ON_FAILURE')
+    CACHEOPS_LRU = bool(os.environ.get('CACHEOPS_LRU'))
+    CACHEOPS_DEGRADE_ON_FAILURE = bool(os.environ.get('CACHEOPS_DEGRADE_ON_FAILURE'))
     CACHEOPS_REDIS = {
         'host': REDIS_HOST,
         'port': REDIS_PORT,
@@ -308,18 +311,6 @@ if DJANGO_USE_CACHE:
         'multitenancy.mtinstance': {}
     }
 
-    # Cache Redis Sessions using django-redis-sessions
-    if env_bool('REDIS_SESSION_CACHE', True):
-        SESSION_REDIS = {
-            'host': REDIS_HOST,
-            'port': REDIS_PORT,
-            'db': REDIS_DB_CACHEOPS,
-            'password': REDIS_PASSWORD,
-            'prefix': 'session',
-            'socket_timeout': 3,
-            'retry_on_timeout': True
-        }
-        SESSION_ENGINE = 'redis_sessions.session'
     if APP_MODULE:
         # take the last part of the path `aether.my.module` => `module`
         _module_name = APP_MODULE.split('.')[-1]
@@ -534,7 +525,7 @@ GATEWAY_ENABLED = False
 
 if KEYCLOAK_SERVER_URL:
     KEYCLOAK_CLIENT_ID = os.environ.get('KEYCLOAK_CLIENT_ID', 'eha')
-    KEYCLOAK_BEHIND_SCENES = env_bool('KEYCLOAK_BEHIND_SCENES')
+    KEYCLOAK_BEHIND_SCENES = bool(os.environ.get('KEYCLOAK_BEHIND_SCENES'))
 
     DEFAULT_KEYCLOAK_TEMPLATE = 'eha/login_realm.html'
     KEYCLOAK_TEMPLATE = os.environ.get('KEYCLOAK_TEMPLATE', DEFAULT_KEYCLOAK_TEMPLATE)
@@ -585,7 +576,7 @@ else:
 # Multitenancy Configuration
 # ------------------------------------------------------------------------------
 
-MULTITENANCY = env_bool('MULTITENANCY') or bool(KEYCLOAK_SERVER_URL)
+MULTITENANCY = bool(os.environ.get('MULTITENANCY')) or bool(KEYCLOAK_SERVER_URL)
 if MULTITENANCY:
     REALM_COOKIE = os.environ.get('REALM_COOKIE', 'eha-realm')
     DEFAULT_REALM = os.environ.get('DEFAULT_REALM', 'eha')
@@ -603,7 +594,7 @@ else:
 # Storage Configuration
 # ------------------------------------------------------------------------------
 
-STORAGE_REQUIRED = env_bool('STORAGE_REQUIRED')
+STORAGE_REQUIRED = bool(os.environ.get('STORAGE_REQUIRED'))
 if STORAGE_REQUIRED:
     DJANGO_STORAGE_BACKEND = os.environ.get('DJANGO_STORAGE_BACKEND')
     if DJANGO_STORAGE_BACKEND not in ['minio', 's3', 'gcs']:
@@ -622,7 +613,7 @@ if STORAGE_REQUIRED:
         MINIO_STORAGE_ACCESS_KEY = get_required('MINIO_STORAGE_ACCESS_KEY')
         MINIO_STORAGE_ENDPOINT = get_required('MINIO_STORAGE_ENDPOINT')
         MINIO_STORAGE_SECRET_KEY = get_required('MINIO_STORAGE_SECRET_KEY')
-        MINIO_STORAGE_USE_HTTPS = env_bool('MINIO_STORAGE_USE_HTTPS')
+        MINIO_STORAGE_USE_HTTPS = bool(os.environ.get('MINIO_STORAGE_USE_HTTPS'))
 
         MINIO_STORAGE_MEDIA_BUCKET_NAME = get_required('BUCKET_NAME')
         MINIO_STORAGE_MEDIA_URL = os.environ.get('MINIO_STORAGE_MEDIA_URL')
@@ -642,7 +633,7 @@ if STORAGE_REQUIRED:
             os.environ.get('MINIO_STORAGE_MEDIA_BACKUP_BUCKET')
         )
 
-        if env_bool('COLLECT_STATIC_FILES_ON_STORAGE'):
+        if bool(os.environ.get('COLLECT_STATIC_FILES_ON_STORAGE')):
             STATICFILES_STORAGE = 'minio_storage.storage.MinioMediaStorage'
             MINIO_STORAGE_STATIC_BUCKET_NAME = get_required('BUCKET_NAME')
 
@@ -654,7 +645,7 @@ if STORAGE_REQUIRED:
         AWS_S3_REGION_NAME = get_required('AWS_S3_REGION_NAME')
         AWS_DEFAULT_ACL = get_required('AWS_DEFAULT_ACL')
 
-        if env_bool('COLLECT_STATIC_FILES_ON_STORAGE'):
+        if bool(os.environ.get('COLLECT_STATIC_FILES_ON_STORAGE')):
             STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
     elif DJANGO_STORAGE_BACKEND == 'gcs':
@@ -663,14 +654,14 @@ if STORAGE_REQUIRED:
 
         GS_BUCKET_NAME = get_required('BUCKET_NAME')
 
-        if env_bool('COLLECT_STATIC_FILES_ON_STORAGE'):
+        if bool(os.environ.get('COLLECT_STATIC_FILES_ON_STORAGE')):
             STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 
 
 # Webpack Configuration
 # ------------------------------------------------------------------------------
 
-WEBPACK_REQUIRED = env_bool('WEBPACK_REQUIRED')
+WEBPACK_REQUIRED = bool(os.environ.get('WEBPACK_REQUIRED'))
 if WEBPACK_REQUIRED:
     INSTALLED_APPS += ['webpack_loader', ]
     WEBPACK_STATS_FILE = os.environ.get(
@@ -729,7 +720,7 @@ if not TESTING and DEBUG:
 # Profiling Configuration
 # ------------------------------------------------------------------------------
 
-PROFILING_ENABLED = env_bool('PROFILING_ENABLED')
+PROFILING_ENABLED = bool(os.environ.get('PROFILING_ENABLED'))
 if not TESTING and PROFILING_ENABLED:
     INSTALLED_APPS += ['silk', ]
     MIDDLEWARE = ['silk.middleware.SilkyMiddleware', *MIDDLEWARE, ]
@@ -737,11 +728,11 @@ if not TESTING and PROFILING_ENABLED:
     SILKY_AUTHENTICATION = True  # User must login
     SILKY_AUTHORISATION = True   # User must have permissions (is_staff)
 
-    SILKY_PYTHON_PROFILER = env_bool('SILKY_PYTHON_PROFILER')
-    SILKY_PYTHON_PROFILER_BINARY = env_bool('SILKY_PYTHON_PROFILER_BINARY', True)
+    SILKY_PYTHON_PROFILER = bool(os.environ.get('SILKY_PYTHON_PROFILER'))
+    SILKY_PYTHON_PROFILER_BINARY = bool(os.environ.get('SILKY_PYTHON_PROFILER_BINARY', True))
     SILKY_PYTHON_PROFILER_RESULT_PATH = os.environ.get('SILKY_PYTHON_PROFILER_RESULT_PATH', '/tmp/')
 
-    SILKY_META = env_bool('SILKY_META', True)
+    SILKY_META = bool(os.environ.get('SILKY_META', True))
 
     SILKY_MAX_REQUEST_BODY_SIZE = int(os.environ.get('SILKY_MAX_REQUEST_BODY_SIZE', -1))
     SILKY_MAX_RESPONSE_BODY_SIZE = int(os.environ.get('SILKY_MAX_RESPONSE_BODY_SIZE', -1))
