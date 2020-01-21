@@ -257,18 +257,6 @@ if SCHEDULER_REQUIRED:
 
 if DJANGO_USE_CACHE:
 
-    # Cache Redis Sessions using django-redis-sessions
-    SESSION_REDIS = {
-        'host': REDIS_HOST,
-        'port': REDIS_PORT,
-        'db': REDIS_DB + 1,
-        'password': REDIS_PASSWORD,
-        'prefix': 'session',
-        'socket_timeout': 3,
-        'retry_on_timeout': True
-    }
-    SESSION_ENGINE = 'redis_sessions.session'
-
     # trying to avoid collisions with REDIS database
     REDIS_DB_CACHEOPS = int(os.environ.get('REDIS_DB_CACHEOPS', REDIS_DB + 1))
 
@@ -318,6 +306,17 @@ if DJANGO_USE_CACHE:
 
     CACHEOPS_ENABLED = not TESTING  # disable on tests
 
+    # Cache Redis Sessions using django-redis-sessions
+    SESSION_REDIS = {
+        'host': REDIS_HOST,
+        'port': REDIS_PORT,
+        'db': REDIS_DB_CACHEOPS,
+        'password': REDIS_PASSWORD,
+        'prefix': 'session',
+        'socket_timeout': 3,
+        'retry_on_timeout': True
+    }
+    SESSION_ENGINE = 'redis_sessions.session'
 
 # Logging Configuration
 # ------------------------------------------------------------------------------
