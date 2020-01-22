@@ -28,6 +28,16 @@ from aether.sdk.auth.utils import get_or_create_user
 from aether.sdk.multitenancy.utils import get_path_realm
 from aether.sdk.utils import find_in_request_headers, request as exec_request
 
+# Cache repetitive calls if we're using caching.
+if settings.DJANGO_USE_CACHE:
+    from cacheops import cached
+    cache_op = cached(timeout=settings.USER_TOKEN_TTL)
+else:
+    # put a fake cache function on global scope so it doesn't complain
+    def cache_op(fn):
+        return fn
+
+
 _KC_TOKEN_SESSION = '__keycloak__token__session__'
 _KC_URL = settings.KEYCLOAK_SERVER_URL
 _KC_OID_URL = 'protocol/openid-connect'
@@ -212,6 +222,7 @@ def _authenticate(realm, data):
     return token, userinfo
 
 
+@cache_op
 def _get_user_info(realm, token):
     response = exec_request(
         method='get',
