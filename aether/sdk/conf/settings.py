@@ -262,6 +262,9 @@ if DJANGO_USE_CACHE:
 
     DJANGO_CACHE_TIMEOUT = int(os.environ.get('DJANGO_CACHE_TIMEOUT', 60 * 5))  # 5 minutes
 
+    # How often should we fetch userinfo from the Keycloak server?
+    USER_TOKEN_TTL = int(os.environ.get('USER_TOKEN_TTL', 60 * 1))
+
     INSTALLED_APPS += ['cacheops', ]
 
     CACHEOPS_LRU = bool(os.environ.get('CACHEOPS_LRU'))
