@@ -126,21 +126,27 @@ def check_user_token(request):
     realm = request.session.get(settings.REALM_COOKIE)
     if token:
         # refresh token
-        response = exec_request(
-            method='post',
-            url=f'{_KC_URL}/{realm}/{_KC_OID_URL}/token',
-            data={
-                'grant_type': 'refresh_token',
-                'client_id': settings.KEYCLOAK_CLIENT_ID,
-                'refresh_token': token['refresh_token'],
-            },
-        )
-
+        response = refresh_kc_token(realm, token)
         try:
             response.raise_for_status()
             request.session[_KC_TOKEN_SESSION] = response.json()
         except Exception:
             logout(request)
+
+
+# memoize (realm token pairs for TTL set by USER_TOKEN_TTL)
+# TTL must be longer than Token validity
+@cache_op
+def refresh_kc_token(realm, token):
+    return exec_request(
+        method='post',
+        url=f'{_KC_URL}/{realm}/{_KC_OID_URL}/token',
+        data={
+            'grant_type': 'refresh_token',
+            'client_id': settings.KEYCLOAK_CLIENT_ID,
+            'refresh_token': token['refresh_token'],
+        },
+    )
 
 
 def check_gateway_token(request):
