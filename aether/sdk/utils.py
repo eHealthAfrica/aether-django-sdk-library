@@ -17,6 +17,7 @@
 # under the License.
 
 import json
+import os
 import requests
 
 from time import sleep
@@ -141,15 +142,21 @@ def get_file_content(file_name, file_url, as_attachment=False):
     Gets file content usually from File Storage URL and returns it back.
     '''
 
-    response = request(method='get', url=file_url, stream=True)
+    try:
+        # Remote server
+        response = request(method='get', url=file_url, stream=True)
+    except requests.exceptions.MissingSchema:
+        # File system
+        response = open(os.path.abspath(file_url), 'rb')
 
+    filename = file_name.split('/')[-1] if file_name else file_url.split('/')[-1]
     http_response = FileResponse(
         streaming_content=response,
         as_attachment=as_attachment,
         # take the last part of the filename path
-        filename=file_name.split('/')[-1] if file_name else '',
-        status=response.status_code,
-        content_type=response.headers.get('Content-Type'),
+        filename=filename,
+        status=getattr(response, 'status_code', None),
+        content_type=getattr(response, 'headers', {}).get('Content-Type'),
     )
     http_response.set_headers(filelike=response)
 
