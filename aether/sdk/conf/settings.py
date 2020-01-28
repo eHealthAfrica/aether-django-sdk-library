@@ -599,66 +599,75 @@ else:
 
 STORAGE_REQUIRED = bool(os.environ.get('STORAGE_REQUIRED'))
 if STORAGE_REQUIRED:
-    DJANGO_STORAGE_BACKEND = os.environ.get('DJANGO_STORAGE_BACKEND')
-    if DJANGO_STORAGE_BACKEND not in ['minio', 's3', 'gcs']:
-        msg = (
-            'Unrecognized value "{}" for environment variable DJANGO_STORAGE_BACKEND.'
-            ' Expected one of the following: "minio", "s3", "gcs"'
-        )
-        raise RuntimeError(msg.format(DJANGO_STORAGE_BACKEND))
+    if TESTING:
+        # we cannot rely on remote servers during tests
+        # use the file system storage
+        DJANGO_STORAGE_BACKEND = 'file'
+        DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+        MEDIA_URL = os.environ.get('MEDIA_URL_TEST', '/tmp/')
+        MEDIA_ROOT = os.environ.get('MEDIA_ROOT_TEST', '/tmp')
+
     else:
-        logger.info(f'Using storage backend "{DJANGO_STORAGE_BACKEND}"')
+        DJANGO_STORAGE_BACKEND = os.environ.get('DJANGO_STORAGE_BACKEND')
+        if DJANGO_STORAGE_BACKEND not in ['minio', 's3', 'gcs']:
+            msg = (
+                'Unrecognized value "{}" for environment variable DJANGO_STORAGE_BACKEND.'
+                ' Expected one of the following: "minio", "s3", "gcs"'
+            )
+            raise RuntimeError(msg.format(DJANGO_STORAGE_BACKEND))
+        else:
+            logger.info(f'Using storage backend "{DJANGO_STORAGE_BACKEND}"')
 
-    if DJANGO_STORAGE_BACKEND == 'minio':
-        INSTALLED_APPS += ['minio_storage', ]
-        DEFAULT_FILE_STORAGE = 'minio_storage.storage.MinioMediaStorage'
+        if DJANGO_STORAGE_BACKEND == 'minio':
+            INSTALLED_APPS += ['minio_storage', ]
+            DEFAULT_FILE_STORAGE = 'minio_storage.storage.MinioMediaStorage'
 
-        MINIO_STORAGE_ACCESS_KEY = get_required('MINIO_STORAGE_ACCESS_KEY')
-        MINIO_STORAGE_ENDPOINT = get_required('MINIO_STORAGE_ENDPOINT')
-        MINIO_STORAGE_SECRET_KEY = get_required('MINIO_STORAGE_SECRET_KEY')
-        MINIO_STORAGE_USE_HTTPS = bool(os.environ.get('MINIO_STORAGE_USE_HTTPS'))
+            MINIO_STORAGE_ACCESS_KEY = get_required('MINIO_STORAGE_ACCESS_KEY')
+            MINIO_STORAGE_ENDPOINT = get_required('MINIO_STORAGE_ENDPOINT')
+            MINIO_STORAGE_SECRET_KEY = get_required('MINIO_STORAGE_SECRET_KEY')
+            MINIO_STORAGE_USE_HTTPS = bool(os.environ.get('MINIO_STORAGE_USE_HTTPS'))
 
-        MINIO_STORAGE_MEDIA_BUCKET_NAME = get_required('BUCKET_NAME')
-        MINIO_STORAGE_MEDIA_URL = os.environ.get('MINIO_STORAGE_MEDIA_URL')
-        MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = bool(
-            os.environ.get('MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET')
-        )
-        MINIO_STORAGE_AUTO_CREATE_MEDIA_POLICY = bool(
-            os.environ.get('MINIO_STORAGE_AUTO_CREATE_MEDIA_POLICY')
-        )
-        MINIO_STORAGE_MEDIA_USE_PRESIGNED = bool(
-            os.environ.get('MINIO_STORAGE_MEDIA_USE_PRESIGNED')
-        )
-        MINIO_STORAGE_MEDIA_BACKUP_FORMAT = bool(
-            os.environ.get('MINIO_STORAGE_MEDIA_BACKUP_FORMAT')
-        )
-        MINIO_STORAGE_MEDIA_BACKUP_BUCKET = bool(
-            os.environ.get('MINIO_STORAGE_MEDIA_BACKUP_BUCKET')
-        )
+            MINIO_STORAGE_MEDIA_BUCKET_NAME = get_required('BUCKET_NAME')
+            MINIO_STORAGE_MEDIA_URL = os.environ.get('MINIO_STORAGE_MEDIA_URL')
+            MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = bool(
+                os.environ.get('MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET')
+            )
+            MINIO_STORAGE_AUTO_CREATE_MEDIA_POLICY = bool(
+                os.environ.get('MINIO_STORAGE_AUTO_CREATE_MEDIA_POLICY')
+            )
+            MINIO_STORAGE_MEDIA_USE_PRESIGNED = bool(
+                os.environ.get('MINIO_STORAGE_MEDIA_USE_PRESIGNED')
+            )
+            MINIO_STORAGE_MEDIA_BACKUP_FORMAT = bool(
+                os.environ.get('MINIO_STORAGE_MEDIA_BACKUP_FORMAT')
+            )
+            MINIO_STORAGE_MEDIA_BACKUP_BUCKET = bool(
+                os.environ.get('MINIO_STORAGE_MEDIA_BACKUP_BUCKET')
+            )
 
-        if bool(os.environ.get('COLLECT_STATIC_FILES_ON_STORAGE')):
-            STATICFILES_STORAGE = 'minio_storage.storage.MinioMediaStorage'
-            MINIO_STORAGE_STATIC_BUCKET_NAME = get_required('BUCKET_NAME')
+            if bool(os.environ.get('COLLECT_STATIC_FILES_ON_STORAGE')):
+                STATICFILES_STORAGE = 'minio_storage.storage.MinioMediaStorage'
+                MINIO_STORAGE_STATIC_BUCKET_NAME = get_required('BUCKET_NAME')
 
-    elif DJANGO_STORAGE_BACKEND == 's3':
-        INSTALLED_APPS += ['storages', ]
-        DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+        elif DJANGO_STORAGE_BACKEND == 's3':
+            INSTALLED_APPS += ['storages', ]
+            DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-        AWS_STORAGE_BUCKET_NAME = get_required('BUCKET_NAME')
-        AWS_S3_REGION_NAME = get_required('AWS_S3_REGION_NAME')
-        AWS_DEFAULT_ACL = get_required('AWS_DEFAULT_ACL')
+            AWS_STORAGE_BUCKET_NAME = get_required('BUCKET_NAME')
+            AWS_S3_REGION_NAME = get_required('AWS_S3_REGION_NAME')
+            AWS_DEFAULT_ACL = get_required('AWS_DEFAULT_ACL')
 
-        if bool(os.environ.get('COLLECT_STATIC_FILES_ON_STORAGE')):
-            STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+            if bool(os.environ.get('COLLECT_STATIC_FILES_ON_STORAGE')):
+                STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-    elif DJANGO_STORAGE_BACKEND == 'gcs':
-        INSTALLED_APPS += ['storages', ]
-        DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+        elif DJANGO_STORAGE_BACKEND == 'gcs':
+            INSTALLED_APPS += ['storages', ]
+            DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 
-        GS_BUCKET_NAME = get_required('BUCKET_NAME')
+            GS_BUCKET_NAME = get_required('BUCKET_NAME')
 
-        if bool(os.environ.get('COLLECT_STATIC_FILES_ON_STORAGE')):
-            STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+            if bool(os.environ.get('COLLECT_STATIC_FILES_ON_STORAGE')):
+                STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 
 
 # Webpack Configuration
