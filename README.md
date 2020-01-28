@@ -20,7 +20,7 @@ This library requires **Python 3.6** and above.
 
 Python libraries:
 
-- [django](https://www.djangoproject.com/) As web framework. (**Above 2**)
+- [django](https://www.djangoproject.com/) As web framework. (**Above 2.2**)
 - [django-cors-headers](https://github.com/ottoyiu/django-cors-headers)
   for handling the server headers required for Cross-Origin Resource Sharing (CORS).
 - [django-debug-toolbar](https://github.com/jazzband/django-debug-toolbar)
