@@ -16,10 +16,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import tempfile
+
 from requests import Response
 from unittest import mock
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.http import FileResponse
 from django.test import RequestFactory
 
 from aether.sdk import utils
@@ -144,6 +147,7 @@ class UtilsTests(AetherTestCase):
 
         with mock.patch('aether.sdk.utils.request', return_value=mock_response) as mock_get:
             response = utils.get_file_content(None, 'http://any-server/sample.txt', False)
+            self.assertTrue(isinstance(response, FileResponse))
             mock_get.assert_called_once_with(
                 url='http://any-server/sample.txt',
                 method='get',
@@ -169,6 +173,7 @@ class UtilsTests(AetherTestCase):
                 'http://any-server/sample.txt',
                 True,
             )
+            self.assertTrue(isinstance(response, FileResponse))
             mock_get.assert_called_once_with(
                 url='http://any-server/sample.txt',
                 method='get',
@@ -183,3 +188,22 @@ class UtilsTests(AetherTestCase):
                              'attachment; filename="sample.txt"')
             self.assertEqual(response['Access-Control-Expose-Headers'],
                              'Content-Disposition')
+
+    def test__get_file_content__local_file(self):
+        with tempfile.NamedTemporaryFile() as fp:
+            fp.write(b'abc')
+            fp.seek(0)
+
+            response = utils.get_file_content(None, fp.name, True)
+            self.assertTrue(isinstance(response, FileResponse))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.getvalue(), b'abc')
+
+            filename = fp.name.split('/')[-1]
+            self.assertEqual(response['Content-Disposition'],
+                             f'attachment; filename="{filename}"')
+            self.assertEqual(response['Access-Control-Expose-Headers'],
+                             'Content-Disposition')
+            self.assertEqual(response['Content-Type'],
+                             'application/octet-stream',
+                             'FileResponse default content-type')
