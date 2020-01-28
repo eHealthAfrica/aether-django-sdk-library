@@ -5,7 +5,7 @@
 #                                                                              #
 ################################################################################
 
-django>=2,<3
+django>=2.2
 django-cacheops
 django-cas-ng>=3.6
 django-cors-headers
