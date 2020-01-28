@@ -7,7 +7,6 @@
 
 django>=2.2
 django-cacheops
-django-cas-ng>=3.6
 django-cors-headers
 django-debug-toolbar
 django-prometheus
