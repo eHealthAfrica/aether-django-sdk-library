@@ -91,7 +91,6 @@ class Command(BaseCommand):
         self.__publish(webpack_dir, storage_path)
 
     def __publish(self, local_dir, storage_path):
-        storage_backend = os.environ.get('DJANGO_STORAGE_BACKEND')
         static_storage_class = get_storage_class(settings.STATICFILES_STORAGE)()
         for file_name in sorted(os.listdir(local_dir)):
             file_path = os.path.join(local_dir, file_name)
