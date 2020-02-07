@@ -658,6 +658,7 @@ if STORAGE_REQUIRED:
             AWS_DEFAULT_ACL = get_required('AWS_DEFAULT_ACL')
 
             if bool(os.environ.get('COLLECT_STATIC_FILES_ON_STORAGE')):
+                STATIC_BUCKET_NAME = get_required('STATIC_BUCKET_NAME')
                 STATICFILES_STORAGE = 'aether.sdk.conf.storages.StaticS3'
 
         elif DJANGO_STORAGE_BACKEND == 'gcs':
@@ -667,6 +668,7 @@ if STORAGE_REQUIRED:
             GS_BUCKET_NAME = get_required('BUCKET_NAME')
 
             if bool(os.environ.get('COLLECT_STATIC_FILES_ON_STORAGE')):
+                STATIC_BUCKET_NAME = get_required('STATIC_BUCKET_NAME')
                 STATICFILES_STORAGE = 'aether.sdk.conf.storages.StaticGCS'
 
 

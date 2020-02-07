@@ -16,21 +16,14 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import os
+from django.conf import settings
 from storages.backends.s3boto3 import S3Boto3Storage
 from storages.backends.gcloud import GoogleCloudStorage
 
 
-def get_required(name):
-    try:
-        return os.environ[name]
-    except KeyError as key:
-        raise RuntimeError(f'Missing {key} environment variable!')
-
-
 class StaticS3(S3Boto3Storage):
-    bucket_name = get_required('STATIC_BUCKET_NAME')
+    bucket_name = settings.STATIC_BUCKET_NAME
 
 
 class StaticGCS(GoogleCloudStorage):
-    bucket_name = get_required('STATIC_BUCKET_NAME')
+    bucket_name = settings.STATIC_BUCKET_NAME

@@ -22,7 +22,7 @@ import json
 import os
 
 from django.conf import settings
-from django.core.files.storage import get_storage_class, default_storage
+from django.core.files.storage import get_storage_class
 from django.core.management.base import BaseCommand
 from django.utils.translation import gettext as _
 
@@ -92,12 +92,7 @@ class Command(BaseCommand):
 
     def __publish(self, local_dir, storage_path):
         storage_backend = os.environ.get('DJANGO_STORAGE_BACKEND')
-        if storage_backend == 's3':
-            static_storage_class = get_storage_class('aether.sdk.conf.storages.StaticS3')()
-        elif storage_backend == 'gcs':
-            static_storage_class = get_storage_class('aether.sdk.conf.storages.StaticGCS')()
-        else:
-            static_storage_class = default_storage
+        static_storage_class = get_storage_class(settings.STATICFILES_STORAGE)()
         for file_name in sorted(os.listdir(local_dir)):
             file_path = os.path.join(local_dir, file_name)
             if os.path.isdir(file_path):
