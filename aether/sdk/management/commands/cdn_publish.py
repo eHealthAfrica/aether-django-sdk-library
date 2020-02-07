@@ -22,7 +22,7 @@ import json
 import os
 
 from django.conf import settings
-from django.core.files.storage import default_storage
+from django.core.files.storage import get_storage_class
 from django.core.management.base import BaseCommand
 from django.utils.translation import gettext as _
 
@@ -91,6 +91,7 @@ class Command(BaseCommand):
         self.__publish(webpack_dir, storage_path)
 
     def __publish(self, local_dir, storage_path):
+        static_storage_class = get_storage_class(settings.STATICFILES_STORAGE)()
         for file_name in sorted(os.listdir(local_dir)):
             file_path = os.path.join(local_dir, file_name)
             if os.path.isdir(file_path):
@@ -98,4 +99,4 @@ class Command(BaseCommand):
                 self.__publish(file_path, f'{storage_path}{file_name}/')
             if os.path.isfile(file_path):
                 with open(file_path, 'rb') as fp:
-                    default_storage.save(f'{storage_path}{file_name}', fp)
+                    static_storage_class.save(f'{storage_path}{file_name}', fp)
