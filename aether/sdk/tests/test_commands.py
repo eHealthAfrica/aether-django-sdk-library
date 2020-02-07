@@ -258,7 +258,7 @@ class TestCreateUserCommand(CommandTestCase):
 
 class TestCdnPublishCommand(CommandTestCase):
 
-    @mock.patch('aether.sdk.management.commands.cdn_publish.default_storage.save')
+    @mock.patch('aether.sdk.management.commands.cdn_publish.static_storage_class.save')
     def test_cdn_publish(self, mock_cdn_save):
         webpack_stats = {
             'chunks': {
