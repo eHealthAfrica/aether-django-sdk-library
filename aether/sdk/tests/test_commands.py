@@ -258,7 +258,7 @@ class TestCreateUserCommand(CommandTestCase):
 
 class TestCdnPublishCommand(CommandTestCase):
 
-    @mock.patch('aether.sdk.management.commands.cdn_publish.static_storage_class.save')
+    @mock.patch('django.contrib.staticfiles.storage.StaticFilesStorage.save')
     def test_cdn_publish(self, mock_cdn_save):
         webpack_stats = {
             'chunks': {
@@ -278,6 +278,13 @@ class TestCdnPublishCommand(CommandTestCase):
                      '--cdn-url=http://cdn-server/path/to',
                      '-w=aether/sdk/tests/webpackfiles',
                      '--storage-path=__assets__/sdk/',
+                     stdout=self.out,
+                     stderr=self.out)
+
+        call_command('cdn_publish',
+                     '--cdn-url=http://cdn-server/path/to/',
+                     '-w=aether/sdk/tests/webpackfiles',
+                     '--storage-path=/__assets__/sdk/',
                      stdout=self.out,
                      stderr=self.out)
 
