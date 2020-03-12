@@ -177,8 +177,10 @@ class AdminUrlsUrlTest(UrlsTestCase):
 
     def test__urls(self):
         self.assertEqual(reverse('admin:index'), '/private/')
+        self.assertEqual(reverse('get-realms'), '/private/~realms')
         self.assertIsNotNone(resolve('/private/~prometheus/metrics'))
         self.assertIsNotNone(resolve('/private/~uwsgi/'))
+        self.assertIsNotNone(resolve('/private/~realms'))
         self.assertRaises(exceptions.Resolver404, resolve, '/private/~silk/')
 
 
@@ -191,6 +193,7 @@ class AdminUrlsProfilingUrlTest(UrlsTestCase):
 
     def test__urls(self):
         self.assertEqual(reverse('admin:index'), '/admin-with-profiling/')
+        self.assertEqual(reverse('get-realms'), '/admin-with-profiling/~realms')
         self.assertIsNotNone(resolve('/admin-with-profiling/~prometheus/metrics'))
         self.assertIsNotNone(resolve('/admin-with-profiling/~uwsgi/'))
         self.assertIsNotNone(resolve('/admin-with-profiling/~silk/'))
