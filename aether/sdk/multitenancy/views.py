@@ -16,11 +16,14 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes, renderer_classes
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import IsAdminUser
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
 from aether.sdk.drf.views import CacheViewSetMixin
@@ -114,3 +117,30 @@ class MtUserViewSetMixin(CacheViewSetMixin):
 
         qs = super(MtUserViewSetMixin, self).get_queryset()
         return filter_users_by_realm(self.request, qs)
+
+
+@api_view(['GET'])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAdminUser])
+def get_realms(*args, **kwargs):
+    '''
+    Get the list of current realms.
+
+    If MULTITENANCY is not enabled then
+    returns the fake realm `settings.NO_MULTITENANCY_REALM`
+
+    If MULTITENANCY is enabled then
+    the default realm is always included in the list
+    '''
+    if settings.MULTITENANCY:
+        from aether.sdk.multitenancy.models import MtInstance
+        realms = set(
+            MtInstance.objects.values_list('realm', flat=True).order_by('realm').distinct()
+        )
+        # include always the default realm
+        realms.add(settings.DEFAULT_REALM)
+
+    else:
+        realms = [settings.NO_MULTITENANCY_REALM]
+
+    return Response({'realms': list(realms)})

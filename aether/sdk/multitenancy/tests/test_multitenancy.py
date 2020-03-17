@@ -65,6 +65,10 @@ class MultitenancyTests(AetherTestCase):
         self.assertTrue(self.client.login(username=username, password=password))
         self.client.cookies[settings.REALM_COOKIE] = TEST_REALM
 
+    def tearDown(self):
+        self.client.logout()
+        super(MultitenancyTests, self).tearDown()
+
     def test_get_multitenancy_model(self):
         self.assertEqual(settings.MULTITENANCY_MODEL, 'fakeapp.TestModel')
         self.assertEqual(utils.get_multitenancy_model(), TestModel)
@@ -478,6 +482,36 @@ class MultitenancyTests(AetherTestCase):
         response = self.client.get(url, **token_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_get_realms_view(self):
+        url = reverse('get-realms')
+
+        # only admin users
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        username = 'admin'
+        email = 'admin@example.com'
+        password = 'secretsecret'
+        get_user_model().objects.create_superuser(username, email, password)
+        self.assertTrue(self.client.login(username=username, password=password))
+
+        response = self.client.get(url)
+        self.assertEqual(response.json(), {'realms': [settings.DEFAULT_REALM]})
+
+        obj1 = TestModel.objects.create(name='one')
+        self.assertTrue(MtInstance.objects.count() == 0)
+        self.assertFalse(obj1.is_accessible(TEST_REALM))
+        self.assertEqual(response.json(), {'realms': [settings.DEFAULT_REALM]})
+
+        obj1.add_to_realm(self.request)
+        self.assertTrue(MtInstance.objects.count() > 0)
+        self.assertEqual(obj1.mt.realm, TEST_REALM)
+        self.assertTrue(obj1.is_accessible(TEST_REALM))
+
+        response = self.client.get(url)
+        realms = set(response.json()['realms'])
+        self.assertEqual(realms, set([TEST_REALM, settings.DEFAULT_REALM]))
+
     @override_settings(MULTITENANCY=False)
     def test_no_multitenancy(self, *args):
         self.assertIsNone(utils.get_multitenancy_model())
@@ -550,3 +584,12 @@ class MultitenancyTests(AetherTestCase):
 
         response = self.client.get(url, **token_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        username = 'admin'
+        email = 'admin@example.com'
+        password = 'secretsecret'
+        get_user_model().objects.create_superuser(username, email, password)
+        self.assertTrue(self.client.login(username=username, password=password))
+
+        response = self.client.get(reverse('get-realms'))
+        self.assertEqual(response.json(), {'realms': [settings.NO_MULTITENANCY_REALM]})
