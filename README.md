@@ -197,6 +197,9 @@ Default URLs included:
   - the `/admin/~uwsgi/` URL. If uWSGI is running displays the server uWSGI settings.
   - the `/admin/~purge-cache` URL. Purges django cache.
     Available if django cache is enabled.
+  - the `/admin/~realms` URL. Returns the list of realms with linked data.
+    The `DEFAULT_REALM` is always included even if it has no linked data.
+    If MULTITENANCY is not enabled returns the fake realm `settings.NO_MULTITENANCY_REALM`.
 
   - the `/accounts` URLs (`AUTH_URL` setting), checks if the REST Framework ones,
     using the templates indicated in `LOGIN_TEMPLATE` and `LOGGED_OUT_TEMPLATE`

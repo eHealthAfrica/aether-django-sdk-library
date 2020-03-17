@@ -580,6 +580,8 @@ else:
 # ------------------------------------------------------------------------------
 
 MULTITENANCY = bool(os.environ.get('MULTITENANCY')) or bool(KEYCLOAK_SERVER_URL)
+NO_MULTITENANCY_REALM = '~'
+
 if MULTITENANCY:
     REALM_COOKIE = os.environ.get('REALM_COOKIE', 'eha-realm')
     DEFAULT_REALM = os.environ.get('DEFAULT_REALM', 'eha')

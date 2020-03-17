@@ -180,11 +180,15 @@ def _get_auth_urls():
 
 
 def _get_admin_urls():
+    from aether.sdk.multitenancy.views import get_realms
+
     admin_urls = [
         # monitoring
         path(route='~prometheus/', view=include('django_prometheus.urls')),
         # uWSGI monitoring
         path(route='~uwsgi/', view=include('django_uwsgi.urls')),
+        # realms
+        path(route='~realms', view=get_realms, name='get-realms'),
         # django admin section
         path(route='', view=admin.site.urls),
     ]
