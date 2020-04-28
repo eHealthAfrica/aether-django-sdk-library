@@ -37,20 +37,18 @@ def get_multitenancy_model():
     return apps.get_model(app_label, model_name, require_ready=True)
 
 
-def get_path_realm(request, default_realm=None, raise_exception=False):
+def get_path_realm(request, default_realm=None):
     '''
     Returns the realm contained in the request path.
     '''
 
     try:
         return resolve(request.path).kwargs['realm']
-    except Exception as e:
-        if raise_exception:
-            raise e
-    return default_realm
+    except Exception:
+        return default_realm
 
 
-def get_current_realm(request):
+def get_current_realm(request, default_realm=settings.DEFAULT_REALM):
     '''
     Returns the current realm or the default one if missing.
     '''
@@ -59,11 +57,11 @@ def get_current_realm(request):
         return None
 
     if settings.GATEWAY_ENABLED:
-        realm = get_path_realm(request, default_realm=settings.GATEWAY_PUBLIC_REALM)
-        if realm != settings.GATEWAY_PUBLIC_REALM:
+        realm = get_path_realm(request, default_realm=None)
+        if realm and realm != settings.GATEWAY_PUBLIC_REALM:
             return realm
 
-    return find_in_request(request, settings.REALM_COOKIE, settings.DEFAULT_REALM)
+    return find_in_request(request, settings.REALM_COOKIE, default_realm)
 
 
 def is_accessible_by_realm(request, obj):

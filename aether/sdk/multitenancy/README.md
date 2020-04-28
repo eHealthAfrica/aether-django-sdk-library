@@ -325,13 +325,14 @@ A collection of useful methods.
 
 - `get_multitenancy_model()`, returns the `settings.MULTITENANCY_MODEL` class.
 
-- `get_path_realm(request, default_realm=None, raise_exception=False)`,
+- `get_path_realm(request, default_realm=None)`,
   finds the current realm in the request path. If the GATEWAY is enabled the
   app path is built using the current realm and the app gateway id like
   `{gateway-server}/{current-realm}/{app-gateway-id}/my-enpoint`.
 
-- `get_current_realm(request)`, finds the current realm in the request path or
-  in the session or within the request cookies or within the request headers.
+- `get_current_realm(request, default_realm=settings.DEFAULT_REALM)`,
+  finds the current realm in the request path or in the session or
+  within the request cookies or within the request headers.
   While using the token authentication no session/cookie is included in
   the requests, in this case the realm value is included as an HTTP header,
   i.e., if the `REALM_COOKIE` value is `my-realm` the HTTP header name is
