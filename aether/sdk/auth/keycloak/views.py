@@ -51,6 +51,7 @@ class KeycloakLoginView(LoginView):
         except Exception:
             # remove realm
             request.session[settings.REALM_COOKIE] = None
+            request.session.modified = True
             messages.error(request, _('An error ocurred while authenticating against keycloak'))
 
         return super(KeycloakLoginView, self).get(request, *args, **kwargs)
@@ -58,6 +59,7 @@ class KeycloakLoginView(LoginView):
     def form_valid(self, form):
         # save the current realm in the session
         self.request.session[settings.REALM_COOKIE] = form.cleaned_data.get('realm')
+        self.request.session.modified = True
         # redirect to keycloak
         return HttpResponseRedirect(get_realm_auth_url(self.request))
 
