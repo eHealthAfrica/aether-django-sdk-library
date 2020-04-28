@@ -52,8 +52,8 @@ Extra dependencies (based on settings):
 - **cache**
   - [django-cacheops](https://github.com/Suor/django-cacheops)
     A slick ORM cache with automatic granular event-driven invalidation.
-  - [django-redis-sessions](https://github.com/martinrusev/django-redis-sessions)
-    Session backend for Django that stores sessions in a Redis database
+  - [django-redis](https://github.com/jazzband/django-redis)
+    Full featured redis cache backend for Django.
 
 - **scheduler**
   - [django-rq](https://github.com/rq/django-rq)
@@ -438,7 +438,7 @@ See more in https://django-minio-storage.readthedocs.io/en/latest/usage
 - `REDIS_HOST`: The redis host name (**mandatory**).
 - `REDIS_PORT`: The redis port (**mandatory**).
 - `REDIS_DB`: The redis database. Defaults to `0`.
-- `REDIS_PASSWORD`: The redis password (**mandatory**).
+- `REDIS_PASSWORD`: The redis password.
 
 *[Return to TOC](#table-of-contents)*
 
@@ -449,8 +449,14 @@ See more in https://django-minio-storage.readthedocs.io/en/latest/usage
 - `DJANGO_CACHE_TIMEOUT`: Cache timeout in seconds. Defaults to `300` (5 minutes).
 - `REDIS_HOST`: The redis host name (**mandatory**).
 - `REDIS_PORT`: The redis port (**mandatory**).
-- `REDIS_PASSWORD`: The redis password (**mandatory**).
-- `REDIS_DB_CACHEOPS`: The django ORM database. Defaults to `1`.
+- `REDIS_PASSWORD`: The redis password.
+- `REDIS_DB_CACHEOPS`: The django ORM Redis database. Defaults to `1`.
+- `REDIS_DJANGO_CACHE`: Used to indicated if the django cache is handled by Redis.
+  Is `false` if unset or set to empty string, anything else is considered `true`.
+- `REDIS_DB_DJANGO`: The django platform Redis database. Defaults to `2`.
+- `REDIS_SESSION_CACHE`: Used to indicated if the django session cache is handled by Redis.
+  Is `false` if unset or set to empty string, anything else is considered `true`.
+- `REDIS_DB_SESSION`: The django session Redis database. Defaults to `3`.
 
 See more in [django-cacheops](https://github.com/Suor/django-cacheops)
 

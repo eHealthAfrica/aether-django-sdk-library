@@ -25,17 +25,9 @@ from django.dispatch import receiver
 from django.urls import reverse
 
 from aether.sdk.auth.utils import get_or_create_user
+from aether.sdk.cache import cache_wrap
 from aether.sdk.multitenancy.utils import get_current_realm
 from aether.sdk.utils import find_in_request_headers, request as exec_request
-
-# Cache repetitive calls if we're using caching.
-if settings.DJANGO_USE_CACHE:
-    from cacheops import cached
-    cache_op = cached(timeout=settings.USER_TOKEN_TTL)
-else:
-    # put a fake cache function on global scope so it doesn't complain
-    def cache_op(fn):
-        return fn
 
 
 _KC_TOKEN_SESSION = '__keycloak__token__session__'
@@ -139,7 +131,7 @@ def check_user_token(request):
 
 # memoize (realm token pairs for TTL set by USER_TOKEN_TTL)
 # TTL must be longer than Token validity
-@cache_op
+@cache_wrap(timeout=settings.USER_TOKEN_TTL)
 def refresh_kc_token(realm, token):
     return exec_request(
         method='post',
@@ -231,7 +223,7 @@ def _authenticate(realm, data):
     return token, userinfo
 
 
-@cache_op
+@cache_wrap(timeout=settings.USER_TOKEN_TTL)
 def _get_user_info(realm, token):
     response = exec_request(
         method='get',
