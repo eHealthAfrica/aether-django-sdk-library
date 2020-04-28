@@ -363,7 +363,6 @@ if (not TESTING) and DJANGO_USE_CACHE:
         CACHEOPS[f'{_module_name}.*'] = {}
 
 
-
 # Logging Configuration
 # ------------------------------------------------------------------------------
 
