@@ -25,7 +25,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 
 from aether.sdk.auth.utils import get_or_create_user
-from aether.sdk.multitenancy.utils import get_path_realm
+from aether.sdk.multitenancy.utils import get_current_realm
 from aether.sdk.utils import find_in_request_headers, request as exec_request
 
 # Cache repetitive calls if we're using caching.
@@ -44,7 +44,7 @@ _KC_OID_URL = 'protocol/openid-connect'
 
 
 def get_realm_auth_url(request):
-    realm = request.session.get(settings.REALM_COOKIE)
+    realm = get_current_realm(request, default_realm=None)
     redirect_uri = urllib.parse.quote(_get_login_url(request), safe='')
 
     return (
@@ -87,6 +87,7 @@ def authenticate(request, username, password, realm):
     request.session[settings.REALM_COOKIE] = realm
     # save the user token in the session
     request.session[_KC_TOKEN_SESSION] = token
+    request.session.modified = True
 
     return _get_or_create_user(request, userinfo)
 
@@ -94,7 +95,7 @@ def authenticate(request, username, password, realm):
 def post_authenticate(request):
     session_state = request.GET.get('session_state')
     code = request.GET.get('code')
-    realm = request.session.get(settings.REALM_COOKIE)
+    realm = get_current_realm(request, default_realm=None)
 
     if not session_state or not code or not realm:
         return
@@ -113,6 +114,7 @@ def post_authenticate(request):
 
     # save the user token in the session
     request.session[_KC_TOKEN_SESSION] = token
+    request.session.modified = True
 
     return _get_or_create_user(request, userinfo)
 
@@ -123,13 +125,14 @@ def check_user_token(request):
     '''
 
     token = request.session.get(_KC_TOKEN_SESSION)
-    realm = request.session.get(settings.REALM_COOKIE)
-    if token:
+    realm = get_current_realm(request, default_realm=None)
+    if token and realm:
         # refresh token
         response = refresh_kc_token(realm, token)
         try:
             response.raise_for_status()
             request.session[_KC_TOKEN_SESSION] = response.json()
+            request.session.modified = True
         except Exception:
             logout(request)
 
@@ -155,14 +158,15 @@ def check_gateway_token(request):
     '''
 
     token = find_in_request_headers(request, settings.GATEWAY_HEADER_TOKEN)
-    if token:
+    realm = get_current_realm(request, default_realm=None)
+    if token and realm:
         try:
-            realm = get_path_realm(request, raise_exception=True)
             userinfo = _get_user_info(realm, token)
 
             # flags that we are using the gateway to authenticate
             request.session[settings.GATEWAY_HEADER_TOKEN] = True
             request.session[settings.REALM_COOKIE] = realm
+            request.session.modified = True
 
             user = _get_or_create_user(request, userinfo)
             # only login if the user changed otherwise it will refresh the Csrf
@@ -196,9 +200,8 @@ def _user_logged_out(sender, user, request, **kwargs):
     '''
 
     token = request.session.get(_KC_TOKEN_SESSION)
-    realm = request.session.get(settings.REALM_COOKIE)
-
-    if token:
+    realm = get_current_realm(request, default_realm=None)
+    if token and realm:
         # logout
         exec_request(
             method='post',
