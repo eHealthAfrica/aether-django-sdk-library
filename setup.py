@@ -69,6 +69,7 @@ setup(
         'cache': [
             'django-cacheops',
             'django-redis',
+            'msgpack',
         ],
         'scheduler': [
             'django-rq',

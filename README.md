@@ -54,6 +54,8 @@ Extra dependencies (based on settings):
     A slick ORM cache with automatic granular event-driven invalidation.
   - [django-redis](https://github.com/jazzband/django-redis)
     Full featured redis cache backend for Django.
+  - [msgpack](https://msgpack.org/)
+    An efficient binary serialization format.
 
 - **scheduler**
   - [django-rq](https://github.com/rq/django-rq)

@@ -257,7 +257,7 @@ if SCHEDULER_REQUIRED:
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 # How often should we fetch userinfo from the Keycloak server?
-USER_TOKEN_TTL = int(os.environ.get('USER_TOKEN_TTL', 60 * 1))  # 1 minute
+USER_TOKEN_TTL = int(os.environ.get('USER_TOKEN_TTL', 60 * 1))   # 1 minute
 CACHE_TTL = int(os.environ.get('DJANGO_CACHE_TIMEOUT', 60 * 5))  # 5 minutes
 
 if (not TESTING) and DJANGO_USE_CACHE:
@@ -268,17 +268,22 @@ if (not TESTING) and DJANGO_USE_CACHE:
         'default': {
             'BACKEND': 'django_prometheus.cache.backends.locmem.LocMemCache',
             'LOCATION': f'aether--django--{APP_MODULE}',
+            'TIMEOUT': CACHE_TTL,
         },
         SESSION_CACHE_ALIAS: {
             'BACKEND': 'django_prometheus.cache.backends.locmem.LocMemCache',
             'LOCATION': f'aether--session--{APP_MODULE}',
+            'TIMEOUT': CACHE_TTL,
         },
     }
-    MIDDLEWARE = [
-        'django.middleware.cache.UpdateCacheMiddleware',
-        *MIDDLEWARE,
-        'django.middleware.cache.FetchFromCacheMiddleware',
-    ]
+
+    # DO NOT UNCOMMENT!!!
+    #    Can't pickle local object 'create_reverse_many_to_one_manager.<locals>.RelatedManager'
+    # MIDDLEWARE = [
+    #     'django.middleware.cache.UpdateCacheMiddleware',
+    #     *MIDDLEWARE,
+    #     'django.middleware.cache.FetchFromCacheMiddleware',
+    # ]
 
     # trying to avoid collisions with REDIS databases
     REDIS_DB_CACHEOPS = int(os.environ.get('REDIS_DB_CACHEOPS', REDIS_DB + 1))
@@ -286,14 +291,16 @@ if (not TESTING) and DJANGO_USE_CACHE:
     REDIS_DB_SESSION = int(os.environ.get('REDIS_DB_CACHE_SESSION', REDIS_DB_DJANGO + 1))
 
     DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS = True
+    # Based on:  https://www.peterbe.com/plog/fastest-redis-optimization-for-django
     _CACHE_OPTIONS = {
-        'COMPRESSOR': 'django_redis.compressors.lzma.LzmaCompressor',
+        'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
         'CONNECTION_POOL_KWARGS': {
             'max_connections': int(os.environ.get('CACHE_POOL_SIZE', 100)),
             'retry_on_timeout': True,
         },
         'IGNORE_EXCEPTIONS': True,
         'PASSWORD': REDIS_PASSWORD,
+        'SERIALIZER': 'django_redis.serializers.msgpack.MSGPackSerializer',
     }
 
     if bool(os.environ.get('REDIS_DJANGO_CACHE')):
@@ -301,6 +308,7 @@ if (not TESTING) and DJANGO_USE_CACHE:
             'BACKEND': 'django_prometheus.cache.backends.redis.RedisCache',
             'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB_DJANGO}',
             'OPTIONS': _CACHE_OPTIONS,
+            'TIMEOUT': CACHE_TTL,
         }
 
     if bool(os.environ.get('REDIS_SESSION_CACHE')):
@@ -308,6 +316,7 @@ if (not TESTING) and DJANGO_USE_CACHE:
             'BACKEND': 'django_prometheus.cache.backends.redis.RedisCache',
             'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB_SESSION}',
             'OPTIONS': _CACHE_OPTIONS,
+            'TIMEOUT': CACHE_TTL,
         }
 
     INSTALLED_APPS += ['cacheops', ]
