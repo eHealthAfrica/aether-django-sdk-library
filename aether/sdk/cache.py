@@ -34,6 +34,22 @@ logger.setLevel(settings.LOGGING_LEVEL)
 CONTENT_TYPE_CACHE = {}
 
 
+def _is_cacheops_enabled():
+    return settings.DJANGO_USE_CACHE and 'cacheops' in settings.INSTALLED_APPS
+
+
+def cache_wrap(timeout=settings.CACHE_TTL):
+    if _is_cacheops_enabled():
+        from cacheops import cached
+        return cached(timeout=timeout)
+
+    # put a fake cache function on global scope so it doesn't complain
+    def do_nothing(fn):
+        return fn
+
+    return do_nothing
+
+
 def get_content_type(model):
     try:
         return CONTENT_TYPE_CACHE[model]
@@ -56,7 +72,7 @@ def clear_cache(objects=None, models=None, purge=False):
         # ignore errors
         logger.error(str(e))
 
-    if settings.DJANGO_USE_CACHE:
+    if _is_cacheops_enabled():
         from cacheops import invalidate_all, invalidate_model, invalidate_obj
 
         if objects:
