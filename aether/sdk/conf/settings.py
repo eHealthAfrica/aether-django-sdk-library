@@ -300,7 +300,6 @@ if (not TESTING) and DJANGO_USE_CACHE:
         },
         'IGNORE_EXCEPTIONS': True,
         'PASSWORD': REDIS_PASSWORD,
-        'SERIALIZER': 'django_redis.serializers.msgpack.MSGPackSerializer',
     }
 
     if bool(os.environ.get('REDIS_DJANGO_CACHE')):
