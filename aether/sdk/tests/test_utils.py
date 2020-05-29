@@ -157,8 +157,6 @@ class UtilsTests(AetherTestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.getvalue(), b'abc')
             self.assertEqual(response['Content-Type'], 'testing')
-
-            self.assertNotIn('Content-Disposition', response)
             self.assertNotIn('Access-Control-Expose-Headers', response)
 
     def test__get_file_content_as_attachment(self):

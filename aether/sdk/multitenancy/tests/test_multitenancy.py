@@ -460,7 +460,7 @@ class MultitenancyTests(AetherTestCase):
         Token.objects.create(user=user, key=token_key)
 
         token_headers = {'HTTP_AUTHORIZATION': f'Token {token_key}'}
-        token_headers_wrong = {'HTTP_AUTHORIZATION': f'Token 123'}
+        token_headers_wrong = {'HTTP_AUTHORIZATION': 'Token 123'}
 
         url = reverse('http-200')
         response = self.client.get(url)

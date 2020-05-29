@@ -39,7 +39,7 @@ MSG_EXTERNAL_APP_TOKEN_OK = _('"{app}" app token is valid for app server ({url})
 
 def check_db_connection():
     # this should happen automatically, but it does not hurt to force it
-    # https://github.com/django/django/blob/2.2.6/django/db/__init__.py#L55-L61
+    # https://github.com/django/django/blob/master/django/db/__init__.py#L55-L61
     close_old_connections()
 
     try:
