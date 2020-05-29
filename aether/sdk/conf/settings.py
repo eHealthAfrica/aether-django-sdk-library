@@ -255,18 +255,72 @@ if SCHEDULER_REQUIRED:
 # https://github.com/Suor/django-cacheops
 # A slick ORM cache with automatic granular event-driven invalidation.
 
-if DJANGO_USE_CACHE:
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+# How often should we fetch userinfo from the Keycloak server?
+USER_TOKEN_TTL = int(os.environ.get('USER_TOKEN_TTL', 60 * 1))   # 1 minute
+CACHE_TTL = int(os.environ.get('DJANGO_CACHE_TIMEOUT', 60 * 5))  # 5 minutes
 
-    # trying to avoid collisions with REDIS database
+if (not TESTING) and DJANGO_USE_CACHE:
+    SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+    SESSION_CACHE_ALIAS = 'session'
+
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_prometheus.cache.backends.locmem.LocMemCache',
+            'LOCATION': f'aether--django--{APP_MODULE}',
+            'TIMEOUT': CACHE_TTL,
+        },
+        SESSION_CACHE_ALIAS: {
+            'BACKEND': 'django_prometheus.cache.backends.locmem.LocMemCache',
+            'LOCATION': f'aether--session--{APP_MODULE}',
+            'TIMEOUT': CACHE_TTL,
+        },
+    }
+
+    # DO NOT UNCOMMENT!!!
+    #    Can't pickle local object 'create_reverse_many_to_one_manager.<locals>.RelatedManager'
+    # MIDDLEWARE = [
+    #     'django.middleware.cache.UpdateCacheMiddleware',
+    #     *MIDDLEWARE,
+    #     'django.middleware.cache.FetchFromCacheMiddleware',
+    # ]
+
+    # trying to avoid collisions with REDIS databases
     REDIS_DB_CACHEOPS = int(os.environ.get('REDIS_DB_CACHEOPS', REDIS_DB + 1))
+    REDIS_DB_DJANGO = int(os.environ.get('REDIS_DB_CACHE_DJANGO', REDIS_DB_CACHEOPS + 1))
+    REDIS_DB_SESSION = int(os.environ.get('REDIS_DB_CACHE_SESSION', REDIS_DB_DJANGO + 1))
 
-    DJANGO_CACHE_TIMEOUT = int(os.environ.get('DJANGO_CACHE_TIMEOUT', 60 * 5))  # 5 minutes
+    DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS = True
+    # Based on:  https://www.peterbe.com/plog/fastest-redis-optimization-for-django
+    _CACHE_OPTIONS = {
+        'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
+        'CONNECTION_POOL_KWARGS': {
+            'max_connections': int(os.environ.get('CACHE_POOL_SIZE', 100)),
+            'retry_on_timeout': True,
+        },
+        'IGNORE_EXCEPTIONS': True,
+        'PASSWORD': REDIS_PASSWORD,
+    }
 
-    # How often should we fetch userinfo from the Keycloak server?
-    USER_TOKEN_TTL = int(os.environ.get('USER_TOKEN_TTL', 60 * 1))
+    if bool(os.environ.get('REDIS_DJANGO_CACHE')):
+        CACHES['default'] = {
+            'BACKEND': 'django_prometheus.cache.backends.redis.RedisCache',
+            'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB_DJANGO}',
+            'OPTIONS': _CACHE_OPTIONS,
+            'TIMEOUT': CACHE_TTL,
+        }
+
+    if bool(os.environ.get('REDIS_SESSION_CACHE')):
+        CACHES[SESSION_CACHE_ALIAS] = {
+            'BACKEND': 'django_prometheus.cache.backends.redis.RedisCache',
+            'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB_SESSION}',
+            'OPTIONS': _CACHE_OPTIONS,
+            'TIMEOUT': CACHE_TTL,
+        }
 
     INSTALLED_APPS += ['cacheops', ]
 
+    CACHEOPS_ENABLED = not TESTING  # disable on tests
     CACHEOPS_LRU = bool(os.environ.get('CACHEOPS_LRU'))
     CACHEOPS_DEGRADE_ON_FAILURE = bool(os.environ.get('CACHEOPS_DEGRADE_ON_FAILURE'))
     CACHEOPS_REDIS = {
@@ -279,7 +333,7 @@ if DJANGO_USE_CACHE:
     CACHEOPS_DEFAULTS = {
         # 'all' is an alias for {'get', 'fetch', 'count', 'aggregate', 'exists'}
         'ops': ('fetch', 'get', 'exists'),
-        'timeout': DJANGO_CACHE_TIMEOUT,
+        'timeout': CACHE_TTL,
         'cache_on_save': True,
     }
 
@@ -307,20 +361,6 @@ if DJANGO_USE_CACHE:
         _module_name = APP_MODULE.split('.')[-1]
         CACHEOPS[f'{_module_name}.*'] = {}
 
-    CACHEOPS_ENABLED = not TESTING  # disable on tests
-
-    # Cache Redis Sessions using django-redis-sessions
-    if (not TESTING) and bool(os.environ.get('REDIS_SESSION_CACHE', True)):
-        SESSION_REDIS = {
-            'host': REDIS_HOST,
-            'port': REDIS_PORT,
-            'db': REDIS_DB_CACHEOPS,
-            'password': REDIS_PASSWORD,
-            'prefix': 'session',
-            'socket_timeout': 3,
-            'retry_on_timeout': True
-        }
-        SESSION_ENGINE = 'redis_sessions.session'
 
 # Logging Configuration
 # ------------------------------------------------------------------------------
@@ -601,6 +641,9 @@ else:
 
 STORAGE_REQUIRED = bool(os.environ.get('STORAGE_REQUIRED'))
 if STORAGE_REQUIRED:
+    # https://github.com/un1t/django-cleanup#configuration
+    INSTALLED_APPS += ['django_cleanup', ]
+
     if TESTING:
         # we cannot rely on remote servers during tests
         # use the file system storage
@@ -771,14 +814,6 @@ if not TESTING:
         # Make sure this stays as the last middleware
         'django_prometheus.middleware.PrometheusAfterMiddleware',
     ]
-
-
-# Django Cleanup configuration
-# ------------------------------------------------------------------------------
-
-# https://github.com/un1t/django-cleanup#configuration
-if STORAGE_REQUIRED:
-    INSTALLED_APPS += ['django_cleanup', ]
 
 
 # Local Configuration

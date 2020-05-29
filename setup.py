@@ -68,7 +68,7 @@ setup(
     extras_require={
         'cache': [
             'django-cacheops',
-            'django-redis-sessions',
+            'django-redis',
         ],
         'scheduler': [
             'django-rq',

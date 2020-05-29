@@ -18,14 +18,17 @@
 
 from unittest import mock
 
+from django.test import override_settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-from aether.sdk.tests import AetherTestCase
 from aether.sdk import cache
+from aether.sdk.tests import AetherTestCase
+from aether.sdk.unittest import UrlsTestCase
 
 
-class CacheTest(AetherTestCase):
+@override_settings(DJANGO_USE_CACHE=True)
+class CacheTest(AetherTestCase, UrlsTestCase):
 
     def tearDown(self):
         super(CacheTest, self).tearDown()
