@@ -275,7 +275,7 @@ Based on the application settings:
 ### Environment variables
 
 The following environment variables are used to build the application django settings.
-Take a look at the [django settings](https://docs.djangoproject.com/en/2.2/ref/settings/).
+Take a look at the [django settings](https://docs.djangoproject.com/en/3.0/ref/settings/).
 
 Take a look at `aether/sdk/conf.settings.py` file to check the list of all
 the expected environment variables.
@@ -314,11 +314,11 @@ the expected environment variables.
 ##### Django
 
 - `DJANGO_SECRET_KEY`: Django secret key for this installation (**mandatory**).
-  https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-SECRET_KEY
+  https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-SECRET_KEY
 - `LANGUAGE_CODE`: `en-us`. Language code for this installation.
-  https://docs.djangoproject.com/en/2.2/ref/settings/#language-code
+  https://docs.djangoproject.com/en/3.0/ref/settings/#language-code
 - `TIME_ZONE`: `UTC`. Time zone for this installation.
-  https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-TIME_ZONE
+  https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-TIME_ZONE
 - `STATIC_URL`: `/static/`. Provides a base URL for the static assets to be served from.
 - `STATIC_ROOT`: `/var/www/static/`. Provides the local folder for the static assets to be served from.
 
@@ -330,7 +330,7 @@ the expected environment variables.
 
 ##### Database
 
-More information in https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+More information in https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 - `PGHOST`: Postgres host name (**mandatory**).
 - `PGPORT`: Postgres port (**mandatory**).
@@ -405,7 +405,7 @@ See more in https://github.com/jazzband/django-silk
 - `STORAGE_REQUIRED`: Used to indicate if the file storage system is required.
   Is `false` if unset or set to empty string, anything else is considered `true`.
 - `DJANGO_STORAGE_BACKEND`: Used to specify a
-  [Default file storage system](https://docs.djangoproject.com/en/2.2/ref/settings/#default-file-storage).
+  [Default file storage system](https://docs.djangoproject.com/en/3.0/ref/settings/#default-file-storage).
   Available options: `minio`, `s3`, `gcs`.
 - `COLLECT_STATIC_FILES_ON_STORAGE`: Used to indicate if static files should be collected on the specified cloud-based storage service (`minio`, `s3` or `gcs`)
   Is `false` if unset or set to empty string, anything else is considered `true`.
@@ -480,18 +480,18 @@ See more in [django-cacheops](https://github.com/Suor/django-cacheops)
 #### Security
 
 - `DJANGO_ALLOWED_HOSTS`: `*`. Set `ALLOWED_HOSTS` Django setting.
-  https://docs.djangoproject.com/en/2.2/ref/settings/#allowed-hosts
+  https://docs.djangoproject.com/en/3.0/ref/settings/#allowed-hosts
 - `CSRF_COOKIE_DOMAIN`: `.ehealthafrica.org`. Set `CSRF_COOKIE_DOMAIN` Django setting.
-  https://docs.djangoproject.com/en/2.2/ref/settings/#csrf-cookie-domain
+  https://docs.djangoproject.com/en/3.0/ref/settings/#csrf-cookie-domain
 - `CSRF_TRUSTED_ORIGINS`. Set `CSRF_TRUSTED_ORIGINS` Django setting.
-  https://docs.djangoproject.com/en/2.2/ref/settings/#csrf-trusted-origins
+  https://docs.djangoproject.com/en/3.0/ref/settings/#csrf-trusted-origins
 - `DJANGO_USE_X_FORWARDED_HOST`: `False`. Set `USE_X_FORWARDED_HOST` Django setting.
-  https://docs.djangoproject.com/en/2.2/ref/settings/#use-x-forwarded-host
+  https://docs.djangoproject.com/en/3.0/ref/settings/#use-x-forwarded-host
 - `DJANGO_USE_X_FORWARDED_PORT`: `False`. Set `USE_X_FORWARDED_PORT` Django setting.
-  https://docs.djangoproject.com/en/2.2/ref/settings/#use-x-forwarded-port
+  https://docs.djangoproject.com/en/3.0/ref/settings/#use-x-forwarded-port
 - `DJANGO_HTTP_X_FORWARDED_PROTO`: `False`. If present sets `SECURE_PROXY_SSL_HEADER`
   Django setting to `('HTTP_X_FORWARDED_PROTO', 'https')`.
-  https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-SECURE_PROXY_SSL_HEADER
+  https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-SECURE_PROXY_SSL_HEADER
 
 *[Return to TOC](#table-of-contents)*
 
