@@ -25,6 +25,8 @@ Python libraries:
   for handling the server headers required for Cross-Origin Resource Sharing (CORS).
 - [django-debug-toolbar](https://github.com/jazzband/django-debug-toolbar)
   A configurable set of panels that display various debug information about the current request/response.
+- [django_postgrespool2](https://github.com/lcd1232/django-postgrespool2)
+  Postgres Connection Pooling for Django, powered by SQLAlchemy.
 - [django-prometheus](https://github.com/korfuri/django-prometheus)
   To monitor the application with Prometheus.io.
 - [django-silk](https://github.com/jazzband/django-silk)
@@ -330,13 +332,26 @@ the expected environment variables.
 
 More information in https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-  - `PGHOST`: Postgres host name (**mandatory**).
-  - `PGPORT`: Postgres port (**mandatory**).
-  - `DB_NAME`: Postgres database name (**mandatory**).
-  - `PGUSER`: Postgres user (**mandatory**).
-  - `PGPASSWORD`: Postgres user password (**mandatory**).
-  - `DB_CONN_MAX_AGE`: The lifetime of a database connection, in seconds.
-     Defaults to `600`, value `0` means non persistent connections.
+- `PGHOST`: Postgres host name (**mandatory**).
+- `PGPORT`: Postgres port (**mandatory**).
+- `DB_NAME`: Postgres database name (**mandatory**).
+- `PGUSER`: Postgres user (**mandatory**).
+- `PGPASSWORD`: Postgres user password (**mandatory**).
+- `DB_CONN_MAX_AGE`: The lifetime of a database connection, in seconds.
+  Defaults to `0`. Value `0` means non persistent connections but `None`
+  means persistent.
+- `ENABLE_CONNECTION_POOL`: Used to indicate if a connection pooler is enabled.
+  Is `false` if unset or set to empty string, anything else is considered `true`.
+  The expected pooler is [pgbouncer](https://www.pgbouncer.org/) that might run
+  as an external service.
+- `DB_POOL_INTERNAL`: Used to indicate that an internal connection pooler is used.
+  Is `false` if unset or set to empty string, anything else is considered `true`.
+  `SQLAlchemy` library is used to handle internally the connections.
+  Optional environment variables:
+  - `DB_POOL_INITIAL_SIZE`: `20`, the initial number of open connections.
+  - `DB_POOL_MAX_OVERFLOW`: `80`, the number of connections that can be created.
+  - `DB_POOL_RECYCLE_SECONDS`: `3600` (1 hour), the maximum age, in seconds,
+    for a connection before discarding it.
 
 ##### Endpoints
 
