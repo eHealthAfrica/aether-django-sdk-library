@@ -343,7 +343,7 @@ if (not TESTING) and DJANGO_USE_CACHE:
 
     CACHEOPS_ENABLED = not TESTING  # disable on tests
     CACHEOPS_LRU = bool(os.environ.get('CACHEOPS_LRU'))
-    CACHEOPS_DEGRADE_ON_FAILURE = bool(os.environ.get('CACHEOPS_DEGRADE_ON_FAILURE'))
+    CACHEOPS_DEGRADE_ON_FAILURE = True
     CACHEOPS_REDIS = {
         'host': REDIS_HOST,
         'port': REDIS_PORT,
@@ -361,20 +361,23 @@ if (not TESTING) and DJANGO_USE_CACHE:
     CACHEOPS = {
         # users and roles
         'auth.user': {
-            'ops': ('fetch', 'get', 'exists'),
-            'timeout': 60,  # one minute
+            'ops': ('get', 'exists'),
+            'timeout': 60 * 60 * 24,  # one day
         },
         'auth.permission': {},
         'auth.group': {},
         'authtoken.token': {},
         # content types
         'contenttypes.contenttype': {
-            'local_get': True,
-            'timeout': 60 * 60 * 24,  # one day
+            'ops': ('get', 'exists'),
+            'local_get': True,  # put into local cache for faster recall
         },
         # internal models
         'apptoken.*': {},
-        'multitenancy.mtinstance': {}
+        'multitenancy.mtinstance': {
+            'ops': ('get', 'exists'),
+            'timeout': 60 * 60 * 24,  # one day
+        },
     }
 
     if APP_MODULE:
