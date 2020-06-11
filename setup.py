@@ -54,6 +54,7 @@ setup(
         'django>=2.2',
         'django-cors-headers',
         'django-debug-toolbar',
+        'django_postgrespool2',
         'django-prometheus',
         'django-silk',
         'django-uwsgi',

@@ -173,11 +173,32 @@ DATABASES = {
     },
 }
 
-# the default value is 0 (non persistent connections)
+# the default value is 0 (non persistent connections), None means persistent
 # to avoid idle connections only include the entry when required
-DB_CONN_MAX_AGE = int(os.environ.get('DB_CONN_MAX_AGE', 600))  # 5 minutes
+DB_CONN_MAX_AGE = int(os.environ.get('DB_CONN_MAX_AGE', 0))
 if DB_CONN_MAX_AGE > 0:
     DATABASES['default']['CONN_MAX_AGE'] = DB_CONN_MAX_AGE
+
+# With connection pool make connections persistent and disable server side cursors
+ENABLE_CONNECTION_POOL = bool(os.environ.get('ENABLE_CONNECTION_POOL'))
+if ENABLE_CONNECTION_POOL:
+    # https://docs.djangoproject.com/en/3.0/ref/databases/#transaction-pooling-server-side-cursors
+    DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
+    # https://docs.djangoproject.com/en/3.0/ref/databases/#persistent-connections
+    DATABASES['default']['CONN_MAX_AGE'] = None  # persistent
+
+    # Instead of using an external service like pgbouncer
+    # to handle the connection rely on SQLAlchemy for it.
+    DB_POOL_INTERNAL = bool(os.environ.get('DB_POOL_INTERNAL'))
+    if DB_POOL_INTERNAL:
+        DATABASES['default']['ENGINE'] = 'django_postgrespool2'
+        DATABASE_POOL_ARGS = {
+            'pool_size': int(os.environ.get('DB_POOL_INITIAL_SIZE', 20)),
+            'max_overflow': int(os.environ.get('DB_POOL_MAX_OVERFLOW', 80)),
+            'recycle': int(os.environ.get('DB_POOL_RECYCLE_SECONDS', 3600)),
+            'pool_pre_ping': True,
+            'pool_use_lifo': True,
+        }
 
 
 # App Configuration
