@@ -352,6 +352,9 @@ More information in https://docs.djangoproject.com/en/3.0/ref/settings/#database
   - `DB_POOL_MAX_OVERFLOW`: `80`, the number of connections that can be created.
   - `DB_POOL_RECYCLE_SECONDS`: `3600` (1 hour), the maximum age, in seconds,
     for a connection before discarding it.
+  - `DB_POOL_USE_LIFO`: Used to indicate that an internal connection pooler uses LIFO.
+    Is `false` if unset or set to empty string, anything else is considered `true`.
+    [Using FIFO vs. LIFO](https://docs.sqlalchemy.org/en/13/core/pooling.html#pool-use-lifo)
 
 ##### Endpoints
 

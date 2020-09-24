@@ -196,8 +196,7 @@ if ENABLE_CONNECTION_POOL:
             'pool_size': int(os.environ.get('DB_POOL_INITIAL_SIZE', 20)),
             'max_overflow': int(os.environ.get('DB_POOL_MAX_OVERFLOW', 80)),
             'recycle': int(os.environ.get('DB_POOL_RECYCLE_SECONDS', 3600)),
-            'pool_pre_ping': True,
-            'pool_use_lifo': True,
+            'use_lifo': bool(os.environ.get('DB_POOL_USE_LIFO')),
         }
 
 
