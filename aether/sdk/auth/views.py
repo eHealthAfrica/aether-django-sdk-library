@@ -31,7 +31,10 @@ from aether.sdk.auth.utils import get_or_create_user
 def auth_token(request, *args, **kwargs):
     '''
     GET:
-    Returns the user token if exists
+    Returns the user token if exists.
+
+    If it does not exist but the parameter ``force`` is present,
+    then will create it and return the new token.
 
     POST:
     If logged in user is not admin:
@@ -46,9 +49,15 @@ def auth_token(request, *args, **kwargs):
     try:
         if request.method == 'GET':
             # return the own token
-            token = Token.objects.filter(user=request.user)
-            if token.exists():
-                return Response({'token': token.first().key})
+            tokens = Token.objects.filter(user=request.user)
+            if tokens.exists():
+                return Response({'token': tokens.first().key})
+
+            if 'force' in request.query_params:
+                # create token
+                token, _ = Token.objects.get_or_create(user=request.user)
+                return Response({'token': token.key})
+
             return Response({'token': None})
 
         username = request.data.get('username', request.user.username)
