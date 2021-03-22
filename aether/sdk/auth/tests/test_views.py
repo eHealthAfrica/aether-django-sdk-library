@@ -54,6 +54,7 @@ class ViewsTest(AetherTestCase, UrlsTestCase):
         response = self.client.get(self.token_url)
         self.assertIsNone(response.json()['token'])
 
+        # ignores username in payload
         response = self.client.post(self.token_url, data={'username': token_username})
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.content)
         token = response.json()['token']
@@ -63,6 +64,26 @@ class ViewsTest(AetherTestCase, UrlsTestCase):
 
         response = self.client.get(self.token_url)
         self.assertEqual(response.json()['token'], token)
+
+    def test_obtain_auth_token__as_normal_user__with_force(self):
+        username = 'user'
+        email = 'user@example.com'
+        password = 'useruser'
+        user = user_objects.create_user(username, email, password)
+        self.assertTrue(self.client.login(username=username, password=password))
+
+        # no token yet
+        response = self.client.get(self.token_url)
+        self.assertIsNone(response.json()['token'])
+
+        # force it
+        response = self.client.get(self.token_url + '?force')
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.content)
+        token = response.json()['token']
+        self.assertIsNotNone(token)
+
+        self.assertEqual(user_objects.filter(username=username).count(), 1)
+        self.assertEqual(Token.objects.get(user=user).key, token)
 
     def test_obtain_auth_token__as_admin(self):
         username = 'admin'

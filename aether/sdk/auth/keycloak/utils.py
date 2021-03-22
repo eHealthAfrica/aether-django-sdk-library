@@ -22,6 +22,7 @@ from django.conf import settings
 from django.contrib.auth import login, logout
 from django.contrib.auth.signals import user_logged_out
 from django.dispatch import receiver
+from django.middleware.csrf import CSRF_SESSION_KEY
 from django.urls import reverse
 
 from aether.sdk.auth.utils import get_or_create_user
@@ -171,8 +172,11 @@ def check_gateway_token(request):
                 # to the missing CSRF Token in the request headers.
                 # We are adding it manually to skip this issue but
                 # only if it needs to login
+                csrfCookie = request.META.get('CSRF_COOKIE')
                 if not request.META.get(settings.CSRF_HEADER_NAME):
-                    request.META[settings.CSRF_HEADER_NAME] = request.META.get('CSRF_COOKIE')
+                    request.META[settings.CSRF_HEADER_NAME] = csrfCookie
+                if not request.session.get(CSRF_SESSION_KEY):
+                    request.session[CSRF_SESSION_KEY] = csrfCookie
             request.user = user
 
         except Exception:
