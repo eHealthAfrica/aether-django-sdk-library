@@ -60,6 +60,7 @@ setup(
         'django-uwsgi',
         'djangorestframework>=3.8',
         'drf-dynamic-fields',
+        'markdown',
         'psycopg2-binary',
         'pygments',
         'python-json-logger',
