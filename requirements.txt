@@ -5,13 +5,13 @@
 #                                                                              #
 ################################################################################
 
-django>=2.2
+django<3.2
 django-cors-headers
 django-debug-toolbar
 django-prometheus
 django-silk
 django-uwsgi
-django-webpack-loader
+django-webpack-loader<1.0.0
 djangorestframework>=3.8
 psycopg2-binary
 pygments

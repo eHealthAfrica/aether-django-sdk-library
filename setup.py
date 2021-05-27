@@ -51,7 +51,7 @@ setup(
 
     python_requires='>=3.6',
     install_requires=[
-        'django>=2.2',
+        'django<3.2',
         'django-cors-headers',
         'django-debug-toolbar',
         'django_postgrespool2',
@@ -92,7 +92,7 @@ setup(
             'tblib',  # for paralell test runner
         ],
         'webpack': [
-            'django-webpack-loader',
+            'django-webpack-loader<1.0.0',
         ],
     },
 
@@ -103,6 +103,7 @@ setup(
         'Environment :: Web Environment',
         'Framework :: Django :: 2.2',
         'Framework :: Django :: 3.0',
+        'Framework :: Django :: 3.1',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',

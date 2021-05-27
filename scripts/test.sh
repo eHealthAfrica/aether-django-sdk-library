@@ -23,7 +23,7 @@ set -Eeuo pipefail
 # ----------------------------------------
 # remove previous results
 # ----------------------------------------
-rm -R .coverage* 2>/dev/null || true
+coverage erase || true
 
 # ----------------------------------------
 # set up test environment
