@@ -38,6 +38,8 @@ Python libraries:
 - [drf-dynamic-fields](https://github.com/dbrgn/drf-dynamic-fields)
   Dynamically select only a subset of fields per DRF resource,
   either using a whitelist or a blacklist.
+- [markdown](https://github.com/Python-Markdown/markdown)
+  This is a Python implementation of John Gruber's Markdown.
 - [psycopg2-binary](http://initd.org/psycopg/)
   Python-PostgreSQL Database Adapter.
 - [pygments](http://pygments.org/)
