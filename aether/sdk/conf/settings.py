@@ -48,6 +48,8 @@ STATIC_ROOT = os.environ.get('STATIC_ROOT', '/var/www/static/')
 
 PRETTIFIED_CUTOFF = int(os.environ.get('PRETTIFIED_CUTOFF', 10000))
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # Executes each request call at least X times
 # trying to avoid unexpected connection errors.
 try:
@@ -138,7 +140,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'aether.sdk.auth.authentication.BasicAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+        'aether.sdk.auth.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -211,7 +213,7 @@ APP_MODULE = os.environ.get('APP_MODULE', '')
 APP_FAVICON = os.environ.get('APP_FAVICON', 'eha/images/eHA-icon.svg')
 APP_LOGO = os.environ.get('APP_LOGO', 'eha/images/eHA-icon.svg')
 
-# to be overriden in each app
+# to be overridden in each app
 APP_EXTRA_STYLE = None
 APP_EXTRA_META = None
 
