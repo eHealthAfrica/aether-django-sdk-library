@@ -139,7 +139,9 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
         'aether.sdk.auth.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
         'aether.sdk.auth.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
