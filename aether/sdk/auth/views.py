@@ -33,7 +33,7 @@ def auth_token(request, *args, **kwargs):
     GET:
     Returns the user token if exists.
 
-    If it does not exist but the parameter ``force`` is present,
+    If it does not exist but the parameter ``force`` is present
     then will create it and return the new token.
 
     POST:
@@ -42,8 +42,8 @@ def auth_token(request, *args, **kwargs):
 
     If logged in user is admin:
         Given a username (POST entry) generates an auth token for him/her.
-        If the username does not belong to an existing user,
-        it's going to be created with a long and random password.
+        If the username does not belong to an existing user
+        then it's going to be created with a long and random password.
     '''
 
     try:

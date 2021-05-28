@@ -14,7 +14,7 @@ class AetherJSONField(JSONField):
 
     def from_db_value(self, value, expression, connection):
         try:
-            super(AetherJSONField, self).from_db_value(value, expression, connection)
+            return super(AetherJSONField, self).from_db_value(value, expression, connection)
 
         except Exception as e:
             if 'the JSON object must be str, bytes or bytearray, not dict' in str(e):

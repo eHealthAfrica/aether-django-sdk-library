@@ -19,6 +19,7 @@
 from django.conf import settings
 from django.db import models
 
+from aether.sdk.drf.fields import AetherJSONField
 from aether.sdk.multitenancy.models import MtModelAbstract, MtModelChildAbstract
 
 
@@ -62,6 +63,14 @@ class TestGrandChildModel(MtModelChildAbstract):
 
 class TestNoMtModel(models.Model):
     name = models.TextField()
+
+    class Meta:
+        app_label = 'fakeapp'
+
+
+class TestJSONModel(models.Model):
+    name = models.TextField()
+    payload = AetherJSONField()
 
     class Meta:
         app_label = 'fakeapp'

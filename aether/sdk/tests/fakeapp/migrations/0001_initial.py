@@ -20,6 +20,9 @@ from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
 
+import aether.sdk.drf.fields
+
+
 if settings.MULTITENANCY:
     run_before_multitenancy = [
         ('multitenancy', '0001_initial'),
@@ -103,6 +106,20 @@ class Migration(migrations.Migration):
                     verbose_name='ID',
                     )),
                 ('name', models.TextField()),
+            ],
+            options={},
+        ),
+        migrations.CreateModel(
+            name='TestJSONModel',
+            fields=[
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID',
+                    )),
+                ('name', models.TextField()),
+                ('payload', aether.sdk.drf.fields.AetherJSONField()),
             ],
             options={},
         ),
