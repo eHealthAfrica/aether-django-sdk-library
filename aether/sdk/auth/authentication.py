@@ -34,10 +34,14 @@ class BasicAuthentication(BasicAuth):
     '''
 
     def authenticate_credentials(self, userid, password, request=None):
-        userid = parse_username(request, userid)
+        try:
+            user, __ = super(BasicAuthentication, self) \
+                .authenticate_credentials(userid, password, request)
 
-        user, __ = super(BasicAuthentication, self) \
-            .authenticate_credentials(userid, password, request)
+        except AuthenticationFailed:
+            userid = parse_username(request, userid)
+            user, __ = super(BasicAuthentication, self) \
+                .authenticate_credentials(userid, password, request)
 
         # check that the user belongs to the current realm
         if not check_user_in_realm(request, user):

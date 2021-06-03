@@ -448,6 +448,30 @@ class MultitenancyTests(AetherTestCase):
         response = self.client.get(url, **basic_realm_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_basic_authentication__admin(self):
+        self.client.logout()
+        self.client.cookies[settings.REALM_COOKIE] = TEST_REALM
+
+        username = 'admin-pan'
+        email = 'admin-pan@example.com'
+        password = 'secretsecret'
+        user = get_user_model().objects.create_superuser(username, email, password)
+        self.assertTrue(user.is_staff)
+
+        auth_str = f'{username}:{password}'
+        basic = base64.b64encode(bytearray(auth_str, 'utf-8')).decode('ascii')
+        basic_headers = {'HTTP_AUTHORIZATION': f'Basic {basic}'}
+
+        url = reverse('http-200')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(
+            response.json(),
+            {'detail': 'Authentication credentials were not provided.'})
+
+        response = self.client.get(url, **basic_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.content)
+
     def test_token_authentication(self):
         self.client.logout()
         self.client.cookies[settings.REALM_COOKIE] = TEST_REALM
@@ -478,6 +502,30 @@ class MultitenancyTests(AetherTestCase):
         self.assertEqual(response.json(), {'detail': 'Invalid token.'})
 
         utils.add_user_to_realm(self.request, user)
+
+        response = self.client.get(url, **token_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_token_authentication__admin(self):
+        self.client.logout()
+        self.client.cookies[settings.REALM_COOKIE] = TEST_REALM
+
+        username = 'admin-pan'
+        email = 'admin-pan@example.com'
+        password = 'secretsecret'
+        user = get_user_model().objects.create_superuser(username, email, password)
+        self.assertTrue(user.is_staff)
+
+        token_key = 'token-admin-123456'
+        Token.objects.create(user=user, key=token_key)
+        token_headers = {'HTTP_AUTHORIZATION': f'Token {token_key}'}
+
+        url = reverse('http-200')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(
+            response.json(),
+            {'detail': 'Authentication credentials were not provided.'})
 
         response = self.client.get(url, **token_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

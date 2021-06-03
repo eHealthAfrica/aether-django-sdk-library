@@ -162,6 +162,9 @@ def check_user_in_realm(request, user):
     if not settings.MULTITENANCY:
         return True
 
+    if user.is_staff:
+        return True
+
     return get_auth_group(request) in user.groups.all()
 
 
