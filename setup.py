@@ -90,10 +90,10 @@ setup(
             'coverage',
             'flake8',
             'flake8-quotes',
-            'tblib',  # for paralell test runner
+            'tblib',  # for parallel test runner
         ],
         'webpack': [
-            'django-webpack-loader<1.0.0',
+            'django-webpack-loader',
         ],
     },
 
