@@ -189,8 +189,6 @@ def _get_admin_urls():
         path(route='~uwsgi/', view=include('django_uwsgi.urls')),
         # realms
         path(route='~realms', view=get_realms, name='get-realms'),
-        # django admin section
-        path(route='', view=admin.site.urls),
     ]
 
     if settings.DJANGO_USE_CACHE:
@@ -204,6 +202,11 @@ def _get_admin_urls():
         admin_urls += [
             path(route='~silk/', view=include('silk.urls', namespace='silk')),
         ]
+
+    admin_urls += [
+        # django admin section
+        path(route='', view=admin.site.urls),
+    ]
 
     return [
         path(route=f'{settings.ADMIN_URL}/', view=include(admin_urls)),

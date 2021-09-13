@@ -181,7 +181,23 @@ class AdminUrlsUrlTest(UrlsTestCase):
         self.assertIsNotNone(resolve('/private/~prometheus/metrics'))
         self.assertIsNotNone(resolve('/private/~uwsgi/'))
         self.assertIsNotNone(resolve('/private/~realms'))
-        self.assertRaises(exceptions.Resolver404, resolve, '/private/~silk/')
+
+        # Breaking change since 3.2, `AdminSite.final_catch_all_view=True`
+        # self.assertRaises(exceptions.Resolver404, resolve, '/private/~silk/')
+
+        # ResolverMatch(
+        #     func=django.contrib.admin.sites.catch_all_view,
+        #     args=(),
+        #     kwargs={'url': '~silk'},
+        #     url_name=None,
+        #     app_names=['admin'],
+        #     namespaces=['admin'],
+        #     route=private/(?P<url>.*)$
+        # )
+        profiling = resolve('/private/~silk')
+        self.assertEqual(profiling.kwargs, {'url': '~silk'})
+        self.assertEqual(profiling.namespaces, ['admin'])
+        self.assertEqual(profiling.route, 'private/(?P<url>.*)$')
 
 
 @override_settings(
@@ -197,6 +213,7 @@ class AdminUrlsProfilingUrlTest(UrlsTestCase):
         self.assertIsNotNone(resolve('/admin-with-profiling/~prometheus/metrics'))
         self.assertIsNotNone(resolve('/admin-with-profiling/~uwsgi/'))
         self.assertIsNotNone(resolve('/admin-with-profiling/~silk/'))
+        self.assertEqual(resolve('/admin-with-profiling/~silk/').namespaces, ['silk'])
 
 
 @override_settings(AUTH_URL='secure')
