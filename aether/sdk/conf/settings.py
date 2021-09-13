@@ -184,9 +184,9 @@ if DB_CONN_MAX_AGE > 0:
 # With connection pool make connections persistent and disable server side cursors
 ENABLE_CONNECTION_POOL = bool(os.environ.get('ENABLE_CONNECTION_POOL'))
 if ENABLE_CONNECTION_POOL:
-    # https://docs.djangoproject.com/en/3.0/ref/databases/#transaction-pooling-server-side-cursors
+    # https://docs.djangoproject.com/en/3.2/ref/databases/#transaction-pooling-server-side-cursors
     DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
-    # https://docs.djangoproject.com/en/3.0/ref/databases/#persistent-connections
+    # https://docs.djangoproject.com/en/3.2/ref/databases/#persistent-connections
     DATABASES['default']['CONN_MAX_AGE'] = None  # persistent
 
     # Instead of using an external service like pgbouncer

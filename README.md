@@ -13,7 +13,6 @@ This library contains the most common features used by the different Aether djan
   - [Environment variables](#environment-variables)
   - [Management commands](#management-commands)
 
-
 ## Requirements
 
 This library requires **Python 3.6** and above.
@@ -100,7 +99,6 @@ Extra dependencies (based on settings):
 
 *[Return to TOC](#table-of-contents)*
 
-
 ## Installation
 
 ```bash
@@ -112,7 +110,6 @@ pip3 install aether.sdk[scheduler,server,storage,test,webpack]
 ```
 
 *[Return to TOC](#table-of-contents)*
-
 
 ## Distribution
 
@@ -131,7 +128,6 @@ or
 ```
 
 *[Return to TOC](#table-of-contents)*
-
 
 ## Tests
 
@@ -153,7 +149,6 @@ source ./venv/bin/activate
 The file `scripts/test.ini` contains the environment variables used in the tests.
 
 *[Return to TOC](#table-of-contents)*
-
 
 ## Usage
 
@@ -188,38 +183,38 @@ urlpatterns = generate_urlpatterns(token=[True|False], app=[
 
 Default URLs included:
 
-  - The health endpoints:
-    - the `/health` URL. Always responds with `200` status and an empty content.
-      Uses `aether.sdk.health.views.health` view.
-    - the `/check-db` URL. Responds with `500` status if the database is not available.
-      Uses `aether.sdk.health.views.check_db` view.
-    - the `/check-app` URL. Responds with current application version and more.
-      Uses `aether.sdk.health.views.check_app` view.
+- The health endpoints:
+  - the `/health` URL. Always responds with `200` status and an empty content.
+    Uses `aether.sdk.health.views.health` view.
+  - the `/check-db` URL. Responds with `500` status if the database is not available.
+    Uses `aether.sdk.health.views.check_db` view.
+  - the `/check-app` URL. Responds with current application version and more.
+    Uses `aether.sdk.health.views.check_app` view.
 
-  - the `/admin` section URLs (`ADMIN_URL` setting).
-  - the `/admin/~prometheus/metrics` URL. Displays the raw monitoring data.
-  - the `/admin/~uwsgi/` URL. If uWSGI is running displays the server uWSGI settings.
-  - the `/admin/~purge-cache` URL. Purges django cache.
-    Available if django cache is enabled.
-  - the `/admin/~realms` URL. Returns the list of realms with linked data.
-    The `DEFAULT_REALM` is always included even if it has no linked data.
-    If MULTITENANCY is not enabled returns the fake realm `settings.NO_MULTITENANCY_REALM`.
+- the `/admin` section URLs (`ADMIN_URL` setting).
+- the `/admin/~prometheus/metrics` URL. Displays the raw monitoring data.
+- the `/admin/~uwsgi/` URL. If uWSGI is running displays the server uWSGI settings.
+- the `/admin/~purge-cache` URL. Purges django cache.
+  Available if django cache is enabled.
+- the `/admin/~realms` URL. Returns the list of realms with linked data.
+  The `DEFAULT_REALM` is always included even if it has no linked data.
+  If MULTITENANCY is not enabled returns the fake realm `settings.NO_MULTITENANCY_REALM`.
 
-  - the `/accounts` URLs (`AUTH_URL` setting), checks if the REST Framework ones,
-    using the templates indicated in `LOGIN_TEMPLATE` and `LOGGED_OUT_TEMPLATE`
-    settings, or the Keycloak ones.
+- the `/accounts` URLs (`AUTH_URL` setting), checks if the REST Framework ones,
+  using the templates indicated in `LOGIN_TEMPLATE` and `LOGGED_OUT_TEMPLATE`
+  settings, or the Keycloak ones.
 
 Based on the arguments:
 
-  - `token`: indicates if the application should be able to create and return
-    user tokens via POST request and activates the URL.
-    The URL endpoint is indicated in the `TOKEN_URL` setting.
-    Defaults to `/token`.
-    Uses `aether.sdk.auth.views.auth_token` view.
+- `token`: indicates if the application should be able to create and return
+  user tokens via POST request and activates the URL.
+  The URL endpoint is indicated in the `TOKEN_URL` setting.
+  Defaults to `/token`.
+  Uses `aether.sdk.auth.views.auth_token` view.
 
-    If the current user is not an admin user then creates and returns the authorization
-    token for himself, otherwise creates a token for the `username` contained
-    in the request payload.
+  If the current user is not an admin user then creates and returns the authorization
+  token for himself, otherwise creates a token for the `username` contained
+  in the request payload.
 
 Based on the application settings:
 
@@ -277,7 +272,7 @@ Based on the application settings:
 ### Environment variables
 
 The following environment variables are used to build the application django settings.
-Take a look at the [django settings](https://docs.djangoproject.com/en/3.0/ref/settings/).
+Take a look at the [django settings](https://docs.djangoproject.com/en/3.2/ref/settings/).
 
 Take a look at `aether/sdk/conf.settings.py` file to check the list of all
 the expected environment variables.
@@ -307,20 +302,20 @@ the expected environment variables.
 - `LOGGING_FORMATTER`: `json`. The application messages format.
   Possible values: `verbose` or `json`.
 - `LOGGING_LEVEL`: `info`. Logging level for application messages.
-  https://docs.python.org/3.7/library/logging.html#levels
+  <https://docs.python.org/3.7/library/logging.html#levels>
 - `SENTRY_DSN`: Sentry DSN (error reporting tool).
-  https://docs.sentry.io
+  <https://docs.sentry.io>
 - `PRETTIFIED_CUTOFF`: `10000`. Indicates the maximum length of a prettified JSON value.
   See: `aether.sdk.utils.json_prettified(value, indent=2)` method.
 
 ##### Django
 
 - `DJANGO_SECRET_KEY`: Django secret key for this installation (**mandatory**).
-  https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-SECRET_KEY
+  <https://docs.djangoproject.com/en/3.2/ref/settings/#std:setting-SECRET_KEY>
 - `LANGUAGE_CODE`: `en-us`. Language code for this installation.
-  https://docs.djangoproject.com/en/3.0/ref/settings/#language-code
+  <https://docs.djangoproject.com/en/3.2/ref/settings/#language-code>
 - `TIME_ZONE`: `UTC`. Time zone for this installation.
-  https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-TIME_ZONE
+  <https://docs.djangoproject.com/en/3.2/ref/settings/#std:setting-TIME_ZONE>
 - `STATIC_URL`: `/static/`. Provides a base URL for the static assets to be served from.
 - `STATIC_ROOT`: `/var/www/static/`. Provides the local folder for the static assets to be served from.
 
@@ -332,7 +327,7 @@ the expected environment variables.
 
 ##### Database
 
-More information in https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+More information in <https://docs.djangoproject.com/en/3.2/ref/settings/#databases>
 
 - `PGHOST`: Postgres host name (**mandatory**).
 - `PGPORT`: Postgres port (**mandatory**).
@@ -401,7 +396,7 @@ More information in https://docs.djangoproject.com/en/3.0/ref/settings/#database
 
 The `/admin/~silk/` URL displays the profiling data (accessible to admin users only).
 
-See more in https://github.com/jazzband/django-silk
+See more in <https://github.com/jazzband/django-silk>
 
 *[Return to TOC](#table-of-contents)*
 
@@ -410,7 +405,7 @@ See more in https://github.com/jazzband/django-silk
 - `STORAGE_REQUIRED`: Used to indicate if the file storage system is required.
   Is `false` if unset or set to empty string, anything else is considered `true`.
 - `DJANGO_STORAGE_BACKEND`: Used to specify a
-  [Default file storage system](https://docs.djangoproject.com/en/3.0/ref/settings/#default-file-storage).
+  [Default file storage system](https://docs.djangoproject.com/en/3.2/ref/settings/#default-file-storage).
   Available options: `minio`, `s3`, `gcs`.
 - `COLLECT_STATIC_FILES_ON_STORAGE`: Used to indicate if static files should be collected on the specified cloud-based storage service (`minio`, `s3` or `gcs`)
   Is `false` if unset or set to empty string, anything else is considered `true`.
@@ -429,7 +424,7 @@ More information in https://django-storages.readthedocs.io/en/latest/index.html
 - `MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET`: Whether to create the bucket if it does not already exist.
 - `MINIO_STORAGE_MEDIA_USE_PRESIGNED`: Determines if the media file URLs should be pre-signed.
 
-See more in https://django-minio-storage.readthedocs.io/en/latest/usage
+See more in <https://django-minio-storage.readthedocs.io/en/latest/usage>
 
 ##### S3 (`DJANGO_STORAGE_BACKEND=s3`)
 
@@ -485,18 +480,18 @@ See more in [django-cacheops](https://github.com/Suor/django-cacheops)
 #### Security
 
 - `DJANGO_ALLOWED_HOSTS`: `*`. Set `ALLOWED_HOSTS` Django setting.
-  https://docs.djangoproject.com/en/3.0/ref/settings/#allowed-hosts
+  <https://docs.djangoproject.com/en/3.2/ref/settings/#allowed-hosts>
 - `CSRF_COOKIE_DOMAIN`: `.ehealthafrica.org`. Set `CSRF_COOKIE_DOMAIN` Django setting.
-  https://docs.djangoproject.com/en/3.0/ref/settings/#csrf-cookie-domain
+  <https://docs.djangoproject.com/en/3.2/ref/settings/#csrf-cookie-domain>
 - `CSRF_TRUSTED_ORIGINS`. Set `CSRF_TRUSTED_ORIGINS` Django setting.
-  https://docs.djangoproject.com/en/3.0/ref/settings/#csrf-trusted-origins
+  <https://docs.djangoproject.com/en/3.2/ref/settings/#csrf-trusted-origins>
 - `DJANGO_USE_X_FORWARDED_HOST`: `False`. Set `USE_X_FORWARDED_HOST` Django setting.
-  https://docs.djangoproject.com/en/3.0/ref/settings/#use-x-forwarded-host
+  <https://docs.djangoproject.com/en/3.2/ref/settings/#use-x-forwarded-host>
 - `DJANGO_USE_X_FORWARDED_PORT`: `False`. Set `USE_X_FORWARDED_PORT` Django setting.
-  https://docs.djangoproject.com/en/3.0/ref/settings/#use-x-forwarded-port
+  <https://docs.djangoproject.com/en/3.2/ref/settings/#use-x-forwarded-port>
 - `DJANGO_HTTP_X_FORWARDED_PROTO`: `False`. If present sets `SECURE_PROXY_SSL_HEADER`
   Django setting to `('HTTP_X_FORWARDED_PROTO', 'https')`.
-  https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-SECURE_PROXY_SSL_HEADER
+  <https://docs.djangoproject.com/en/3.2/ref/settings/#std:setting-SECURE_PROXY_SSL_HEADER>
 
 *[Return to TOC](#table-of-contents)*
 
@@ -532,6 +527,7 @@ There are two ways of setting up keycloak:
 
 a) In this case the authentication process happens in the server side without
 any further user interaction.
+
 ```ini
 # .env file
 KEYCLOAK_SERVER_URL=http://my-keycloak-server/auth/realms
@@ -540,6 +536,7 @@ KEYCLOAK_BEHIND_SCENES=true
 
 b) In this case the user is redirected to the keycloak server to finish the
 sign in step.
+
 ```ini
 # .env file
 KEYCLOAK_SERVER_URL=http://my-keycloak-server/auth/realms
@@ -565,8 +562,8 @@ In this case the application URLs can be reached in several ways:
 
 Trying to access the health endpoint `/health`:
 
-- http://my-server/health using the internal URL
-- http://my-gateway-server/my-realm/my-module/health using the gateway URL
+- `http://my-server/health` using the internal URL
+- `http://my-gateway-server/my-realm/my-module/health` using the gateway URL
   (being `my-module` the `GATEWAY_SERVICE_ID` value)
 
 For those endpoints that don't depend on the realm and must also be available
@@ -579,8 +576,8 @@ For those endpoints that don't depend on the realm and must also be available
 The authorization and admin endpoints never depend on any realm so the final URLs
 use always the public realm.
 
-- http://my-gateway-server/-/my-module/accounts/
-- http://my-gateway-server/-/my-module/admin/
+- `http://my-gateway-server/-/my-module/accounts/`
+- `http://my-gateway-server/-/my-module/admin/`
 
 *[Return to TOC](#table-of-contents)*
 
@@ -614,6 +611,7 @@ Follow the instructions to enable multi-tenancy option in your application.
 
 If the `EXTERNAL_APPS` equals to `app-1,mod-ule-2,pro-d-uct-3` the expected and
 mandatory environment variables are:
+
 - `APP_1_URL`, `APP_1_TOKEN`
 - `MOD_ULE_2_URL`, `MOD_ULE_2_TOKEN`
 - `PRO_D_UCT_3_URL`, `PRO_D_UCT_3_TOKEN`
@@ -624,10 +622,9 @@ with the external application when possible.
 
 *[Return to TOC](#table-of-contents)*
 
-
 ### Management commands
 
-#### To check if an URL is reachable via command line.
+#### To check if an URL is reachable via command line
 
 ```bash
 # arguments:
@@ -636,7 +633,7 @@ with the external application when possible.
 ./manage.py check_url -u=http://my-server/url/to/check
 ```
 
-#### To create "admin" users via command line.
+#### To create "admin" users via command line
 
 ```bash
 # arguments:
@@ -647,7 +644,7 @@ with the external application when possible.
 ./manage.py setup_admin -u=admin -p=password -t=auth_token
 ```
 
-#### To create "standard" users via command line.
+#### To create "standard" users via command line
 
 ```bash
 # arguments:
@@ -658,7 +655,7 @@ with the external application when possible.
 ./manage.py create_user -u=user -p=password -t=auth_token
 ```
 
-#### To publish webpack assets to CDN via command line.
+#### To publish webpack assets to CDN via command line
 
 ```bash
 # arguments:
