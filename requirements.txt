@@ -5,7 +5,7 @@
 #                                                                              #
 ################################################################################
 
-django
+django<4
 django-cors-headers
 django-debug-toolbar
 django-prometheus

@@ -51,7 +51,7 @@ setup(
 
     python_requires='>=3.6',
     install_requires=[
-        'django',
+        'django<4',
         'django-cors-headers',
         'django-debug-toolbar',
         'django_postgrespool2',
