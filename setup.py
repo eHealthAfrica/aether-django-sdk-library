@@ -20,7 +20,7 @@
 
 import os
 from io import open
-from setuptools import find_packages, setup
+from setuptools import find_namespace_packages, setup
 
 
 def read(f):
@@ -97,7 +97,7 @@ setup(
         ],
     },
 
-    packages=find_packages(exclude=['*tests*']),
+    packages=find_namespace_packages(exclude=['*tests*']),
     include_package_data=True,
     classifiers=[
         'Development Status :: 5 - Production/Stable',

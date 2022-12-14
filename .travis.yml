@@ -1,10 +1,14 @@
 os: linux
-dist: bionic
+dist: jammy
 language: python
 python:
-  - '3.8'
+  - '3.8.13'
 
 install: true
+env:
+  global:
+    # Workaround for issue with setuptools
+    - SETUPTOOLS_USE_DISTUTILS=stdlib
 
 # build only the master branch or tags like #.#.#
 branches:
