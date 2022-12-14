@@ -2,9 +2,13 @@ os: linux
 dist: jammy
 language: python
 python:
-  - '3.10'
+  - '3.8.13'
 
 install: true
+env:
+  global:
+    # Workaround for issue with setuptools
+    - SETUPTOOLS_USE_DISTUTILS=stdlib
 
 # build only the master branch or tags like #.#.#
 branches:
