@@ -35,7 +35,7 @@ class UtilsTests(AetherTestCase):
 
     def test__json_prettified_simple(self):
         data = {}
-        expected = '<pre><span></span><span class="p">{}</span>\n</pre>'
+        expected = '<span class="p">{}</span>'
 
         pretty = str(utils.json_prettified(data))
         self.assertIn(expected, pretty)
