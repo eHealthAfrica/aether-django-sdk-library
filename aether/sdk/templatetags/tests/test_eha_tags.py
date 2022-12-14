@@ -78,7 +78,7 @@ class TagsTests(AetherTestCase):
 
     def test_prettified(self):
         data = {}
-        expected = '<pre><span></span><span class="p">{}</span>\n</pre>'
+        expected = '<span class="p">{}</span>'
 
         pretty = str(prettified(data))
         self.assertIn(expected, pretty)

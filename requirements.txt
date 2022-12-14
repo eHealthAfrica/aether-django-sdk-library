@@ -5,7 +5,7 @@
 #                                                                              #
 ################################################################################
 
-django
+django<4
 django-cors-headers
 django-debug-toolbar
 django-prometheus
@@ -21,6 +21,6 @@ requests[security]
 
 # test libraries
 coverage
-flake8
+flake8<6
 flake8-quotes
 tblib

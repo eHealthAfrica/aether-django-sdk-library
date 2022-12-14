@@ -35,7 +35,7 @@ def __prettified__(response, lexer):
     # Truncate the data. Alter as needed
     response = response[:settings.PRETTIFIED_CUTOFF]
     # Get the Pygments formatter
-    formatter = HtmlFormatter(style='colorful')
+    formatter = HtmlFormatter(style='friendly')
     # Highlight the data
     response = highlight(response, lexer, formatter)
     # Get the stylesheet
