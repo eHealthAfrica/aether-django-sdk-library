@@ -88,7 +88,7 @@ setup(
         ],
         'test': [
             'coverage',
-            'flake8',
+            'flake8<6',
             'flake8-quotes',
             'tblib',  # for parallel test runner
         ],
