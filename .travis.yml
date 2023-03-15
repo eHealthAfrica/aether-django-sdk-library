@@ -2,13 +2,9 @@ os: linux
 dist: jammy
 language: python
 python:
-  - '3.10'
+  - '3.8'
 
 install: true
-env:
-  global:
-    # Workaround for issue with setuptools
-    - SETUPTOOLS_USE_DISTUTILS=stdlib
 
 # build only the master branch or tags like #.#.#
 branches:
@@ -21,9 +17,17 @@ jobs:
   fast_finish: true
   include:
 
-    - name: "Test"
+    - name: "Test library"
       stage: test
       script: ./scripts/travis_test.sh
+      if: type = pull_request
+      python:
+        - '3.10'
+
+    - name: "Test release"
+      stage: test
+      script: ./scripts/travis_release.sh
+      if: type = pull_request
 
     - name: "Release"
       stage: deploy

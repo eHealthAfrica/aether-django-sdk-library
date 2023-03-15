@@ -20,22 +20,10 @@
 #
 set -Eeuo pipefail
 
+
 echo "-------------------- install requirements -------------------- "
 pip3 install -q -r requirements.txt
 
+
 echo "-------------------- test library -------------------- "
 ./scripts/test.sh
-
-echo "-------------------- distribution version --------------------"
-export VERSION=$(date "+%Y%m%d%H%M%S")
-echo "-------------------- $VERSION --------------------"
-
-echo "-------------------- build distribution -------------------- "
-./scripts/build.sh
-
-echo "-------------------- install twine -------------------- "
-pip3 install -q --upgrade twine
-
-echo "-------------------- upload to TestPyPi repository -------------------- "
-export TWINE_REPOSITORY_URL=https://test.pypi.org/legacy/
-twine upload --verbose --skip-existing dist/*

@@ -22,14 +22,22 @@ set -Eeuo pipefail
 
 
 echo "-------------------- distribution version --------------------"
-export VERSION=$TRAVIS_TAG
+if [[ ${TRAVIS_TAG:-} == "" ]]; then
+    export VERSION=$(date "+%Y%m%d%H%M%S")
+    export TWINE_REPOSITORY_URL=https://test.pypi.org/legacy/
+else
+    export VERSION=$TRAVIS_TAG
+fi
 echo "-------------------- $VERSION --------------------"
+
 
 echo "-------------------- build distribution --------------------"
 ./scripts/build.sh
 
+
 echo "-------------------- install twine --------------------"
 pip3 install -q --upgrade twine
+
 
 echo "-------------------- upload to PyPi repository --------------------"
 twine upload --skip-existing dist/*
