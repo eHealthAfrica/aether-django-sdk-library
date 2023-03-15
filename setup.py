@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2019 by eHealth Africa : http://www.eHealthAfrica.org
+# Copyright (C) 2023 by eHealth Africa : http://www.eHealthAfrica.org
 #
 # See the NOTICE file distributed with this work for additional information
 # regarding copyright ownership.
@@ -65,6 +65,7 @@ setup(
         'pygments',
         'python-json-logger',
         'requests[security]',
+        'SQLAlchemy<2',
         'uwsgi',
     ],
     extras_require={
@@ -105,6 +106,7 @@ setup(
         'Framework :: Django :: 2.2',
         'Framework :: Django :: 3.0',
         'Framework :: Django :: 3.1',
+        'Framework :: Django :: 3.2',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
