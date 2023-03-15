@@ -390,7 +390,7 @@ if (not TESTING) and DJANGO_USE_CACHE:
 # Logging Configuration
 # ------------------------------------------------------------------------------
 
-# https://docs.python.org/3.7/library/logging.html#levels
+# https://docs.python.org/3/library/logging.html#levels
 LOGGING_LEVEL = os.getenv('LOGGING_LEVEL', logging.INFO)
 LOGGING_CLASS = 'logging.StreamHandler' if not TESTING else 'logging.NullHandler'
 LOGGING_FORMAT = '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'

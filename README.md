@@ -302,7 +302,7 @@ the expected environment variables.
 - `LOGGING_FORMATTER`: `json`. The application messages format.
   Possible values: `verbose` or `json`.
 - `LOGGING_LEVEL`: `info`. Logging level for application messages.
-  <https://docs.python.org/3.7/library/logging.html#levels>
+  <https://docs.python.org/3/library/logging.html#levels>
 - `SENTRY_DSN`: Sentry DSN (error reporting tool).
   <https://docs.sentry.io>
 - `PRETTIFIED_CUTOFF`: `10000`. Indicates the maximum length of a prettified JSON value.

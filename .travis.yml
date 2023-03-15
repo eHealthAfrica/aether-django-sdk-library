@@ -2,7 +2,7 @@ os: linux
 dist: jammy
 language: python
 python:
-  - '3.8.13'
+  - '3.10'
 
 install: true
 env:
